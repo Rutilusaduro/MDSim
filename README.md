@@ -71,35 +71,36 @@ Preview the production build:
 npm run preview
 ```
 
-## GitHub Pages deployment
+## GitHub Pages deployment (automatic)
 
-The Vite config is set to:
+**Live URL after deploy:** https://rutilusaduro.github.io/MDSim/
 
-```js
-base: '/MDSim/'
-```
+This repo includes `.github/workflows/deploy.yml`, which builds the Vite app and publishes `dist/` on every push to `main`.
 
-That matches the current repository name for GitHub Pages project hosting.
+### One-time setup (do this once in GitHub)
 
-### Option A: deploy `dist/` manually
+1. Open **https://github.com/Rutilusaduro/MDSim/settings/pages**
+2. Under **Build and deployment → Source**, choose **GitHub Actions** (not “Deploy from a branch” and not Jekyll).
+3. Save. You’re done — no other config needed.
 
-1. Run `npm run build`.
-2. Upload the generated `dist/` folder to the GitHub Pages publishing branch or configured Pages source.
-3. In the repository settings, enable GitHub Pages for that source.
+### How deploys happen
 
-### Option B: GitHub Actions
+- Push or merge to `main` → Actions runs `npm ci` → `npm run build` → uploads `dist` → publishes to Pages.
+- Watch progress: **https://github.com/Rutilusaduro/MDSim/actions**
+- Re-run manually anytime: Actions tab → **Deploy to GitHub Pages** → **Run workflow**.
 
-Use a standard Vite Pages workflow:
+### Important: `base` path
 
-1. Enable Pages in repository settings with GitHub Actions as the source.
-2. Add a workflow that checks out the repo, runs `npm ci`, runs `npm run build`, uploads `dist`, and deploys Pages.
+`vite.config.js` uses `base: '/MDSim/'` so assets load correctly at `username.github.io/MDSim/`. If you rename the repo, update that value to match.
 
-### Option C: docs folder method
+### Troubleshooting
 
-1. Run `npm run build`.
-2. Copy the contents of `dist/` into a `docs/` folder.
-3. Commit `docs/`.
-4. Set GitHub Pages source to `main` / `/docs`.
+| Problem | Fix |
+|--------|-----|
+| Blank page / no styles | Pages Source must be **GitHub Actions**. Delete any old Jekyll workflow. |
+| 404 on assets | Confirm `base: '/MDSim/'` matches the repo name exactly. |
+| Workflow didn’t run | Check you pushed to `main`, not a feature branch only. |
+| Old broken site still showing | Hard-refresh (Ctrl+Shift+R) or wait 1–2 min for CDN cache. |
 
 ## Example End Week narrative summaries
 
