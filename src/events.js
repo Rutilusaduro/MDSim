@@ -5,6 +5,7 @@ import {
   rngForState,
   saveGame,
   spendActionPoint,
+  updateInstallableAchievement,
 } from './state.js';
 import { applyPendingInstallations, computeClinicEffects } from './clinic.js';
 import {
@@ -16,6 +17,20 @@ import {
   getStageInfo,
   summarizeStageChange,
 } from './characters.js';
+import { advanceArc, canAdvanceArc, getArcProgress } from './arcs.js';
+import { checkAchievements } from './achievements.js';
+import {
+  fireRelationshipBeat,
+  fireWardrobeEvents,
+  pickWeeklyEvent,
+} from './weeklyContent.js';
+
+const RECRUIT_ROLES = [
+  'Patient Care Coordinator',
+  'Wellness Associate',
+  'Clinical Support Staff',
+  'Outreach Liaison',
+];
 
 export const interactionCatalog = {
   consult: {
@@ -59,6 +74,17 @@ export const interactionCatalog = {
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
+  arcScene: {
+    label: 'Advance Personal Arc',
+    scope: ['staff'],
+    description: 'Private scene. Trust deepens. Story moves forward.',
+  },
+  recruit: {
+    label: 'Recruit to Staff',
+    scope: ['patient'],
+    cost: 750,
+    description: 'Offer a job. Trust high. Body ready. She stays for good.',
+  },
 };
 
 export function findCharacter(state, id) {
@@ -71,6 +97,36 @@ export function getInteractionOptions(state, character) {
     .map(([id, action]) => {
       const inventoryMissing = action.inventory && (state.inventory[action.inventory] || 0) <= 0;
       const moneyMissing = action.cost && state.money < action.cost;
+      let extraDisabled = false;
+      let extraReason = '';
+
+      if (id === 'consult' && character.seenThisWeek) {
+        extraDisabled = true;
+        extraReason = 'Already seen this week';
+      }
+      if (id === 'arcScene') {
+        const arcCheck = canAdvanceArc(character);
+        if (!arcCheck.ok) {
+          extraDisabled = true;
+          extraReason = arcCheck.reason;
+        }
+      }
+      if (id === 'recruit') {
+        if (character.trust < 8) {
+          extraDisabled = true;
+          extraReason = 'Need trust 8+';
+        } else if (getStageIndex(character) < 4) {
+          extraDisabled = true;
+          extraReason = 'Need stage 5+';
+        } else if ((character.visits || 0) < 3) {
+          extraDisabled = true;
+          extraReason = 'Need 3+ visits';
+        } else if (state.staff.length >= 8) {
+          extraDisabled = true;
+          extraReason = 'Staff roster full';
+        }
+      }
+
       return {
         id,
         ...action,
@@ -78,7 +134,7 @@ export function getInteractionOptions(state, character) {
           state.actionPoints <= 0 ||
           inventoryMissing ||
           moneyMissing ||
-          (id === 'consult' && character.seenThisWeek),
+          extraDisabled,
         reason:
           state.actionPoints <= 0
             ? 'No AP remaining'
@@ -86,9 +142,7 @@ export function getInteractionOptions(state, character) {
               ? 'Out of stock'
               : moneyMissing
                 ? 'Insufficient funds'
-                : id === 'consult' && character.seenThisWeek
-                  ? 'Already seen this week'
-                  : '',
+                : extraReason,
       };
     });
 }
@@ -137,6 +191,11 @@ function actionFlavor(character, actionId) {
       : mid
         ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
         : `Thick shake. Sweet. ${name} drains it. Steady. Warm. Heavy-lidded at the end.`,
+    arcScene: (() => {
+      const progress = getArcProgress(character);
+      return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}. "${dialogue}"`;
+    })(),
+    recruit: `${name} accepts the offer on the spot. New hire paperwork waits. She asks about the break room menu first.`,
   };
 
   return copy[actionId];
@@ -151,7 +210,10 @@ export function performInteraction(state, characterId, actionId) {
   if (!spendActionPoint(state)) return { ok: false, message: 'No action points remain.' };
 
   if (action.cost) state.money -= action.cost;
-  if (action.inventory) state.inventory[action.inventory] -= 1;
+  if (action.inventory) {
+    state.inventory[action.inventory] -= 1;
+    if (state.stats) state.stats.compoundsUsed = (state.stats.compoundsUsed || 0) + 1;
+  }
 
   switch (actionId) {
     case 'consult':
@@ -198,6 +260,30 @@ export function performInteraction(state, characterId, actionId) {
       character.indulgence += 3;
       character.weeklyMomentum += 1.35;
       break;
+    case 'arcScene': {
+      const arcResult = advanceArc(character, state);
+      if (!arcResult.ok) return { ok: false, message: arcResult.reason };
+      addWeekNote({
+        type: 'arc',
+        title: `Arc: ${character.name}`,
+        text: arcResult.text,
+      }, state);
+      return { ok: true, message: arcResult.text };
+    }
+    case 'recruit': {
+      const role = RECRUIT_ROLES[state.staff.length % RECRUIT_ROLES.length];
+      character.type = 'staff';
+      character.role = role;
+      character.arc = { completedBeats: [] };
+      state.patients = state.patients.filter((p) => p.id !== character.id);
+      state.staff.push(character);
+      state.salaries += 280;
+      state.reputation += 3;
+      if (state.stats) state.stats.patientsRecruited = (state.stats.patientsRecruited || 0) + 1;
+      const hireText = actionFlavor(character, actionId);
+      addWeekNote({ type: 'recruit', title: `Hired: ${character.name}`, text: hireText }, state);
+      return { ok: true, message: hireText };
+    }
     default:
       break;
   }
@@ -233,6 +319,9 @@ function buildResolutionHtml({
   bills,
   clinicRevenue,
   newPatients,
+  weeklyEvent,
+  wardrobeFired,
+  relationshipBeat,
 }) {
   const installedText = installed.length
     ? `Sunday night. ${installed.map((item) => item.name).join(', ')} slots into place.`
@@ -249,8 +338,23 @@ function buildResolutionHtml({
       ? `${newPatients.length} new patients on the roster. Word of mouth. Busy rooms.`
       : `${newPatients.length} new patients waitlisted. Reputation does the recruiting now.`;
 
+  const eventBlock = weeklyEvent
+    ? `<p><strong>${weeklyEvent.title}:</strong> ${weeklyEvent.text}</p>`
+    : '';
+  const wardrobeBlock = wardrobeFired.length
+    ? wardrobeFired
+        .map((w) => `<p><strong>${w.character.name}:</strong> ${w.text}</p>`)
+        .join('')
+    : '';
+  const relBlock = relationshipBeat
+    ? `<p><strong>${relationshipBeat.beat.title}:</strong> ${relationshipBeat.beat.text}</p>`
+    : '';
+
   return `
     <p>${installedText}</p>
+    ${eventBlock}
+    ${wardrobeBlock}
+    ${relBlock}
     <p>Week ${state.week} closes. ${
       bestStaff
         ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.`
@@ -268,10 +372,17 @@ function buildResolutionHtml({
 export function endWeek(state) {
   const rng = rngForState(state);
   const installed = applyPendingInstallations(state);
+  updateInstallableAchievement(state);
   const effects = computeClinicEffects(state);
   const staffGains = [];
   const patientGains = [];
   const stageChanges = [];
+
+  const weeklyEvent = pickWeeklyEvent(state, rng);
+  if (weeklyEvent) {
+    weeklyEvent.effect(state);
+    addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
+  }
 
   [...state.staff, ...state.patients].forEach((character) => {
     const oldStage = getStageIndex(character);
@@ -295,6 +406,12 @@ export function endWeek(state) {
     character.weeklyMomentum = 0;
     if (character.type === 'patient') character.seenThisWeek = false;
   });
+
+  if (!state.firedEvents) state.firedEvents = [];
+  const wardrobeFired = fireWardrobeEvents(state, rng);
+  wardrobeFired.forEach((w) => state.firedEvents.push(w.key));
+
+  const relationshipBeat = fireRelationshipBeat(state, rng);
 
   const clinicRevenue = effects.weeklyRevenue;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
@@ -332,6 +449,23 @@ export function endWeek(state) {
     bills,
     clinicRevenue,
     newPatients,
+    weeklyEvent,
+    wardrobeFired,
+    relationshipBeat,
+  });
+
+  state.pendingStageHighlights = stageChanges;
+
+  let hasDevoted = false;
+  for (const c of [...state.staff, ...state.patients]) {
+    if (getAttitudeKey(c) === 'devoted') hasDevoted = true;
+  }
+  const staffGainTotal = staffGains.reduce((s, i) => s + i.gain, 0);
+  const perfectApWeek = (state.apSpentThisWeek || 0) >= state.actionPointsMax;
+  const newAchievements = checkAchievements(state, {
+    staffGainWeek: staffGainTotal,
+    perfectApWeek,
+    hasDevoted,
   });
 
   const resolution = {
@@ -343,6 +477,10 @@ export function endWeek(state) {
     bills,
     clinicRevenue,
     newPatients,
+    weeklyEvent,
+    wardrobeFired,
+    relationshipBeat,
+    newAchievements,
     html: resolutionHtml,
   };
 
@@ -355,6 +493,7 @@ export function endWeek(state) {
   state.lastResolution = resolution;
   state.week += 1;
   state.actionPoints = state.actionPointsMax;
+  state.apSpentThisWeek = 0;
   state.thisWeek = [];
   state.campaignBoost = null;
   saveGame(state);

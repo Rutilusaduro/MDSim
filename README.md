@@ -10,7 +10,24 @@ Alternative title directions:
 
 All characters in the prototype are adults 21+ and are framed as opt-in participants in comfort-forward care. The tone is celebratory, sensual, and positive: no shame, no cruelty, no degradation.
 
-## Current playable features
+## V2 features (current)
+
+- **Character arcs** — 3-beat personal stories for each starting staff member (trust + stage gates)
+- **Weekly random events** — 10 weighted events tied to clinic upgrades
+- **Patient → staff recruitment** — Trust 8+, stage 5+, 3 visits, $750
+- **Reputation tiers** — 5 tiers unlock shop items (no insurance sim)
+- **Achievements** — 15 milestones with unlock toasts at week end
+- **Wardrobe strain** — 6 stage-gated text events
+- **Staff relationship beats** — 4 scripted multi-staff scenes
+- **Comfort preferences** — Pace / focus / public toggles per character
+- **Abstract silhouettes** — Body-type SVG in character modal
+- **Stage-change polish** — Glow highlight on week resolution
+- **2 new archetypes** — Donor's Niece, Returning VIP
+- **Save migration** — v1 saves upgrade to v2 automatically
+
+See `docs/V3-PLAN.md` for the post-v2 roadmap (review before we build v3).
+
+## Current playable features (v1 core)
 
 - Week-based management loop with money, reputation, bills, salaries, supplies, and action points.
 - Generated all-adult staff and patient rosters.
@@ -42,9 +59,16 @@ src/
   events.js
   ui.js
   prose.js
+  reputation.js
+  achievements.js
+  arcs.js
+  silhouettes.js
+  weeklyContent.js
   styles.css
+docs/V3-PLAN.md
 public/
 .cursor/skills/beautiful-prose/
+.cursor/skills/event-authoring/
 AGENTS.md
 ```
 
@@ -140,15 +164,14 @@ The private recovery nook changes the clinic's rhythm. Consultations stretch lon
 
 The week ends with bills paid, chairs fuller, and the whole practice glowing with the sense that something generous is taking root.
 
-## V2 expansion ideas
+## V2 expansion ideas (shipped or superseded)
 
-- Deeper long-form character arcs with multi-week personal scenes.
-- More archetypes, including rival doctors, donors, and returning VIP patients.
-- Patient-to-staff recruitment paths.
-- More rooms with placement choices and room-specific atmosphere bonuses.
-- A consent/profile system with preferences, boundaries, and explicit opt-in progression tracks.
-- Wardrobe strain events and size-specific clothing purchases.
-- Staff relationships, jealousy, admiration, and group indulgence scenes.
-- More advanced economy with insurance contracts, premium memberships, and reputation tiers.
-- Visual body silhouettes or abstract stage art.
-- Achievement system for clinic styles, body-type stage milestones, and perfect-week management.
+See **V2 features** above. Remaining ideas moved to `docs/V3-PLAN.md`.
+
+Legacy wishlist items now in V3+ planning:
+
+- Room placement UI
+- Rival clinic / campaign chapters
+- Group indulgence scenes as first-class system
+- Visual stage art upgrades
+- Doctor customization depth
