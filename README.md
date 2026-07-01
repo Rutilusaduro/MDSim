@@ -41,8 +41,11 @@ src/
   clinic.js
   events.js
   ui.js
+  prose.js
   styles.css
 public/
+.cursor/skills/beautiful-prose/
+AGENTS.md
 ```
 
 ## Local setup
@@ -71,6 +74,21 @@ Preview the production build:
 npm run preview
 ```
 
+Lint narrative prose (Beautiful Prose skill):
+
+```bash
+npm run lint:prose
+```
+
+## Writing style: Beautiful Prose
+
+All game narrative follows the **Beautiful Prose** skill at `.cursor/skills/beautiful-prose/SKILL.md`.
+
+- Concrete, muscular English. No em dashes. No AI filler or therapy voice.
+- Default register for this project: `literary_modern`, `HEAT: warm`.
+- Agents: see `AGENTS.md`. Run `npm run lint:prose` before committing dialogue or descriptions.
+- Lint utility: `src/prose.js`.
+
 ## GitHub Pages deployment (automatic)
 
 **Live URL after deploy:** https://rutilusaduro.github.io/MDSim/
@@ -81,7 +99,7 @@ This repo includes `.github/workflows/deploy.yml`, which builds the Vite app and
 
 1. Open **https://github.com/Rutilusaduro/MDSim/settings/pages**
 2. Under **Build and deployment → Source**, choose **GitHub Actions** (not “Deploy from a branch” and not Jekyll).
-3. Save. You’re done — no other config needed.
+3. Save. You are done. No other config needed.
 
 ### How deploys happen
 

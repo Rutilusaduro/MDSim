@@ -19,9 +19,9 @@ export const bodyTypes = {
     baseRange: [148, 178],
     stageSize: 18,
     descriptions: [
-      'She has a neat, professional figure — fitted scrubs, good posture, and the easy confidence of someone who likes her job.',
+      'She has a neat, professional figure. Fitted scrubs, good posture, the easy confidence of someone who likes her job.',
       'She still looks trim and capable, though her uniform sits a touch closer after long shifts than it used to.',
-      'A little softness is starting to show at her waist and hips — subtle enough that she might not have mentioned it yet.',
+      'Softness gathers at her waist and hips now. Subtle enough that she might not have mentioned it yet.',
       'Weight gathers like velvet on her thighs, belly, and chest, making her silhouette plush while her waist remains beautifully defined.',
       'Her curves press into the world with new confidence: fuller arms, deeper cleavage, and hips that brush chair arms with a soft whisper.',
       'She moves with a warm, breathy rhythm now, her belly rounding enough to rest against waistbands while her hips roll with deliberate ease.',
@@ -39,7 +39,7 @@ export const bodyTypes = {
     stageSize: 19,
     descriptions: [
       'She is slim and professional, shoulders back, scrubs hanging cleanly over a figure that has not changed much yet.',
-      'Her hips and thighs feel a fraction fuller lately — nothing dramatic, just a snugger fit after laundry day.',
+      'Her hips and thighs feel a fraction fuller lately. Nothing dramatic. Just a snugger fit after laundry day.',
       'Weight is gathering lower on her frame now, and her walk has a faint new sway she keeps catching herself doing.',
       'Her lower body blooms beautifully, hips widening into chairs while her waistbands ride over an increasingly soft belly.',
       'She carries most of her indulgence below the waist now, with thick, cushiony thighs and a generous seat that settles heavily into furniture.',
@@ -58,7 +58,7 @@ export const bodyTypes = {
     stageSize: 20,
     descriptions: [
       'She looks fit and put-together, with a flat middle and the brisk energy of someone still settling into the role.',
-      'Her blouse rests a little differently now — a faint roundness at her middle that was not there on day one.',
+      'Her blouse rests a little differently now. A faint roundness at her middle that was not there on day one.',
       'Her belly is starting to soften and press forward, noticeable enough that she tugs her top down more often.',
       'Her middle grows heavy and inviting, lifting her chest and making every seated breath shift fabric in small, visible waves.',
       'Her belly now leads her movement, soft and round enough to brush counters while her arms and face take on a fresh glow.',
@@ -76,7 +76,7 @@ export const bodyTypes = {
     baseRange: [145, 176],
     stageSize: 17,
     descriptions: [
-      'She still has an athletic build — firm posture, defined lines, and scrubs that fit the way they are supposed to.',
+      'She still has an athletic build: firm posture, defined lines, scrubs that fit the way they are supposed to.',
       'The sharp edges are blurring a little; her stomach is not quite as flat and her thighs fill her pants more.',
       'Softness is replacing definition across her middle and hips, and her uniform is clearly working harder than before.',
       'Strength remains beneath the gain, but every movement now carries a soft bounce at her belly, chest, and hips.',
@@ -95,7 +95,7 @@ export const bodyTypes = {
     baseRange: [126, 152],
     stageSize: 16,
     descriptions: [
-      'She is slender and composed, long-limbed and light on her feet — a normal figure for a normal workday.',
+      'She is slender and composed, long-limbed and light on her feet. A normal figure for a normal workday.',
       'A little padding has appeared at her hips and lower belly, soft enough that she keeps checking if it is real.',
       'Her once-narrow frame is rounding visibly now, and fitted clothes are starting to tell the story for her.',
       'Her limbs remain elegant, but now they carry plushness that makes every movement look slower and more sensual.',
@@ -115,7 +115,7 @@ export const bodyTypes = {
     stageSize: 18,
     descriptions: [
       'She is petite and professional, her scrubs tidy and her frame still close to how she looked when she was hired.',
-      'A few pounds show quickly on her shorter body — a snugger waistband and a face that looks a little softer.',
+      'A few pounds show quickly on her shorter body. Snugger waistband, softer face.',
       'Her compact frame is rounding fast now, belly and hips pressing into her uniform with unmistakable new weight.',
       'She grows delightfully dense, each pound making her look softer, shorter, and more satisfyingly rounded.',
       'Her compact curves push outward with charming insistence, filling chairs quickly and making every outfit look carefully negotiated.',
@@ -139,7 +139,7 @@ export const archetypes = {
     lines: {
       professional: 'I love it here. The team is wonderful and the patients actually listen.',
       noticing: 'Huh... my scrubs feel a little tighter? Probably just shrank in the dryer.',
-      hungry: 'Why am I so hungry lately? Oh my god — I could eat the entire break room.',
+      hungry: 'Why am I so hungry lately? Oh my god. I could eat the entire break room.',
       pleased: 'I feel calmer when I am full. Softer, steadier... I think I am starting to like it.',
       indulgent: 'I am getting so fat and I do not even mind. Feed me before rounds, please.',
       devoted: 'I am so fucking fat now and I love it. I just want to eat and grow until the ground cracks beneath me.',
@@ -156,7 +156,7 @@ export const archetypes = {
       hungry: 'I cannot stop thinking about food between shifts. This is not in my schedule.',
       pleased: 'The weight is off-plan, but I cannot deny how good fullness feels lately.',
       indulgent: 'Screw the old metrics. I want bigger portions and softer results.',
-      devoted: 'I am enormous now and I love every pound. Keep feeding me until nothing fits — I do not care.',
+      devoted: 'I am enormous now and I love every pound. Keep feeding me until nothing fits. I do not care.',
     },
   },
   socialite: {
@@ -165,7 +165,7 @@ export const archetypes = {
     trustMod: 1,
     hook: 'Charming, social, and always first to greet patients at the door.',
     lines: {
-      professional: 'Best job I have had — great coworkers, gorgeous lobby. I am happy here!',
+      professional: 'Best job I have had. Great coworkers, gorgeous lobby. I am happy here!',
       noticing: 'Has anyone else noticed their uniform fitting differently? ...Just me?',
       hungry: 'I am STARVING by noon every single day. It is honestly kind of embarrassing.',
       pleased: 'Okay, the curves are doing something. People keep staring and I am not mad about it.',
@@ -177,7 +177,7 @@ export const archetypes = {
     label: 'Rebel',
     appetiteMod: 0.9,
     trustMod: 0.7,
-    hook: 'Blunt, independent, and slow to trust authority — but she showed up on time.',
+    hook: 'Blunt, independent, and slow to trust authority. She still shows up on time.',
     lines: {
       professional: 'Yeah, it is fine. Better than my last place. I will stick around.',
       noticing: 'These scrubs did not used to pull across my hips like this. Weird.',
@@ -219,7 +219,7 @@ export const archetypes = {
     label: 'Former Athlete',
     appetiteMod: 1.15,
     trustMod: 0.85,
-    hook: 'Disciplined and energetic — still moves like someone who used to train daily.',
+    hook: 'Disciplined and energetic. She still moves like someone who used to train daily.',
     lines: {
       professional: 'Solid hours, good benefits. Happy to be on the team.',
       noticing: 'My scrubs are tighter across the thighs. Huh. That is new.',
@@ -237,7 +237,7 @@ export const archetypes = {
     lines: {
       professional: 'Honestly? Great job, nice people, good coffee. No complaints at all.',
       noticing: 'Okay, my pants are definitely snugger. When did that happen?',
-      hungry: 'Why am I so hungry oh my god — I already ate and I want more right now.',
+      hungry: 'Why am I so hungry oh my god. I already ate and I want more right now.',
       pleased: 'Everything feels tighter and softer. Honestly? It is kind of delicious.',
       indulgent: 'I am fat, happy, and not apologizing. Bring me everything on the menu.',
       devoted: 'I am so fucking fat now I love it. I just want to eat and grow until the ground cracks beneath me.',
@@ -461,12 +461,12 @@ export function summarizeStageChange(character, oldStage, newStage) {
     return `${base} She has noticed something shifting, but she is not ready to name it yet.`;
   }
   if (attitude === 'hungry') {
-    return `${base} The change is harder to ignore — and so is the hunger that keeps following her through the halls.`;
+    return `${base} The change is harder to ignore. So is the hunger that keeps following her through the halls.`;
   }
   if (attitude === 'pleased' || attitude === 'indulgent') {
     return `${base} The transformation is impossible to miss now: slower steps, softer posture, and a body that has stopped pretending it wants less.`;
   }
-  return `${base} She has become a monument of glorious weight — radiant, hungry, and utterly unashamed.`;
+  return `${base} She has become a monument of glorious weight: radiant, hungry, utterly unashamed.`;
 }
 
 export function getGainTemperament(character) {

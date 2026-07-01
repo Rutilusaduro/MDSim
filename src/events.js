@@ -109,7 +109,7 @@ function actionFlavor(character, actionId) {
         ? `${name} lingers a moment after the consult, still thinking about food and the way her clothes fit lately. "${dialogue}"`
         : `${name} leaves glowing, clearly enjoying how her body fills the chair and the conversation alike. The talk drifts to ${preference} and how good it feels to stop holding back. "${dialogue}"`,
     personalTalk: early
-      ? `${name} settles into the check-in easily — professional, warm, happy to be here. She talks about the team and how much she likes the work. "${dialogue}"`
+      ? `${name} settles into the check-in easily: professional, warm, happy to be here. She talks about the team and how much she likes the work. "${dialogue}"`
       : mid
         ? `${name} opens up more than usual, venting about hunger, tighter scrubs, and not understanding what her body is doing. "${dialogue}"`
         : `${name} relaxes completely into the private talk, speaking openly about weight, appetite, and how much she is starting to want more. "${dialogue}"`,
@@ -119,7 +119,7 @@ function actionFlavor(character, actionId) {
         ? `${name} demolishes the catered tray faster than she meant to, surprised by her own appetite. ${preference} disappears first.`
         : `The catered tray arrives glossy and fragrant. ${name} lingers over ${preference}, growing drowsy and pleased as her ${stage.bodyType.toLowerCase()} body settles heavier into the break-room cushions.`,
     comfortPlan: early
-      ? `${name} listens to the wellness advice with a nod — sensible, routine, nothing she would think twice about.`
+      ? `${name} listens to the wellness advice with a nod. Sensible, routine, nothing she would think twice about.`
       : mid
         ? `${name} receives the comfort plan and goes quiet, already imagining richer meals and softer evenings.`
         : `${name} takes the plan like a gift: richer snacks, slower nights, and full permission to keep growing. Her expression turns openly eager.`,
@@ -243,7 +243,7 @@ function buildResolutionHtml({
   const bestPatient = patientGains.slice().sort((a, b) => b.gain - a.gain)[0];
   const stageText = stageChanges.length
     ? stageChanges.map((change) => `<p><strong>${change.name}</strong>: ${change.text}</p>`).join('')
-    : '<p>No one crosses a formal stage threshold this week. Maybe a button sits tighter, maybe someone mentions being hungry — small changes, easy to shrug off.</p>';
+    : '<p>No one crosses a formal stage threshold this week. Maybe a button sits tighter. Maybe someone mentions being hungry. Small changes, easy to shrug off.</p>';
 
   const closingTone =
     state.week <= 3

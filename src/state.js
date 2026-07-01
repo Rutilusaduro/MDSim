@@ -59,7 +59,7 @@ export function createNewGame(options = {}) {
         week: 1,
         type: 'system',
         title: 'Grand opening',
-        text: 'IndulgeCare Clinic opens its doors — polished floors, a competent staff, and a waiting room that already feels busy. Week one begins.',
+        text: 'IndulgeCare Clinic opens its doors. Polished floors, a competent staff, a waiting room that already feels busy. Week one begins.',
       },
     ],
     thisWeek: [],
