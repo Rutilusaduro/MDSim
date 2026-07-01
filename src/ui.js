@@ -32,6 +32,15 @@ import {
   setDebugMode,
   syncProseLabFromForm,
 } from './proseLab.js';
+import {
+  applyDebugResetWeight,
+  applyDebugStage,
+  applyDebugStageBump,
+  applyDebugWeightBump,
+  fattenRoster,
+  renderCharacterDebugControls,
+  renderRosterDebugPanel,
+} from './debugTools.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -746,6 +755,7 @@ function openCharacterModal(id, tab = null) {
         ${stageMeter(character)}
         ${arcHtml}
         ${character.type === 'patient' ? `<p class="mt-2 text-center text-xs text-stone-400">Loyalty ${character.loyalty || 0} · Visits ${character.visits || 0}</p>` : ''}
+        ${isDebugMode() ? renderCharacterDebugControls(character.id) : ''}
       </aside>
       <div class="min-w-0">
         <div class="mb-4 flex flex-wrap gap-2 border-b border-amber-100/10 pb-4">
@@ -942,6 +952,47 @@ function bindEvents() {
       if (!proseLabState.output) generateProseLabText();
       downloadFixRequest(proseLabState.issueText);
       showToast('Fix request downloaded.');
+    }
+    if (action === 'debug-stage') {
+      if (!isDebugMode()) return;
+      const character = findCharacter(gameState, target.dataset.id);
+      if (!character) return;
+      if (target.dataset.target !== undefined) {
+        applyDebugStage(character, Number(target.dataset.target));
+      } else {
+        applyDebugStageBump(character, Number(target.dataset.delta || 1));
+      }
+      saveGame(gameState);
+      render();
+      openCharacterModal(character.id, characterModalTab);
+      showToast(`${character.name} is now stage ${getStageIndex(character) + 1}.`);
+    }
+    if (action === 'debug-weight') {
+      if (!isDebugMode()) return;
+      const character = findCharacter(gameState, target.dataset.id);
+      if (!character) return;
+      applyDebugWeightBump(character, Number(target.dataset.pounds || 20));
+      saveGame(gameState);
+      render();
+      openCharacterModal(character.id, characterModalTab);
+      showToast(`${character.name} now ${Math.round(character.weight)} lb.`);
+    }
+    if (action === 'debug-reset') {
+      if (!isDebugMode()) return;
+      const character = findCharacter(gameState, target.dataset.id);
+      if (!character) return;
+      applyDebugResetWeight(character);
+      saveGame(gameState);
+      render();
+      openCharacterModal(character.id, characterModalTab);
+      showToast(`${character.name} reset to baseline weight.`);
+    }
+    if (action === 'debug-fatten') {
+      if (!isDebugMode()) return;
+      const count = fattenRoster(gameState, target.dataset.filter, target.dataset.mode);
+      saveGame(gameState);
+      render();
+      showToast(`Debug: updated ${count} characters.`);
     }
     if (action === 'tab') {
       playUiClick();

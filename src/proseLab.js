@@ -18,6 +18,7 @@ import { getArcProgress } from './arcs.js';
 import { getLoyaltyArcProgress } from './loyaltyArcs.js';
 import { ALL_WEEKLY_EVENTS, WARDROBE_EVENTS } from './weeklyContent.js';
 import { createRng } from './state.js';
+import { renderRosterDebugPanel } from './debugTools.js';
 
 const REPO = 'Rutilusaduro/MDSim';
 
@@ -495,6 +496,7 @@ export function renderProseLabPanel() {
           </div>
         </div>
       </div>
+      ${renderRosterDebugPanel()}
     </section>
   `;
 }
