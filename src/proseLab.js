@@ -260,7 +260,12 @@ export function generateProseLabText(state = proseLabState) {
       break;
     case 'staff_arc_beat': {
       const progress = getArcProgress(character);
-      output = progress?.nextBeat?.text || '(No next beat — raise trust/stage or arc complete)';
+      if (!progress?.nextBeat) {
+        output = '(No next beat — raise trust/stage or arc complete)';
+        break;
+      }
+      const scene = getStaffArcScene(character, progress.nextBeat);
+      output = scene?.opening || progress.nextBeat.title;
       break;
     }
     case 'loyalty_arc_beat': {
