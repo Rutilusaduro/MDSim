@@ -19,6 +19,9 @@ export const ACHIEVEMENTS = [
   { id: 'chapter_one', name: 'Soft Opening', desc: 'Complete Chapter 1.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_1') },
   { id: 'rival_win', name: 'Annex Silenced', desc: 'Defeat ThriveWell Annex.', check: (s) => s.rivalState?.defeated },
   { id: 'group_scene', name: 'Crowd Scene', desc: 'Play a group scene.', check: (s) => (s.stats?.groupScenesPlayed || 0) >= 1 },
+  { id: 'chapter_three', name: 'City Whisper', desc: 'Complete Chapter 3.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_3') },
+  { id: 'loyalty_arc', name: 'Regular\'s Story', desc: 'Complete a patient loyalty arc.', check: (s) => (s.stats?.loyaltyArcBeats || 0) >= 3 },
+  { id: 'rival_ops', name: 'Annex Operator', desc: 'Complete Annex ops arc.', check: (s) => s.rivalClinic?.complete },
 ];
 
 export function ensureAchievementState(state) {

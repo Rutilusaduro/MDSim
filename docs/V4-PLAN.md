@@ -1,6 +1,6 @@
 # IndulgeCare Clinic — V4 Plan (draft)
 
-**Status:** For player review after V3 ship. Do not implement until approved.
+**Status:** Implemented on branch `cursor/v4-full-implementation-59c3`. See `docs/V3-AUDIT.md` and `docs/V5-PLAN.md`.
 
 **Prerequisite:** V3 campaign (Chapters 1–2), floor plan, rival arc, relationship web, group scenes, endings.
 

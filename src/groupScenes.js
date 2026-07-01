@@ -1,5 +1,7 @@
 import { addWeekNote, spendActionPoint } from './state.js';
 
+import { V4_GROUP_SCENES } from './v4GroupScenes.js';
+
 export const GROUP_SCENES = [
   {
     id: 'break_room_trio',
@@ -83,24 +85,26 @@ export const GROUP_SCENES = [
       },
     ],
   },
+  ...V4_GROUP_SCENES,
 ];
 
 export function pickGroupScene(state, rng) {
   if (!state.firedEvents) state.firedEvents = [];
-  if (state.staff.length < 3) return null;
 
   const pool = GROUP_SCENES.filter((s) => {
     if (state.firedEvents.includes(`group_${s.id}`)) return false;
     if (state.week < s.minWeek) return false;
-    return true;
+    if (s.scope === 'patient') return state.patients.length >= s.characters;
+    return state.staff.length >= s.characters;
   });
-  if (!pool.length || rng.next() > 0.28) return null;
+  if (!pool.length || rng.next() > 0.32) return null;
 
   const scene = rng.pick(pool);
-  const staff = [...state.staff].sort(() => rng.next() - 0.5).slice(0, scene.characters);
-  if (staff.length < scene.characters) return null;
+  const roster = scene.scope === 'patient' ? state.patients : state.staff;
+  const characters = [...roster].sort(() => rng.next() - 0.5).slice(0, scene.characters);
+  if (characters.length < scene.characters) return null;
 
-  return { scene, characters: staff };
+  return { scene, characters };
 }
 
 export function applyGroupChoice(state, scene, choiceId, characters) {

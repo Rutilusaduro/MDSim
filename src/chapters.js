@@ -22,6 +22,18 @@ export const CHAPTERS = [
     ],
     reward: { money: 1200, reputation: 4, unlockNgPlus: true },
   },
+  {
+    id: 3,
+    name: 'City Whisper',
+    tagline: 'Become the name everyone repeats.',
+    goals: [
+      { id: 'week', label: 'Reach week 20', check: (s) => s.week >= 20 },
+      { id: 'rep', label: 'Reputation 70+ (Renowned)', check: (s) => s.reputation >= 70 },
+      { id: 'loyalty', label: 'Complete 2 patient loyalty arcs', check: (s) => (s.stats?.loyaltyArcBeats || 0) >= 6 },
+      { id: 'rival_ops', label: 'Complete Annex ops arc', check: (s) => s.rivalClinic?.complete },
+    ],
+    reward: { money: 2000, reputation: 6 },
+  },
 ];
 
 export function ensureChapter(state) {

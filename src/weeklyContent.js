@@ -1,6 +1,7 @@
 import { getStageIndex } from './characters.js';
 import { recordRelationshipBeat } from './relationships.js';
 import { V3_RELATIONSHIP_BEATS, V3_WEEKLY_EVENTS, getActiveSeasonalWeek } from './v3WeeklyContent.js';
+import { getChallenge } from './challenges.js';
 
 export const WEEKLY_EVENTS = [
   {
@@ -233,9 +234,10 @@ export function pickWeeklyEvent(state, rng) {
 
   const weighted = pool.map((ev) => {
     let w = ev.weight;
+    const challenge = getChallenge(state.challengeWeek);
     if (seasonal && ev.seasonal === seasonal.eventBoost) w *= 2;
-    if (state.challengeWeek === 'caterer' && ev.id.includes('feast')) w *= 2;
-    if (state.challengeWeek === 'button' && ev.id.includes('button')) w *= 2;
+    if (challenge?.eventBoost?.(ev)) w *= 2;
+    if (state.challengeWeek === 'quiet') w *= 0.65;
     return { ev, w };
   });
   const total = weighted.reduce((s, e) => s + e.w, 0);
@@ -250,13 +252,15 @@ export function pickWeeklyEvent(state, rng) {
 export function fireWardrobeEvents(state, rng) {
   const fired = [];
   const all = [...state.staff, ...state.patients];
+  const challenge = getChallenge(state.challengeWeek);
+  const wardrobeChance = 0.22 * (challenge?.wardrobeMult || 1);
   for (const character of all) {
     const stage = getStageIndex(character);
     for (const ev of WARDROBE_EVENTS) {
       if (stage < ev.stageMin) continue;
       const key = `wardrobe_${ev.id}_${character.id}`;
       if (state.firedEvents?.includes(key)) continue;
-      if (rng.next() > 0.22) continue;
+      if (rng.next() > wardrobeChance) continue;
       fired.push({ character, ...ev, key });
       character.openness += 2;
       character.weeklyMomentum += 0.35;

@@ -76,3 +76,34 @@ export function applyStyleWeekTick(state) {
   if (state.staff.length >= 5) bumpStyle(state, { softness: 1 });
   if (state.reputation >= 48) bumpStyle(state, { spectacle: 1 });
 }
+
+const STYLE_PERK_THRESHOLD = 65;
+
+export function getStylePerks(state) {
+  ensureStyle(state);
+  const perks = [];
+  const s = state.clinicStyle;
+  if (s.softness >= STYLE_PERK_THRESHOLD) {
+    perks.push({ axis: 'softness', label: 'Warm Welcome', effect: '+8% staff gain' });
+  }
+  if (s.speed >= STYLE_PERK_THRESHOLD) {
+    perks.push({ axis: 'speed', label: 'Fast Trays', effect: '+6% patient momentum' });
+  }
+  if (s.spectacle >= STYLE_PERK_THRESHOLD) {
+    perks.push({ axis: 'spectacle', label: 'Buzz Factor', effect: '+2 rep on consult' });
+  }
+  return perks;
+}
+
+export function applyStylePerksToEffects(state, effects) {
+  ensureStyle(state);
+  const s = state.clinicStyle;
+  if (s.softness >= STYLE_PERK_THRESHOLD) effects.staffGain += 0.04;
+  if (s.speed >= STYLE_PERK_THRESHOLD) effects.patientMomentum += 0.12;
+  return effects;
+}
+
+export function consultReputationBonus(state) {
+  ensureStyle(state);
+  return state.clinicStyle.spectacle >= STYLE_PERK_THRESHOLD ? 1 : 0;
+}

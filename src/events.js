@@ -32,6 +32,9 @@ import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchet
 import { pickGroupScene, setPendingGroupScene } from './groupScenes.js';
 import { getActiveSeasonalWeek } from './v3WeeklyContent.js';
 import { canShowEnding, computeEnding } from './endings.js';
+import { startNewWeekChallenge } from './challenges.js';
+import { advanceLoyaltyArc, loyaltyRecruitVisitShortcut } from './loyaltyArcs.js';
+import { consultReputationBonus } from './clinicStyle.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -125,7 +128,7 @@ export function getInteractionOptions(state, character) {
         } else if (getStageIndex(character) < 4) {
           extraDisabled = true;
           extraReason = 'Need stage 5+';
-        } else if ((character.visits || 0) < 3 && (character.loyalty || 0) < 5) {
+        } else if ((character.visits || 0) < 3 - loyaltyRecruitVisitShortcut(character) && (character.loyalty || 0) < 5) {
           extraDisabled = true;
           extraReason = 'Need 3+ visits or loyalty 5+';
         } else if (state.staff.length >= 8) {
@@ -233,13 +236,23 @@ export function performInteraction(state, characterId, actionId) {
   switch (actionId) {
     case 'consult':
       state.money += action.money;
-      state.reputation += 1;
+      state.reputation += 1 + consultReputationBonus(state);
       character.visits += 1;
       character.seenThisWeek = true;
       character.trust += 0.65;
       character.openness += 2.5;
       character.weeklyMomentum += 0.65;
       bumpLoyalty(character, 1);
+      if (state.challengeWeek === 'quiet') bumpLoyalty(character, 1);
+      {
+        const loyaltyResult = advanceLoyaltyArc(character, state);
+        if (loyaltyResult.ok) {
+          addWeekNote(
+            { type: 'loyalty', title: `Loyalty: ${character.name}`, text: loyaltyResult.text },
+            state,
+          );
+        }
+      }
       break;
     case 'personalTalk':
       character.trust += 0.7;
@@ -418,23 +431,6 @@ export function endWeek(state) {
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
 
-  if (rng.chance(12) && !state.challengeWeek) {
-    state.challengeWeek = rng.pick(['caterer', 'button']);
-    addWeekNote(
-      {
-        type: 'challenge',
-        title: state.challengeWeek === 'caterer' ? 'Caterer Convention Week' : 'Button Crisis Week',
-        text:
-          state.challengeWeek === 'caterer'
-            ? 'Challenge week: food events weigh double.'
-            : 'Challenge week: wardrobe strain everywhere.',
-      },
-      state,
-    );
-  } else if (state.challengeWeek) {
-    state.challengeWeek = null;
-  }
-
   const rivalEvent = tickRival(state, rng);
 
   [...state.staff, ...state.patients].forEach((character) => {
@@ -538,6 +534,7 @@ export function endWeek(state) {
 
   const resolution = {
     week: state.week,
+    challengeWeek: state.challengeWeek,
     installed,
     staffGains,
     patientGains,
@@ -568,6 +565,7 @@ export function endWeek(state) {
   state.apSpentThisWeek = 0;
   state.thisWeek = [];
   state.campaignBoost = null;
+  startNewWeekChallenge(state);
   saveGame(state);
 
   return resolution;

@@ -1,7 +1,7 @@
 import { addWeekNote, formatMoney } from './state.js';
 import { getReputationBlockReason, isItemUnlockedByReputation } from './reputation.js';
 import { computeRoomEffects, autoAssignNewItems } from './rooms.js';
-import { styleFromPurchase } from './clinicStyle.js';
+import { styleFromPurchase, applyStylePerksToEffects } from './clinicStyle.js';
 
 export const shopItems = [
   {
@@ -255,6 +255,8 @@ export function computeClinicEffects(state) {
   if (state.ngPlusGain) {
     effects.gainMultiplier += state.ngPlusGain;
   }
+
+  applyStylePerksToEffects(state, effects);
 
   return effects;
 }

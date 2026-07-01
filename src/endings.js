@@ -2,6 +2,12 @@ import { getAttitudeKey } from './characters.js';
 
 export const ENDING_CARDS = [
   {
+    id: 'city_whisper',
+    name: 'City Whisper',
+    check: (s) => s.chapter > 3 && s.reputation >= 70,
+    blurb: 'Your clinic is the name on every lip. Appetite follows reputation like a shadow.',
+  },
+  {
     id: 'temple',
     name: 'Temple of Appetite',
     check: (s) => s.reputation >= 70 && s.staff.length >= 6,
@@ -49,7 +55,7 @@ export function computeEnding(state) {
 }
 
 export function canShowEnding(state) {
-  return state.chapter > 2 && state.week >= 14;
+  return state.chapter > 3 && state.week >= 20;
 }
 
 export const NG_PLUS_BONUSES = [

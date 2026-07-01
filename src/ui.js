@@ -1,7 +1,7 @@
 import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './clinic.js';
 import { describeCharacter, getStageIndex, getStageInfo, weightStageNames } from './characters.js';
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
-import { formatMoney, gameState, loadGame, resetGame, saveGame } from './state.js';
+import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
 import { getArcProgress } from './arcs.js';
 import { getReputationBlockReason, getReputationTier, isItemUnlockedByReputation } from './reputation.js';
@@ -9,11 +9,16 @@ import { renderSilhouette, renderSilhouetteCompare } from './silhouettes.js';
 import { ROOMS, assignItemToRoom, getRoomBonusSummary } from './rooms.js';
 import { getRivalProgress } from './rival.js';
 import { getChapterInfo } from './chapters.js';
-import { getRelationshipWeb } from './relationships.js';
-import { getDominantStyle, getStyleFlavor } from './clinicStyle.js';
+import { getRelationshipWeb, renderRelationshipGraphSvg } from './relationships.js';
+import { getDominantStyle, getStyleFlavor, getStylePerks } from './clinicStyle.js';
 import { applyGroupChoice, getPendingGroupScene } from './groupScenes.js';
 import { applyNgPlus } from './endings.js';
 import { getActiveSeasonalWeek } from './v3WeeklyContent.js';
+import { CHALLENGE_WEEKS, needsChallengePick, pickChallengeWeek, getChallengeLabel } from './challenges.js';
+import { getLoyaltyArcProgress } from './loyaltyArcs.js';
+import { canUseRivalClinic, getRivalClinicProgress, performRivalClinicAction, RIVAL_CLINIC_ACTIONS } from './rivalClinic.js';
+import { copyWeekSummary } from './export.js';
+import { initAudio, isAudioMuted, playPurchase, playStageUp, playUiClick, playWeekEnd, toggleAudioMuted } from './audio.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -64,6 +69,11 @@ function stageMeter(character, compact = false) {
 function characterCard(character, variant = 'standard') {
   const stage = getStageInfo(character);
   const isPatient = character.type === 'patient';
+  const arc = isPatient ? getLoyaltyArcProgress(character) : getArcProgress(character);
+  const arcChip =
+    variant === 'sidebar' && arc
+      ? `<p class="mt-2 text-xs text-amber-200/90">${isPatient ? 'Loyalty arc' : e(arc.track.title)}: ${arc.completed}/${arc.total}</p>`
+      : '';
   return `
     <article class="soft-card cursor-pointer rounded-3xl p-4 transition duration-200" data-action="open-character" data-id="${e(character.id)}">
       <div class="flex items-start justify-between gap-4">
@@ -75,6 +85,7 @@ function characterCard(character, variant = 'standard') {
         <span class="rounded-full bg-pink-500/15 px-3 py-1 text-xs text-pink-100">${e(stage.name)}</span>
       </div>
       ${stageMeter(character, true)}
+      ${arcChip}
       ${
         variant === 'sidebar'
           ? ''
@@ -110,6 +121,9 @@ function renderTopNav(state) {
           </div>
           <button class="gold-button rounded-2xl px-6 py-4 font-bold transition hover:scale-[1.02]" data-action="end-week">
             End Week
+          </button>
+          <button class="dark-button rounded-2xl px-4 py-4 text-sm font-bold" data-action="toggle-audio" title="Toggle sound">
+            ${isAudioMuted() ? 'Sound off' : 'Sound on'}
           </button>
         </div>
       </div>
@@ -299,12 +313,12 @@ function renderFloorPlan(state) {
         ${summary
           .map(
             ({ room, items, filled, slots }) => `
-          <article class="soft-card rounded-3xl p-5">
+          <article class="soft-card rounded-3xl p-5" data-drop-room="${e(room.id)}">
             <h3 class="text-xl font-bold text-amber-100">${e(room.name)}</h3>
             <p class="mt-1 text-sm text-stone-400">${e(room.blurb)}</p>
-            <p class="mt-2 text-xs text-stone-500">${filled} / ${slots} slots</p>
-            <ul class="mt-4 space-y-2 text-sm text-stone-300">
-              ${items.length ? items.map((i) => `<li>${e(i.name)}</li>`).join('') : '<li class="text-stone-500">Empty</li>'}
+            <p class="mt-2 text-xs text-stone-500">${filled} / ${slots} slots · drop items here</p>
+            <ul class="mt-4 min-h-16 space-y-2 rounded-2xl border border-dashed border-amber-100/15 p-3 text-sm text-stone-300">
+              ${items.length ? items.map((i) => `<li class="draggable-chip cursor-grab rounded-xl bg-stone-900/60 px-2 py-1" draggable="true" data-drag-item="${e(i.id)}">${e(i.name)}</li>`).join('') : '<li class="text-stone-500">Empty — drag furniture here</li>'}
             </ul>
           </article>
         `,
@@ -321,8 +335,9 @@ function renderFloorPlan(state) {
               .map((id) => {
                 const item = getItem(id);
                 return `
-              <div class="soft-card rounded-2xl p-4">
+              <div class="soft-card draggable-chip cursor-grab rounded-2xl p-4" draggable="true" data-drag-item="${e(id)}">
                 <p class="font-bold text-stone-50">${e(item?.name || id)}</p>
+                <p class="mt-2 text-xs text-stone-500">Drag to a room or use buttons</p>
                 <div class="mt-3 flex flex-wrap gap-2">
                   ${ROOMS.map(
                     (r) => `
@@ -350,8 +365,9 @@ function renderRelationships(state) {
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Staff dynamics</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Relationship web</h2>
-        <p class="mt-2 text-stone-300">${edges.length} active edges. Beats unlock in week resolution.</p>
+        <p class="mt-2 text-stone-300">${edges.length} active edges. Green = admires, pink = envies.</p>
       </div>
+      <div class="soft-card mb-6 rounded-3xl p-4">${renderRelationshipGraphSvg(state)}</div>
       <div class="grid gap-4 md:grid-cols-2">
         ${edges
           .map(
@@ -378,12 +394,27 @@ function renderCampaign(state) {
   const info = getChapterInfo(state);
   const rival = getRivalProgress(state);
   const seasonal = getActiveSeasonalWeek(state);
+  const perks = getStylePerks(state);
+  const rivalOps = getRivalClinicProgress(state);
+  const challengeBanner = needsChallengePick(state)
+    ? `<div class="mb-6 rounded-3xl border border-amber-300/30 bg-amber-950/30 p-5">
+        <h3 class="font-bold text-amber-100">Pick this week's challenge</h3>
+        <div class="mt-3 flex flex-wrap gap-3">
+          ${CHALLENGE_WEEKS.map(
+            (c) => `
+            <button class="gold-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="pick-challenge" data-challenge="${e(c.id)}">${e(c.name)}</button>
+          `,
+          ).join('')}
+        </div>
+      </div>`
+    : `<p class="mb-4 text-sm text-stone-400">Active challenge: <strong class="text-amber-100">${e(getChallengeLabel(state.challengeWeek))}</strong></p>`;
   return `
     <section>
+      ${challengeBanner}
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Story mode</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">${info.allDone ? 'Campaign complete' : info.chapter.name}</h2>
-        <p class="mt-2 text-stone-300">${info.allDone ? 'Ending available after week 14.' : e(info.chapter.tagline)}</p>
+        <p class="mt-2 text-stone-300">${info.allDone ? 'Ending available after week 20.' : e(info.chapter.tagline)}</p>
       </div>
       ${
         !info.allDone
@@ -411,9 +442,28 @@ function renderCampaign(state) {
         <div class="soft-card rounded-3xl p-4">
           <h4 class="font-bold text-amber-100">Clinic style</h4>
           <p class="mt-2 text-sm text-stone-300">${e(getStyleFlavor(state))}</p>
+          ${perks.length ? `<ul class="mt-2 space-y-1 text-xs text-emerald-200">${perks.map((p) => `<li>${e(p.label)}: ${e(p.effect)}</li>`).join('')}</ul>` : '<p class="mt-2 text-xs text-stone-500">Reach 65+ on a style axis for perks.</p>'}
           ${seasonal ? `<p class="mt-2 text-xs text-pink-200">${e(seasonal.name)}: ${e(seasonal.modifier)}</p>` : ''}
         </div>
       </div>
+      ${
+        canUseRivalClinic(state)
+          ? `
+      <div class="mt-6 soft-card rounded-3xl p-5">
+        <h4 class="font-bold text-red-100">Annex Ops (${rivalOps.phase}/${rivalOps.maxPhase})</h4>
+        <p class="mt-2 text-sm text-stone-300">Light rival-clinic counterplay. ${rivalOps.complete ? 'Arc complete.' : 'Take actions to silence ThriveWell.'}</p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          ${RIVAL_CLINIC_ACTIONS.map(
+            (a) => `
+            <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="rival-ops" data-rival-action="${e(a.id)}" ${rivalOps.complete ? 'disabled' : ''}>
+              ${e(a.label)}${a.ap ? ' (1 AP)' : ` (${formatMoney(a.cost)})`}
+            </button>
+          `,
+          ).join('')}
+        </div>
+      </div>`
+          : ''
+      }
     </section>
   `;
 }
@@ -458,6 +508,7 @@ function renderLog(state) {
           <h2 class="mt-2 text-3xl font-black text-stone-50">This Week</h2>
         </div>
         <div class="flex gap-3">
+          <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="export-week">Export Week</button>
           <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="save">Save Game</button>
           <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="load">Load Game</button>
           <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="new-game">New Game</button>
@@ -554,10 +605,10 @@ function openCharacterModal(id) {
   const stage = getStageInfo(character);
   const stageIdx = getStageIndex(character);
   const options = getInteractionOptions(gameState, character);
-  const arc = getArcProgress(character);
+  const arc = character.type === 'staff' ? getArcProgress(character) : getLoyaltyArcProgress(character);
   const prefs = character.preferences || { pace: 'gradual', focus: 'comfort', public: 'private' };
   const arcHtml = arc
-    ? `<p class="mt-3 rounded-2xl bg-pink-500/10 px-3 py-2 text-xs text-pink-100"><strong>${e(arc.track.title)}</strong><br>Arc ${arc.completed} / ${arc.total}${arc.done ? ' (complete)' : ''}</p>`
+    ? `<p class="mt-3 rounded-2xl bg-pink-500/10 px-3 py-2 text-xs text-pink-100"><strong>${e(arc.track.title)}</strong><br>${character.type === 'patient' ? 'Loyalty' : 'Arc'} ${arc.completed} / ${arc.total}${arc.done ? ' (complete)' : ''}</p>`
     : '';
 
   openModal(`
@@ -578,6 +629,7 @@ function openCharacterModal(id) {
         <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(stage.name)}</p>
         ${stageMeter(character)}
         ${arcHtml}
+        ${character.type === 'patient' ? `<p class="mt-2 text-xs text-stone-400">Loyalty ${character.loyalty || 0} · Visits ${character.visits || 0}</p>` : ''}
         <div class="mt-5 space-y-3 text-sm text-stone-300">
           <div class="flex justify-between"><span>Appetite</span><strong>${character.appetite.toFixed(1)}</strong></div>
           <div class="flex justify-between"><span>Trust</span><strong>${character.trust.toFixed(1)}</strong></div>
@@ -738,7 +790,10 @@ function openResolutionModal(resolution) {
 function handleBuy(id) {
   const result = buyManagementItem(gameState, id);
   showToast(result.message, result.ok ? 'success' : 'error');
-  if (result.ok) saveGame(gameState);
+  if (result.ok) {
+    playPurchase();
+    saveGame(gameState);
+  }
   render();
 }
 
@@ -767,6 +822,7 @@ function bindEvents() {
 
     const action = target.dataset.action;
     if (action === 'tab') {
+      playUiClick();
       activeTab = target.dataset.tab;
       render();
     }
@@ -781,6 +837,8 @@ function bindEvents() {
     }
     if (action === 'end-week') {
       const resolution = endWeek(gameState);
+      playWeekEnd();
+      if (resolution.stageChanges?.length) playStageUp();
       render();
       openResolutionModal(resolution);
       gameState.pendingStageHighlights = [];
@@ -790,6 +848,33 @@ function bindEvents() {
       if (resolution.ending) {
         setTimeout(() => openEndingModal(resolution.ending), 800);
       }
+    }
+    if (action === 'pick-challenge') {
+      const result = pickChallengeWeek(gameState, target.dataset.challenge);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) {
+        playUiClick();
+        saveGame(gameState);
+        render();
+      }
+    }
+    if (action === 'rival-ops') {
+      const result = performRivalClinicAction(gameState, target.dataset.rivalAction, spendActionPoint);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) {
+        if (gameState.stats) gameState.stats.rivalOpsActions = (gameState.stats.rivalOpsActions || 0) + 1;
+        saveGame(gameState);
+        render();
+      }
+    }
+    if (action === 'export-week') {
+      copyWeekSummary(gameState).then((r) => showToast(r.message, r.ok ? 'success' : 'error'));
+    }
+    if (action === 'toggle-audio') {
+      toggleAudioMuted(gameState);
+      saveGame(gameState);
+      render();
+      showToast(isAudioMuted() ? 'Sound muted.' : 'Sound on.');
     }
     if (action === 'assign-room') {
       const result = assignItemToRoom(gameState, target.dataset.item, target.dataset.room);
@@ -865,6 +950,26 @@ function bindEvents() {
       }
     }
   });
+  let dragItemId = null;
+  document.addEventListener('dragstart', (event) => {
+    const chip = event.target.closest('[data-drag-item]');
+    if (!chip) return;
+    dragItemId = chip.dataset.dragItem;
+    event.dataTransfer?.setData('text/plain', dragItemId);
+  });
+  document.addEventListener('dragover', (event) => {
+    if (event.target.closest('[data-drop-room]')) event.preventDefault();
+  });
+  document.addEventListener('drop', (event) => {
+    const zone = event.target.closest('[data-drop-room]');
+    if (!zone || !dragItemId) return;
+    event.preventDefault();
+    const result = assignItemToRoom(gameState, dragItemId, zone.dataset.dropRoom);
+    dragItemId = null;
+    showToast(result.message, result.ok ? 'success' : 'error');
+    if (result.ok) saveGame(gameState);
+    render();
+  });
   document.addEventListener('change', (event) => {
     const target = event.target.closest('[data-action="set-pref"]');
     if (!target) return;
@@ -883,6 +988,11 @@ export function initUI() {
   } catch (error) {
     console.warn('Save could not be loaded, starting fresh.', error);
   }
+  initAudio(gameState);
   bindEvents();
   render();
+  if (needsChallengePick(gameState)) {
+    activeTab = 'campaign';
+    render();
+  }
 }

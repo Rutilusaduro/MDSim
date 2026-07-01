@@ -10,7 +10,26 @@ Alternative title directions:
 
 All characters in the prototype are adults 21+ and are framed as opt-in participants in comfort-forward care. The tone is celebratory, sensual, and positive: no shame, no cruelty, no degradation.
 
-## V3 features (current)
+## V4 features (current)
+
+- **Chapter 3** — "City Whisper" campaign + new ending card
+- **4th staff arc beats** — Finale scenes for all five named starters
+- **Player challenge weeks** — Pick Caterer / Button / Quiet each week
+- **7 group scenes** — 5 new branching modals (staff + patients)
+- **Patient loyalty arcs** — 3-beat procedural stories; recruitment shortcuts
+- **Annex Ops** — Playable 4-action rival clinic counter-arc
+- **Style perks** — Passive bonuses at 65+ on Softness/Speed/Spectacle
+- **Drag-and-drop floor plan** — Drop furniture into room zones
+- **Relationship graph** — SVG node map + detail cards
+- **Week export** — Copy markdown summary to clipboard
+- **Sound stubs** — UI click, week-end chime, stage-up swell (mute toggle)
+- **4 new archetypes** — Housewife Donor, Rival Doctor, Food Truck Owner, Sleep Clinic Defector
+- **21 achievements** — Chapter 3, loyalty arc, Annex ops
+- **Save migration** — v1–v3 saves upgrade to v4
+
+See `docs/V5-PLAN.md` for the post-v4 roadmap.
+
+## V3 features
 
 - **Floor plan** — Assign owned furniture to 4 rooms for stacked bonuses
 - **Rival clinic arc** — ThriveWell Annex, 3 events, reputation race
@@ -27,7 +46,7 @@ All characters in the prototype are adults 21+ and are framed as opt-in particip
 - **18 achievements** — Chapter, rival, group scene milestones
 - **Save migration** — v1/v2 saves upgrade to v3
 
-See `docs/V4-PLAN.md` for the post-v3 roadmap.
+See `docs/V3-PLAN.md` for V3 scope. See `docs/V5-PLAN.md` for the post-v4 roadmap.
 
 ## V2 features
 

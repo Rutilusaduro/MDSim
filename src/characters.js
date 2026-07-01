@@ -313,6 +313,62 @@ export const archetypes = {
       devoted: 'Immobility is a goal now. Feed me like a retirement plan.',
     },
   },
+  housewifeDonor: {
+    label: 'Bored Housewife Donor',
+    appetiteMod: 1.15,
+    trustMod: 1.2,
+    hook: 'Funded a wing out of boredom. Stayed for the trays.',
+    lines: {
+      professional: 'My husband thinks I volunteer. I do. The snacks are the volunteer part.',
+      noticing: 'Designer waistbands lie. These curves do not.',
+      hungry: 'Book club can wait. Your casserole cannot.',
+      pleased: 'I donate and dine. Tax write-off and waistline both grow.',
+      indulgent: 'Money buys trays. Trays buy softness. I buy more trays.',
+      devoted: 'I fund the clinic with one hand and feed myself with the other. Both are full.',
+    },
+  },
+  rivalDoctor: {
+    label: "Rival Doctor's Patient",
+    appetiteMod: 1.05,
+    trustMod: 0.75,
+    hook: 'Sent by ThriveWell. Curiosity became appetite.',
+    lines: {
+      professional: 'My doctor says you are bad for discipline. I am checking.',
+      noticing: 'Discipline is losing. Comfort is winning.',
+      hungry: 'I was supposed to report back. I ordered seconds.',
+      pleased: 'ThriveWell can wait. I am learning appetite.',
+      indulgent: 'Tell my doctor I defected. Bring dessert.',
+      devoted: 'I switched clinics permanently. Fat and happy. No refunds.',
+    },
+  },
+  foodTruckOwner: {
+    label: 'Food Truck Owner',
+    appetiteMod: 1.25,
+    trustMod: 1.0,
+    hook: 'She samples everything. Including your policy.',
+    lines: {
+      professional: 'Good parking. Good foot traffic. Great smells.',
+      noticing: 'I taste-test for work. I taste-test for pleasure now too.',
+      hungry: 'My truck makes money. Your clinic makes me hungry.',
+      pleased: 'I park outside on Fridays. We both profit.',
+      indulgent: 'Free samples for staff. Paid samples for me. All calories welcome.',
+      devoted: 'I sold the truck. I eat here full time now.',
+    },
+  },
+  sleepClinicDefector: {
+    label: 'Sleep Clinic Defector',
+    appetiteMod: 1.2,
+    trustMod: 1.05,
+    hook: 'Left a sleep clinic. Found appetite instead of rest.',
+    lines: {
+      professional: 'I used to treat insomnia. Now I treat hunger.',
+      noticing: 'Sleep is overrated. Fullness is not.',
+      hungry: 'Midnight snacks became midday feasts. I am not going back.',
+      pleased: 'My old patients would not recognize me. Good.',
+      indulgent: 'Wake me for meals. Nothing else.',
+      devoted: 'I defected from rest culture entirely. Feed me until I nap happy.',
+    },
+  },
 };
 
 const staffTemplates = [
@@ -456,6 +512,8 @@ export function createPatient(rng, options = {}) {
     archetype = rng.pick(['patron', 'vip']);
   } else if (!options.archetype && rng.next() < 0.08) {
     archetype = rng.pick(['rivalSpy', 'foodBlogger', 'gymDefector']);
+  } else if (!options.archetype && rng.next() < 0.06) {
+    archetype = rng.pick(['housewifeDonor', 'rivalDoctor', 'foodTruckOwner', 'sleepClinicDefector']);
   }
   const profile = bodyTypes[bodyType];
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
@@ -490,6 +548,7 @@ export function createPatient(rng, options = {}) {
     seenThisWeek: false,
     visits: 0,
     loyalty: 0,
+    loyaltyArc: { completedBeats: [] },
     consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
     lastStage: 0,
   };
