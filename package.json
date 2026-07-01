@@ -1,0 +1,32 @@
+{
+  "name": "indulgecare-clinic",
+  "version": "1.0.0",
+  "description": "A premium Vite prototype for a sensual adult clinic management sim.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rutilusaduro/MDSim.git"
+  },
+  "keywords": [
+    "vite",
+    "tailwind",
+    "management-sim",
+    "interactive-fiction"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rutilusaduro/MDSim/issues"
+  },
+  "homepage": "https://github.com/Rutilusaduro/MDSim#readme",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "tailwindcss": "^4.3.2",
+    "vite": "^8.1.2"
+  }
+}
