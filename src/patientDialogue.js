@@ -61,7 +61,7 @@ export const patientArchetypeLines = {
     noticing: 'My pants are snugger. When did that happen? Hm.',
     hungry: 'I leave appointments hungry. Already ate. Still hungry.',
     pleased: 'Everything feels tighter and softer. Honestly? Not mad about it.',
-    indulgent: 'I am rounder and relaxed. Bill me for the good visits.',
+    indulgent: 'I am rounder and relaxed. I would book twice a week if you let me.',
     devoted: 'I book the longest slot every time. I am not done growing into this.',
   },
   patron: {
