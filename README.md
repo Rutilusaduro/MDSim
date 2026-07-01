@@ -63,7 +63,7 @@ See `docs/V3-PLAN.md` for V3 scope. See `docs/V5-PLAN.md` for the post-v4 roadma
 - **2 new archetypes** — Donor's Niece, Returning VIP
 - **Save migration** — v1 saves upgrade to v2 automatically
 
-See `docs/V3-PLAN.md` for V3 scope. See `docs/V4-PLAN.md` for the post-v3 roadmap (review before we build v4).
+See `docs/V3-PLAN.md` for V3 scope. See `docs/V5-PLAN.md` for the post-v4 roadmap (review before we build v5).
 
 ## Current playable features (v1 core)
 
@@ -110,10 +110,18 @@ src/
   clinicStyle.js
   groupScenes.js
   endings.js
+  challenges.js
+  loyaltyArcs.js
+  rivalClinic.js
+  audio.js
+  export.js
+  v4GroupScenes.js
   styles.css
 docs/V3-PLAN.md
 docs/V4-PLAN.md
+docs/V5-PLAN.md
 docs/V1-V2-AUDIT.md
+docs/V3-AUDIT.md
 public/
 .cursor/skills/beautiful-prose/
 .cursor/skills/event-authoring/
@@ -214,7 +222,7 @@ The week ends with bills paid, chairs fuller, and the whole practice glowing wit
 
 ## V2 expansion ideas (shipped or superseded)
 
-See **V2 features** above. Remaining ideas moved to `docs/V3-PLAN.md`.
+See **V4 features** above. Remaining ideas in `docs/V5-PLAN.md`.
 
 Legacy wishlist items now in V3+ planning:
 
