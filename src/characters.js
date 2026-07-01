@@ -19,9 +19,9 @@ export const bodyTypes = {
     baseRange: [148, 178],
     stageSize: 18,
     descriptions: [
-      'Her waist still gathers neatly between balanced curves, though her scrubs skim a little closer over a chest and hips that already know how to draw the eye.',
-      'Softness settles evenly across her figure, rounding her bust and hips until every step has a warmer, slower sway.',
-      'Her middle begins to pillow forward between proud curves, a gentle fullness that makes fitted fabric cling with flattering honesty.',
+      'She has a neat, professional figure — fitted scrubs, good posture, and the easy confidence of someone who likes her job.',
+      'She still looks trim and capable, though her uniform sits a touch closer after long shifts than it used to.',
+      'A little softness is starting to show at her waist and hips — subtle enough that she might not have mentioned it yet.',
       'Weight gathers like velvet on her thighs, belly, and chest, making her silhouette plush while her waist remains beautifully defined.',
       'Her curves press into the world with new confidence: fuller arms, deeper cleavage, and hips that brush chair arms with a soft whisper.',
       'She moves with a warm, breathy rhythm now, her belly rounding enough to rest against waistbands while her hips roll with deliberate ease.',
@@ -38,9 +38,9 @@ export const bodyTypes = {
     baseRange: [142, 172],
     stageSize: 19,
     descriptions: [
-      'Her shoulders and waist stay neat while her hips and thighs already hint at a lower-body softness that makes uniforms drape sweetly.',
-      'New weight gathers first at her hips, lending her walk a gentle side-to-side sway that feels relaxed and unhurried.',
-      'Her thighs grow plush enough to press together when she stands, warm curves shifting under fabric with each careful step.',
+      'She is slim and professional, shoulders back, scrubs hanging cleanly over a figure that has not changed much yet.',
+      'Her hips and thighs feel a fraction fuller lately — nothing dramatic, just a snugger fit after laundry day.',
+      'Weight is gathering lower on her frame now, and her walk has a faint new sway she keeps catching herself doing.',
       'Her lower body blooms beautifully, hips widening into chairs while her waistbands ride over an increasingly soft belly.',
       'She carries most of her indulgence below the waist now, with thick, cushiony thighs and a generous seat that settles heavily into furniture.',
       'Her hips have become a soft horizon, brushing doorframes and chair arms while her belly adds a tender forward curve.',
@@ -57,9 +57,9 @@ export const bodyTypes = {
     baseRange: [150, 182],
     stageSize: 20,
     descriptions: [
-      'Her figure begins with a confident torso and slim-to-soft limbs, the first hint of fullness resting high and warm at her middle.',
-      'Her belly rounds early, pressing gently against blouses and making her posture soften into a more relaxed, satisfied curve.',
-      'A plush central fullness becomes her signature, warm and prominent beneath professional layers that cannot quite hide it.',
+      'She looks fit and put-together, with a flat middle and the brisk energy of someone still settling into the role.',
+      'Her blouse rests a little differently now — a faint roundness at her middle that was not there on day one.',
+      'Her belly is starting to soften and press forward, noticeable enough that she tugs her top down more often.',
       'Her middle grows heavy and inviting, lifting her chest and making every seated breath shift fabric in small, visible waves.',
       'Her belly now leads her movement, soft and round enough to brush counters while her arms and face take on a fresh glow.',
       'She has a ripe, centered softness, her abdomen settling warmly into her lap whenever she sits down with a private sigh.',
@@ -76,9 +76,9 @@ export const bodyTypes = {
     baseRange: [145, 176],
     stageSize: 17,
     descriptions: [
-      'Muscle still defines her posture, but a new softness warms the edges of her shoulders, waist, and thighs.',
-      'Her athletic frame softens into a pleasing contrast, firm lines padded by gentle curves that make activewear hug closer.',
-      'Her thighs thicken and her stomach loses its flatness, trading sharp definition for a smooth, touchable fullness.',
+      'She still has an athletic build — firm posture, defined lines, and scrubs that fit the way they are supposed to.',
+      'The sharp edges are blurring a little; her stomach is not quite as flat and her thighs fill her pants more.',
+      'Softness is replacing definition across her middle and hips, and her uniform is clearly working harder than before.',
       'Strength remains beneath the gain, but every movement now carries a soft bounce at her belly, chest, and hips.',
       'She looks powerful and plush at once, with broadened curves and a newly heavy ease that turns quick strides into deliberate sways.',
       'Her body has shifted from performance to pleasure, muscles hidden under warm padding and waistbands sitting tight at her middle.',
@@ -95,9 +95,9 @@ export const bodyTypes = {
     baseRange: [126, 152],
     stageSize: 16,
     descriptions: [
-      'She begins long-limbed and delicate, with the first softness appearing like warm cream at her hips and lower belly.',
-      'Her slender frame takes on gentle padding, making wrists, cheeks, and waist seem softer under the clinic glow.',
-      'Curves bloom visibly on her once-narrow body, hips rounding and belly smoothing into a tender, surprising swell.',
+      'She is slender and composed, long-limbed and light on her feet — a normal figure for a normal workday.',
+      'A little padding has appeared at her hips and lower belly, soft enough that she keeps checking if it is real.',
+      'Her once-narrow frame is rounding visibly now, and fitted clothes are starting to tell the story for her.',
       'Her limbs remain elegant, but now they carry plushness that makes every movement look slower and more sensual.',
       'The contrast is striking: a formerly willowy silhouette growing soft at the chest, belly, thighs, and face.',
       'Her new weight hangs sweetly on her frame, a rounded belly and softened arms making her seem warmer in every room.',
@@ -114,9 +114,9 @@ export const bodyTypes = {
     baseRange: [136, 162],
     stageSize: 18,
     descriptions: [
-      'Her shorter frame makes every curve feel close and vivid, with softness gathering quickly at her belly and hips.',
-      'A few indulgent weeks show clearly on her, rounding her face and making her uniform fit snugly across her middle.',
-      'Her body becomes plush in concentrated ways, belly, bust, and thighs all pressing warmly into limited space.',
+      'She is petite and professional, her scrubs tidy and her frame still close to how she looked when she was hired.',
+      'A few pounds show quickly on her shorter body — a snugger waistband and a face that looks a little softer.',
+      'Her compact frame is rounding fast now, belly and hips pressing into her uniform with unmistakable new weight.',
       'She grows delightfully dense, each pound making her look softer, shorter, and more satisfyingly rounded.',
       'Her compact curves push outward with charming insistence, filling chairs quickly and making every outfit look carefully negotiated.',
       'She has a cushiony fullness now, belly resting close, thighs thick, and arms soft enough to round her gestures.',
@@ -135,96 +135,112 @@ export const archetypes = {
     label: 'Nurturer',
     appetiteMod: 0.8,
     trustMod: 1.2,
-    hook: 'She wants everyone around her comfortable, and slowly realizes she deserves the same softness.',
+    hook: 'Warm, reliable, and always checking on everyone else before herself.',
     lines: {
-      surprised: 'I keep telling people to rest and eat well. Maybe my body finally listened first.',
-      selfConscious: 'It is strange noticing how much softer I feel, but the warmth is hard to dislike.',
-      pleased: 'I feel calmer when I am full. Softer, steadier, more myself.',
-      indulgent: 'Set the tray there, please. I like how the room quiets when I let myself be cared for.',
+      professional: 'I love it here. The team is wonderful and the patients actually listen.',
+      noticing: 'Huh... my scrubs feel a little tighter? Probably just shrank in the dryer.',
+      hungry: 'Why am I so hungry lately? Oh my god — I could eat the entire break room.',
+      pleased: 'I feel calmer when I am full. Softer, steadier... I think I am starting to like it.',
+      indulgent: 'I am getting so fat and I do not even mind. Feed me before rounds, please.',
+      devoted: 'I am so fucking fat now and I love it. I just want to eat and grow until the ground cracks beneath me.',
     },
   },
   perfectionist: {
     label: 'Perfectionist',
     appetiteMod: 0.55,
     trustMod: 0.8,
-    hook: 'She tracks everything, then becomes fascinated by how controlled indulgence reshapes her.',
+    hook: 'Precise, organized, and proud of running a tight ship.',
     lines: {
-      surprised: 'The numbers are not what I expected, but the protocol results are... consistent.',
-      selfConscious: 'My uniform is tighter. I should be irritated. Instead I keep checking the mirror.',
-      pleased: 'If this is intentional wellness, then I want to understand every variable.',
-      indulgent: 'Record this as compliant pleasure. I want the full plan, no skipped steps.',
+      professional: 'Good clinic, clear protocols. I am exactly where I want to be.',
+      noticing: 'My waistband is snugger than last month. That is... statistically odd.',
+      hungry: 'I cannot stop thinking about food between shifts. This is not in my schedule.',
+      pleased: 'The weight is off-plan, but I cannot deny how good fullness feels lately.',
+      indulgent: 'Screw the old metrics. I want bigger portions and softer results.',
+      devoted: 'I am enormous now and I love every pound. Keep feeding me until nothing fits — I do not care.',
     },
   },
   socialite: {
     label: 'Socialite',
     appetiteMod: 1,
     trustMod: 1,
-    hook: 'She turns every change into gossip, glamour, and a chance to be admired.',
+    hook: 'Charming, social, and always first to greet patients at the door.',
     lines: {
-      surprised: 'Everyone has noticed, right? I can feel the way the room looks at me.',
-      selfConscious: 'I need new clothes, but I have to admit the curves are doing something expensive-looking.',
-      pleased: 'Tell me the truth: this glow is ridiculous. I look like dessert in good lighting.',
-      indulgent: 'Bring the compliments with the pastries. I have decided both suit me.',
+      professional: 'Best job I have had — great coworkers, gorgeous lobby. I am happy here!',
+      noticing: 'Has anyone else noticed their uniform fitting differently? ...Just me?',
+      hungry: 'I am STARVING by noon every single day. It is honestly kind of embarrassing.',
+      pleased: 'Okay, the curves are doing something. People keep staring and I am not mad about it.',
+      indulgent: 'I am getting huge and I look incredible. Bring pastries to my desk.',
+      devoted: 'I am so fucking fat now, I love it, and I want the whole world to watch me grow.',
     },
   },
   rebel: {
     label: 'Rebel',
     appetiteMod: 0.9,
     trustMod: 0.7,
-    hook: 'She resists instruction until indulgence feels like a private act of defiance.',
+    hook: 'Blunt, independent, and slow to trust authority — but she showed up on time.',
     lines: {
-      surprised: 'Do not look so smug. I am just comfortable. Very comfortable.',
-      selfConscious: 'Fine, the extra weight feels good. That does not mean you get to say you were right.',
-      pleased: 'I like being too much for the old rules. It suits me.',
-      indulgent: 'Make it richer. If we are doing this, I want the kind of softness nobody can ignore.',
+      professional: 'Yeah, it is fine. Better than my last place. I will stick around.',
+      noticing: 'These scrubs did not used to pull across my hips like this. Weird.',
+      hungry: 'I am hungry all the time and I do not know why. It is driving me insane.',
+      pleased: 'Fine. The extra weight feels good. You still do not get to say you were right.',
+      indulgent: 'I am fat as hell now and I do not want to stop. Keep the snacks coming.',
+      devoted: 'I am so fucking fat I can barely waddle and I love it. More. Always more.',
     },
   },
   scholar: {
     label: 'Scholar',
     appetiteMod: 0.65,
     trustMod: 1.1,
-    hook: 'She intellectualizes pleasure until her body gives her better evidence than theory.',
+    hook: 'Quiet, observant, and always reading something between patient calls.',
     lines: {
-      surprised: 'The embodied response is more persuasive than I expected.',
-      selfConscious: 'I keep cataloging the sensations: warmth, fullness, the pleasant drag of my own weight.',
-      pleased: 'There is a thesis in this softness, but I would rather keep researching quietly.',
-      indulgent: 'My conclusion is simple: more comfort, more nourishment, more of me.',
+      professional: 'Fascinating practice. I am glad I accepted this position.',
+      noticing: 'I have logged a measurable change in fit. Could still be fabric variance.',
+      hungry: 'My appetite has spiked beyond any reasonable model. I need answers. And lunch.',
+      pleased: 'The data on my body is compelling. Fullness correlates strongly with contentment.',
+      indulgent: 'Hypothesis confirmed: I want to be fatter. Proceed with maximum calories.',
+      devoted: 'I am morbidly, gloriously obese and I want to study how much fatter I can get.',
     },
   },
   dreamer: {
     label: 'Dreamer',
     appetiteMod: 1.05,
     trustMod: 1.1,
-    hook: 'She drifts into indulgence as if following the scent of something sweet through a dream.',
+    hook: 'Gentle and a little absent-minded, but patients find her calming.',
     lines: {
-      surprised: 'I feel like I woke up softer. Is that possible?',
-      selfConscious: 'Sometimes I catch my belly in my hands and just breathe for a minute.',
-      pleased: 'It feels like being wrapped in myself. Warm, slow, safe.',
-      indulgent: 'Let the week be heavy and sweet. I want to feel every bit of it.',
+      professional: 'It is so peaceful here. I feel lucky to work somewhere this warm.',
+      noticing: 'I keep adjusting my belt. When did that start happening?',
+      hungry: 'I drift through the day thinking about lunch... then dinner... then more food...',
+      pleased: 'It feels like being wrapped in myself. Warm, slow, safe. I want more of this.',
+      indulgent: 'I am so soft now. I just want to sit and eat until I cannot move.',
+      devoted: 'I am impossibly fat and deliriously happy. Feed me until the floor groans.',
     },
   },
   athlete: {
     label: 'Former Athlete',
     appetiteMod: 1.15,
     trustMod: 0.85,
-    hook: 'She knows discipline and hunger, then discovers the thrill of training toward softness.',
+    hook: 'Disciplined and energetic — still moves like someone who used to train daily.',
     lines: {
-      surprised: 'My body adapts fast. I just did not expect it to adapt like this.',
-      selfConscious: 'I am slower, sure, but there is power in the weight. I can feel it.',
-      pleased: 'This is a different kind of conditioning, and I am getting very good at it.',
-      indulgent: 'Push the plan. I want to see how strong softness can become.',
+      professional: 'Solid hours, good benefits. Happy to be on the team.',
+      noticing: 'My scrubs are tighter across the thighs. Huh. That is new.',
+      hungry: 'I used to skip meals without thinking. Now I cannot. I am hungry constantly.',
+      pleased: 'Different kind of conditioning, I guess. And my body is responding fast.',
+      indulgent: 'I am getting huge and I feel powerful. Do not slow down the meal plan.',
+      devoted: 'I am so fucking fat now and I love it. I want to grow until I am immovable.',
     },
   },
   hedonist: {
     label: 'Hedonist',
     appetiteMod: 1.35,
     trustMod: 1,
-    hook: 'She never needed much convincing; she only needed permission and a beautiful setting.',
+    hook: 'Easygoing and pleasure-seeking, though nothing suspicious yet.',
     lines: {
-      surprised: 'Already? Good. I was hoping my body was paying attention.',
-      selfConscious: 'Everything feels tighter and softer. Honestly, it is delicious.',
-      pleased: 'I like being spoiled. I like looking spoiled even more.',
-      indulgent: 'No modest portions. I want comfort that lingers on my body.',
+      professional: 'Honestly? Great job, nice people, good coffee. No complaints at all.',
+      noticing: 'Okay, my pants are definitely snugger. When did that happen?',
+      hungry: 'Why am I so hungry oh my god — I already ate and I want more right now.',
+      pleased: 'Everything feels tighter and softer. Honestly? It is kind of delicious.',
+      indulgent: 'I am fat, happy, and not apologizing. Bring me everything on the menu.',
+      devoted: 'I am so fucking fat now I love it. I just want to eat and grow until the ground cracks beneath me.',
     },
   },
 };
@@ -320,7 +336,7 @@ export function createStartingStaff(rng) {
     const bodyType = rng.pick(bodyTypeKeys);
     const profile = bodyTypes[bodyType];
     const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
-    const startingGain = rng.int(0, 18);
+    const startingGain = rng.int(0, 4);
     const archetype = rng.pick(archetypeKeys);
 
     return {
@@ -336,7 +352,7 @@ export function createStartingStaff(rng) {
       weight: baselineWeight + startingGain,
       appetite: Math.round((5 + rng.int(0, 3) + archetypes[archetype].appetiteMod) * 10) / 10,
       trust: Math.round((4 + rng.int(0, 3) + archetypes[archetype].trustMod) * 10) / 10,
-      indulgence: rng.int(8, 18),
+      indulgence: rng.int(0, 4),
       openness: rng.int(12, 24),
       weeklyMomentum: 0,
       preference: rng.pick(preferences),
@@ -371,10 +387,10 @@ export function createPatient(rng) {
     bodyType,
     archetype,
     baselineWeight,
-    weight: baselineWeight + rng.int(0, 26),
+    weight: baselineWeight + rng.int(0, 6),
     appetite: Math.round((4 + rng.int(0, 4) + archetypes[archetype].appetiteMod) * 10) / 10,
     trust: Math.round((3 + rng.int(0, 4) + archetypes[archetype].trustMod) * 10) / 10,
-    indulgence: rng.int(4, 16),
+    indulgence: rng.int(0, 3),
     openness: rng.int(6, 20),
     weeklyMomentum: 0,
     preference: rng.pick(preferences),
@@ -411,10 +427,12 @@ export function getStageInfo(character) {
 
 export function getAttitudeKey(character) {
   const stage = getStageIndex(character);
-  if (stage <= 2) return 'surprised';
-  if (stage <= 5) return 'selfConscious';
-  if (stage <= 8) return 'pleased';
-  return 'indulgent';
+  if (stage <= 1) return 'professional';
+  if (stage <= 3) return 'noticing';
+  if (stage <= 5) return 'hungry';
+  if (stage <= 7) return 'pleased';
+  if (stage <= 9) return 'indulgent';
+  return 'devoted';
 }
 
 export function getCharacterDialogue(character) {
@@ -436,7 +454,19 @@ export function describeCharacter(character) {
 export function summarizeStageChange(character, oldStage, newStage) {
   const stage = getStageInfo(character);
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
-  return `${character.name} reaches ${stage.name}. ${profile.descriptions[newStage]} The change is impossible to miss: warmer posture, slower movement, and the quiet satisfaction of a body becoming more lavish by the week.`;
+  const attitude = getAttitudeKey(character);
+  const base = `${character.name} reaches ${stage.name}. ${profile.descriptions[newStage]}`;
+
+  if (attitude === 'professional' || attitude === 'noticing') {
+    return `${base} She has noticed something shifting, but she is not ready to name it yet.`;
+  }
+  if (attitude === 'hungry') {
+    return `${base} The change is harder to ignore — and so is the hunger that keeps following her through the halls.`;
+  }
+  if (attitude === 'pleased' || attitude === 'indulgent') {
+    return `${base} The transformation is impossible to miss now: slower steps, softer posture, and a body that has stopped pretending it wants less.`;
+  }
+  return `${base} She has become a monument of glorious weight — radiant, hungry, and utterly unashamed.`;
 }
 
 export function getGainTemperament(character) {
@@ -444,6 +474,17 @@ export function getGainTemperament(character) {
   const attitude = getAttitudeKey(character);
   const appetite = character.appetite + character.indulgence / 10;
   const trust = character.trust + character.openness / 12;
-  const resistance = attitude === 'surprised' ? 0.82 : attitude === 'selfConscious' ? 0.96 : 1.12;
+  const resistance =
+    attitude === 'professional'
+      ? 0.72
+      : attitude === 'noticing'
+        ? 0.85
+        : attitude === 'hungry'
+          ? 1.02
+          : attitude === 'pleased'
+            ? 1.1
+            : attitude === 'indulgent'
+              ? 1.18
+              : 1.25;
   return Math.max(0.45, (appetite * 0.12 + trust * 0.08) * archetype.appetiteMod * resistance);
 }

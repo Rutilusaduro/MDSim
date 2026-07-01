@@ -9,6 +9,7 @@ import {
 import { applyPendingInstallations, computeClinicEffects } from './clinic.js';
 import {
   createPatient,
+  getAttitudeKey,
   getCharacterDialogue,
   getGainTemperament,
   getStageIndex,
@@ -97,15 +98,46 @@ function actionFlavor(character, actionId) {
   const name = character.name;
   const dialogue = getCharacterDialogue(character);
   const preference = character.preference;
+  const attitude = getAttitudeKey(character);
+  const early = attitude === 'professional' || attitude === 'noticing';
+  const mid = attitude === 'hungry' || attitude === 'pleased';
 
   const copy = {
-    consult: `${name} leaves the consultation smiling, reassured that her comfort is being treated with expertise. The conversation lingers on ${preference}, slower meals, and how beautiful care can feel when it welcomes every curve. "${dialogue}"`,
-    personalTalk: `${name} relaxes into the private check-in, shoulders lowering as the office warmth settles around her. She speaks more honestly about fullness, softness, and the pleasure of being supported. "${dialogue}"`,
-    cateredBreak: `The catered tray arrives glossy and fragrant. ${name} lingers over ${preference}, growing drowsy and pleased as her ${stage.bodyType.toLowerCase()} body settles heavier into the break-room cushions.`,
-    comfortPlan: `${name} receives a tailored comfort plan: richer snacks, softer evenings, and permission to treat appetite as a signal worth honoring. Her expression turns thoughtful, then quietly eager.`,
-    comfortBlend: `The Comfort Blend tastes of vanilla cream and warm sleep. ${name} drinks slowly, one hand resting near her middle as the clinic seems to soften around her.`,
-    appetiteTonic: `The amber tonic leaves a honeyed heat behind. ${name} blushes at the sudden clarity of wanting more, then laughs softly at how natural it feels.`,
-    recoveryShake: `${name} takes the recovery shake in both hands, savoring its thick sweetness. By the final sip she looks steadier, warmer, and pleasantly heavy-lidded.`,
+    consult: early
+      ? `${name} leaves the consultation on schedule, satisfied with the visit and easy to talk to. She mentions liking the clinic atmosphere. "${dialogue}"`
+      : mid
+        ? `${name} lingers a moment after the consult, still thinking about food and the way her clothes fit lately. "${dialogue}"`
+        : `${name} leaves glowing, clearly enjoying how her body fills the chair and the conversation alike. The talk drifts to ${preference} and how good it feels to stop holding back. "${dialogue}"`,
+    personalTalk: early
+      ? `${name} settles into the check-in easily — professional, warm, happy to be here. She talks about the team and how much she likes the work. "${dialogue}"`
+      : mid
+        ? `${name} opens up more than usual, venting about hunger, tighter scrubs, and not understanding what her body is doing. "${dialogue}"`
+        : `${name} relaxes completely into the private talk, speaking openly about weight, appetite, and how much she is starting to want more. "${dialogue}"`,
+    cateredBreak: early
+      ? `${name} enjoys the break-room spread politely, chatting with coworkers between bites of ${preference}.`
+      : mid
+        ? `${name} demolishes the catered tray faster than she meant to, surprised by her own appetite. ${preference} disappears first.`
+        : `The catered tray arrives glossy and fragrant. ${name} lingers over ${preference}, growing drowsy and pleased as her ${stage.bodyType.toLowerCase()} body settles heavier into the break-room cushions.`,
+    comfortPlan: early
+      ? `${name} listens to the wellness advice with a nod — sensible, routine, nothing she would think twice about.`
+      : mid
+        ? `${name} receives the comfort plan and goes quiet, already imagining richer meals and softer evenings.`
+        : `${name} takes the plan like a gift: richer snacks, slower nights, and full permission to keep growing. Her expression turns openly eager.`,
+    comfortBlend: early
+      ? `${name} drinks the supplement without fuss, remarking that it tastes fine.`
+      : mid
+        ? `The Comfort Blend goes down easy. ${name} blinks, suddenly aware of how hungry she already is again.`
+        : `The Comfort Blend tastes of vanilla cream and warm sleep. ${name} drinks slowly, one hand resting near her middle as the clinic seems to soften around her.`,
+    appetiteTonic: early
+      ? `${name} takes the tonic as directed, treating it like any other clinic supplement.`
+      : mid
+        ? `The amber tonic hits fast. ${name} exhales, embarrassed by how immediately she wants lunch.`
+        : `The amber tonic leaves a honeyed heat behind. ${name} blushes at the sudden clarity of wanting more, then laughs softly at how natural it feels.`,
+    recoveryShake: early
+      ? `${name} finishes the shake between tasks, appreciative but otherwise unchanged.`
+      : mid
+        ? `${name} holds the recovery shake with both hands and does not want it to end. By the last sip she looks heavier-lidded and hungry.`
+        : `${name} takes the recovery shake in both hands, savoring its thick sweetness. By the final sip she looks steadier, warmer, and pleasantly heavy-lidded.`,
   };
 
   return copy[actionId];
@@ -211,21 +243,26 @@ function buildResolutionHtml({
   const bestPatient = patientGains.slice().sort((a, b) => b.gain - a.gain)[0];
   const stageText = stageChanges.length
     ? stageChanges.map((change) => `<p><strong>${change.name}</strong>: ${change.text}</p>`).join('')
-    : '<p>No one crosses a formal stage threshold this week, but the smaller changes are everywhere: tighter buttons, slower hallway turns, softer laughter after snacks.</p>';
+    : '<p>No one crosses a formal stage threshold this week. Maybe a button sits tighter, maybe someone mentions being hungry — small changes, easy to shrug off.</p>';
+
+  const closingTone =
+    state.week <= 3
+      ? `${newPatients.length} new patients join the roster, referred by word of mouth. The clinic feels busy, normal, promising.`
+      : `${newPatients.length} new patients join the waiting list, drawn by the clinic's growing reputation for attentive, generous care.`;
 
   return `
     <p>${installedText}</p>
-    <p>The clinic ends Week ${state.week} fragrant with vanilla, clean linen, and the low electric satisfaction of bodies learning comfort. ${
+    <p>The clinic ends Week ${state.week} with the low hum of a good workweek behind it. ${
       bestStaff
-        ? `<strong>${bestStaff.name}</strong> gains ${bestStaff.gain.toFixed(1)} lb, her routine softened by trays, private encouragement, and the warm gravity of the staff room.`
+        ? `<strong>${bestStaff.name}</strong> is up ${bestStaff.gain.toFixed(1)} lb since last Sunday.`
         : ''
     } ${
       bestPatient
-        ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier, carrying the advice home like a secret she is allowed to enjoy.`
+        ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier after this week's visits.`
         : ''
     }</p>
     ${stageText}
-    <p>Billing closes with ${formatMoney(clinicRevenue)} in clinic revenue and ${formatMoney(bills)} in rent, salaries, supplies, and upkeep. ${newPatients.length} new adult patients join the waiting list, drawn by the clinic's reputation for care that is generous, sensual, and utterly without shame.</p>
+    <p>Billing closes with ${formatMoney(clinicRevenue)} in clinic revenue and ${formatMoney(bills)} in rent, salaries, supplies, and upkeep. ${closingTone}</p>
   `;
 }
 
