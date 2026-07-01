@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #17120f;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(251, 146, 60, 0.22), transparent 28rem),
+    radial-gradient(circle at 80% 20%, rgba(244, 114, 182, 0.2), transparent 32rem),
+    linear-gradient(135deg, #120e0c 0%, #201510 42%, #110f10 100%);
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+.glass-panel {
+  border: 1px solid rgba(255, 237, 213, 0.12);
+  background:
+    linear-gradient(135deg, rgba(68, 48, 36, 0.78), rgba(32, 24, 22, 0.86)),
+    rgba(28, 25, 23, 0.88);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+}
+
+.soft-card {
+  border: 1px solid rgba(255, 237, 213, 0.1);
+  background: rgba(41, 31, 27, 0.76);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.soft-card:hover {
+  border-color: rgba(251, 191, 36, 0.32);
+  transform: translateY(-1px);
+}
+
+.gold-button {
+  background: linear-gradient(135deg, #f59e0b, #fb7185 58%, #db2777);
+  color: #fff7ed;
+  box-shadow: 0 12px 28px rgba(219, 39, 119, 0.3);
+}
+
+.gold-button:disabled,
+.dark-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+  opacity: 0.45;
+}
+
+.dark-button {
+  border: 1px solid rgba(255, 237, 213, 0.14);
+  background: rgba(28, 25, 23, 0.84);
+}
+
+.nav-pill {
+  border: 1px solid rgba(255, 237, 213, 0.12);
+  background: rgba(28, 25, 23, 0.58);
+}
+
+.nav-pill.active {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: linear-gradient(135deg, rgba(146, 64, 14, 0.75), rgba(157, 23, 77, 0.72));
+  color: #fff7ed;
+}
+
+.stage-bar {
+  height: 0.58rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(87, 83, 78, 0.62);
+}
+
+.stage-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fbbf24, #fb7185, #e879f9);
+  transition: width 320ms ease;
+}
+
+.rich-copy p {
+  margin-bottom: 0.85rem;
+  color: #f5e8da;
+  line-height: 1.8;
+}
+
+.rich-copy strong {
+  color: #fed7aa;
+  font-weight: 700;
+}
+
+.rich-copy em {
+  color: #fbcfe8;
+  font-style: normal;
+}
+
+.modal-backdrop {
+  animation: fade-in 140ms ease-out;
+}
+
+.modal-card {
+  animation: rise-in 180ms ease-out;
+}
+
+.stage-glow {
+  animation: glow-pulse 1.25s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+  38% {
+    box-shadow: 0 0 42px rgba(251, 191, 36, 0.38);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
