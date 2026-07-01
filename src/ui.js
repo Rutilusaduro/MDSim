@@ -1,4 +1,4 @@
-import { buyManagementItem, computeClinicEffects, getClinicRating, getItem, shopItems } from './clinic.js';
+import { buyManagementItem, computeClinicEffects, getClinicRating, shopItems } from './clinic.js';
 import { describeCharacter, getStageInfo, weightStageNames } from './characters.js';
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame } from './state.js';

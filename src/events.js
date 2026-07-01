@@ -263,7 +263,7 @@ export function endWeek(state) {
   const clinicRevenue = effects.weeklyRevenue;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
   state.money += clinicRevenue - bills;
-  state.reputation = Math.max(0, state.reputation + Math.round(effects.reputation));
+  state.reputation = Math.max(0, state.reputation);
 
   const leaving = [];
   state.patients = state.patients.filter((patient) => {
