@@ -1,6 +1,6 @@
 # IndulgeCare Clinic — V3 Plan (for review)
 
-**Status:** Draft for player approval. Do not implement until approved.
+**Status:** Implemented on branch `cursor/v3-full-implementation-59c3`. See `docs/V1-V2-AUDIT.md` and `docs/V4-PLAN.md`.
 
 **Note:** Insurance and medical billing sim mechanics are **explicitly out of scope** per design direction. Economy stays fun, tactile, and fetish-forward.
 

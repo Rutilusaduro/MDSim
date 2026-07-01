@@ -10,7 +10,26 @@ Alternative title directions:
 
 All characters in the prototype are adults 21+ and are framed as opt-in participants in comfort-forward care. The tone is celebratory, sensual, and positive: no shame, no cruelty, no degradation.
 
-## V2 features (current)
+## V3 features (current)
+
+- **Floor plan** — Assign owned furniture to 4 rooms for stacked bonuses
+- **Rival clinic arc** — ThriveWell Annex, 3 events, reputation race
+- **Chapters 1–2** — Campaign goals, rewards, Campaign tab
+- **Relationship web** — Staff admires/envies edges + 8 scripted beats
+- **Clinic style** — Softness / Speed / Spectacle affects patients and flavor
+- **25 weekly events** — 15 new + 2 seasonal week modifiers
+- **Group scenes** — 2 branching 3-character modals
+- **Procedural staff arcs** — 4 beats for recruited hires
+- **3 new archetypes** — Rival Spy, Food Blogger, Gym Defector
+- **Patient loyalty** — Tracks visits; recruitment discount
+- **Silhouette compare** — Ghost before/after on stage-up
+- **Ending cards + NG+** — Campaign ending with +1 AP or gain bonus
+- **18 achievements** — Chapter, rival, group scene milestones
+- **Save migration** — v1/v2 saves upgrade to v3
+
+See `docs/V4-PLAN.md` for the post-v3 roadmap.
+
+## V2 features
 
 - **Character arcs** — 3-beat personal stories for each starting staff member (trust + stage gates)
 - **Weekly random events** — 10 weighted events tied to clinic upgrades
@@ -25,7 +44,7 @@ All characters in the prototype are adults 21+ and are framed as opt-in particip
 - **2 new archetypes** — Donor's Niece, Returning VIP
 - **Save migration** — v1 saves upgrade to v2 automatically
 
-See `docs/V3-PLAN.md` for the post-v2 roadmap (review before we build v3).
+See `docs/V3-PLAN.md` for V3 scope. See `docs/V4-PLAN.md` for the post-v3 roadmap (review before we build v4).
 
 ## Current playable features (v1 core)
 
@@ -64,8 +83,18 @@ src/
   arcs.js
   silhouettes.js
   weeklyContent.js
+  v3WeeklyContent.js
+  rooms.js
+  rival.js
+  chapters.js
+  relationships.js
+  clinicStyle.js
+  groupScenes.js
+  endings.js
   styles.css
 docs/V3-PLAN.md
+docs/V4-PLAN.md
+docs/V1-V2-AUDIT.md
 public/
 .cursor/skills/beautiful-prose/
 .cursor/skills/event-authoring/

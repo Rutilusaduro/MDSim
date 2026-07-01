@@ -1,11 +1,19 @@
-import { buyManagementItem, computeClinicEffects, getClinicRating, shopItems } from './clinic.js';
+import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './clinic.js';
 import { describeCharacter, getStageIndex, getStageInfo, weightStageNames } from './characters.js';
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame } from './state.js';
 import { getAchievementProgress } from './achievements.js';
 import { getArcProgress } from './arcs.js';
 import { getReputationBlockReason, getReputationTier, isItemUnlockedByReputation } from './reputation.js';
-import { renderSilhouette } from './silhouettes.js';
+import { renderSilhouette, renderSilhouetteCompare } from './silhouettes.js';
+import { ROOMS, assignItemToRoom, getRoomBonusSummary } from './rooms.js';
+import { getRivalProgress } from './rival.js';
+import { getChapterInfo } from './chapters.js';
+import { getRelationshipWeb } from './relationships.js';
+import { getDominantStyle, getStyleFlavor } from './clinicStyle.js';
+import { applyGroupChoice, getPendingGroupScene } from './groupScenes.js';
+import { applyNgPlus } from './endings.js';
+import { getActiveSeasonalWeek } from './v3WeeklyContent.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -62,7 +70,7 @@ function characterCard(character, variant = 'standard') {
         <div>
           <p class="text-xs uppercase tracking-[0.22em] text-amber-200/70">${isPatient ? 'Patient' : e(character.role)}</p>
           <h3 class="mt-1 text-lg font-semibold text-stone-50">${e(character.name)}</h3>
-          <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb</p>
+          <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb${isPatient && character.loyalty ? ` - Loyalty ${character.loyalty}` : ''}</p>
         </div>
         <span class="rounded-full bg-pink-500/15 px-3 py-1 text-xs text-pink-100">${e(stage.name)}</span>
       </div>
@@ -120,6 +128,16 @@ function renderSidebar(state) {
           <p class="text-xs text-stone-300">${e(getReputationTier(state.reputation).name)}</p>
         </div>
         <div class="soft-card rounded-2xl p-4">
+          <p class="text-xs text-stone-400">Rival</p>
+          <p class="text-xl font-black text-red-100">${getRivalProgress(state).reputation}</p>
+          <p class="text-xs text-stone-300 truncate">${e(getRivalProgress(state).name)}</p>
+        </div>
+        <div class="soft-card rounded-2xl p-4">
+          <p class="text-xs text-stone-400">Chapter</p>
+          <p class="text-sm font-black text-amber-100">${e(getChapterInfo(state).chapter?.name || 'Done')}</p>
+          <p class="text-xs text-stone-300">${getDominantStyle(state).label}</p>
+        </div>
+        <div class="soft-card rounded-2xl p-4">
           <p class="text-xs text-stone-400">Roster</p>
           <p class="text-2xl font-black text-pink-100">${state.staff.length + state.patients.length}</p>
           <p class="text-xs text-stone-300">${state.staff.length} staff / ${state.patients.length} patients</p>
@@ -160,7 +178,10 @@ function renderSidebar(state) {
 function renderTabs() {
   const tabs = [
     ['management', 'Management'],
+    ['floorplan', 'Floor Plan'],
     ['interact', 'Interact'],
+    ['relationships', 'Relationships'],
+    ['campaign', 'Campaign'],
     ['log', 'Log / This Week'],
     ['achievements', 'Achievements'],
   ];
@@ -264,6 +285,139 @@ function renderInteract(state) {
   `;
 }
 
+function renderFloorPlan(state) {
+  const summary = getRoomBonusSummary(state);
+  const unassigned = state.ownedUpgrades.filter((id) => !Object.values(state.rooms || {}).flat().includes(id));
+  return `
+    <section>
+      <div class="mb-5">
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Clinic layout</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Floor plan</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">Assign owned furniture to rooms for stacked bonuses (~35% of item effects per placement).</p>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2">
+        ${summary
+          .map(
+            ({ room, items, filled, slots }) => `
+          <article class="soft-card rounded-3xl p-5">
+            <h3 class="text-xl font-bold text-amber-100">${e(room.name)}</h3>
+            <p class="mt-1 text-sm text-stone-400">${e(room.blurb)}</p>
+            <p class="mt-2 text-xs text-stone-500">${filled} / ${slots} slots</p>
+            <ul class="mt-4 space-y-2 text-sm text-stone-300">
+              ${items.length ? items.map((i) => `<li>${e(i.name)}</li>`).join('') : '<li class="text-stone-500">Empty</li>'}
+            </ul>
+          </article>
+        `,
+          )
+          .join('')}
+      </div>
+      ${
+        unassigned.length
+          ? `
+        <div class="mt-8">
+          <h3 class="mb-3 text-xl font-bold text-amber-100">Unassigned upgrades</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            ${unassigned
+              .map((id) => {
+                const item = getItem(id);
+                return `
+              <div class="soft-card rounded-2xl p-4">
+                <p class="font-bold text-stone-50">${e(item?.name || id)}</p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  ${ROOMS.map(
+                    (r) => `
+                    <button class="dark-button rounded-xl px-3 py-2 text-xs font-bold" data-action="assign-room" data-item="${e(id)}" data-room="${e(r.id)}">
+                      → ${e(r.name)}
+                    </button>
+                  `,
+                  ).join('')}
+                </div>
+              </div>`;
+              })
+              .join('')}
+          </div>
+        </div>`
+          : ''
+      }
+    </section>
+  `;
+}
+
+function renderRelationships(state) {
+  const edges = getRelationshipWeb(state);
+  return `
+    <section>
+      <div class="mb-5">
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Staff dynamics</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Relationship web</h2>
+        <p class="mt-2 text-stone-300">${edges.length} active edges. Beats unlock in week resolution.</p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        ${edges
+          .map(
+            (edge) => `
+          <article class="soft-card rounded-3xl p-4">
+            <p class="text-xs uppercase tracking-widest ${edge.type === 'admires' ? 'text-emerald-300' : 'text-pink-300'}">${e(edge.type)}</p>
+            <h4 class="mt-1 font-bold text-stone-50">${e(edge.from)} → ${e(edge.to)}</h4>
+            <p class="mt-2 text-sm text-stone-300">${e(edge.note)}</p>
+            ${
+              edge.history.length
+                ? `<ul class="mt-3 space-y-1 text-xs text-stone-400">${edge.history.map((h) => `<li>Week ${h.week}: ${e(h.title)}</li>`).join('')}</ul>`
+                : ''
+            }
+          </article>
+        `,
+          )
+          .join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderCampaign(state) {
+  const info = getChapterInfo(state);
+  const rival = getRivalProgress(state);
+  const seasonal = getActiveSeasonalWeek(state);
+  return `
+    <section>
+      <div class="mb-5">
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Story mode</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">${info.allDone ? 'Campaign complete' : info.chapter.name}</h2>
+        <p class="mt-2 text-stone-300">${info.allDone ? 'Ending available after week 14.' : e(info.chapter.tagline)}</p>
+      </div>
+      ${
+        !info.allDone
+          ? `
+        <ul class="space-y-3">
+          ${info.goals
+            .map(
+              (g) => `
+            <li class="soft-card flex items-center justify-between rounded-2xl px-4 py-3">
+              <span class="text-stone-200">${e(g.label)}</span>
+              <span class="${g.done ? 'text-emerald-300' : 'text-stone-500'}">${g.done ? 'Done' : 'Pending'}</span>
+            </li>
+          `,
+            )
+            .join('')}
+        </ul>`
+          : ''
+      }
+      <div class="mt-6 grid gap-4 md:grid-cols-2">
+        <div class="soft-card rounded-3xl p-4">
+          <h4 class="font-bold text-red-100">Rival race</h4>
+          <p class="mt-2 text-sm text-stone-300">You: ${state.reputation} vs ${rival.reputation}</p>
+          <p class="mt-1 text-xs text-stone-400">${rival.defeated ? 'ThriveWell Annex defeated.' : `${rival.eventsLeft} rival events may still fire.`}</p>
+        </div>
+        <div class="soft-card rounded-3xl p-4">
+          <h4 class="font-bold text-amber-100">Clinic style</h4>
+          <p class="mt-2 text-sm text-stone-300">${e(getStyleFlavor(state))}</p>
+          ${seasonal ? `<p class="mt-2 text-xs text-pink-200">${e(seasonal.name)}: ${e(seasonal.modifier)}</p>` : ''}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderAchievements(state) {
   const progress = getAchievementProgress(state);
   return `
@@ -350,11 +504,17 @@ function renderMain(state) {
   const panel =
     activeTab === 'management'
       ? renderManagement(state)
-      : activeTab === 'interact'
-        ? renderInteract(state)
-        : activeTab === 'achievements'
-          ? renderAchievements(state)
-          : renderLog(state);
+      : activeTab === 'floorplan'
+        ? renderFloorPlan(state)
+        : activeTab === 'interact'
+          ? renderInteract(state)
+          : activeTab === 'relationships'
+            ? renderRelationships(state)
+            : activeTab === 'campaign'
+              ? renderCampaign(state)
+              : activeTab === 'achievements'
+                ? renderAchievements(state)
+                : renderLog(state);
 
   return `
     <main class="mx-auto grid max-w-[1600px] gap-6 px-5 py-6 lg:grid-cols-[22rem_1fr]">
@@ -471,18 +631,67 @@ function openCharacterModal(id) {
   `);
 }
 
+function openGroupSceneModal(payload) {
+  const { scene, characters } = payload;
+  openModal(`
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Group scene</p>
+        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(scene.title)}</h2>
+      </div>
+    </div>
+    <p class="mt-4 text-stone-300">${e(scene.text)}</p>
+    <p class="mt-2 text-sm text-amber-100">Present: ${characters.map((c) => e(c.name)).join(', ')}</p>
+    <div class="mt-6 grid gap-3">
+      ${scene.choices
+        .map(
+          (ch) => `
+        <button class="soft-card rounded-2xl p-4 text-left hover:border-amber-200/40" data-action="group-choice" data-scene="${e(scene.id)}" data-choice="${e(ch.id)}">
+          <strong class="text-stone-50">${e(ch.label)}</strong>
+          <p class="mt-1 text-sm text-stone-400">Costs 1 AP</p>
+        </button>
+      `,
+        )
+        .join('')}
+    </div>
+    <button class="dark-button mt-4 rounded-2xl px-4 py-2 font-bold" data-action="dismiss-group">Skip scene</button>
+  `);
+}
+
+function openEndingModal(ending) {
+  openModal(`
+    <div>
+      <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">Campaign ending</p>
+      <h2 class="mt-2 text-3xl font-black text-stone-50">${e(ending.card.name)}</h2>
+      <p class="mt-4 text-lg text-stone-300">${e(ending.card.blurb)}</p>
+      <ul class="mt-6 space-y-2 text-sm text-stone-400">
+        <li>Week ${ending.week}</li>
+        <li>Reputation ${ending.reputation}</li>
+        <li>Staff ${ending.staffCount}</li>
+        <li>Recruited ${ending.recruited}</li>
+      </ul>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button class="gold-button rounded-2xl px-5 py-3 font-bold" data-action="ng-plus" data-bonus="ap">NG+ (+1 AP)</button>
+        <button class="dark-button rounded-2xl px-5 py-3 font-bold" data-action="close-modal">Continue</button>
+      </div>
+    </div>
+  `);
+}
+
 function openResolutionModal(resolution) {
   const stageBlock =
     resolution.stageChanges?.length > 0
-      ? `<div class="mt-4 space-y-2">${resolution.stageChanges
-          .map(
-            (c) => `
+      ? `<div class="mt-4 space-y-4">${resolution.stageChanges
+          .map((c) => {
+            const char = findCharacter(gameState, c.id);
+            return `
         <div class="stage-glow soft-card rounded-2xl p-3 text-sm">
           <strong class="text-amber-100">${e(c.name)}</strong>
           <span class="text-stone-400"> stage ${c.oldStage + 1} → ${c.newStage + 1}</span>
           <p class="mt-1 text-stone-300">+${c.gain.toFixed(1)} lb this week</p>
-        </div>`,
-          )
+          ${char ? `<div class="mt-3">${renderSilhouetteCompare(char, c.oldStage, c.newStage)}</div>` : ''}
+        </div>`;
+          })
           .join('')}</div>`
       : '';
 
@@ -575,6 +784,44 @@ function bindEvents() {
       render();
       openResolutionModal(resolution);
       gameState.pendingStageHighlights = [];
+      if (getPendingGroupScene(gameState)) {
+        setTimeout(() => openGroupSceneModal(getPendingGroupScene(gameState)), 400);
+      }
+      if (resolution.ending) {
+        setTimeout(() => openEndingModal(resolution.ending), 800);
+      }
+    }
+    if (action === 'assign-room') {
+      const result = assignItemToRoom(gameState, target.dataset.item, target.dataset.room);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) saveGame(gameState);
+      render();
+    }
+    if (action === 'group-choice') {
+      const pending = getPendingGroupScene(gameState);
+      if (!pending) return;
+      const result = applyGroupChoice(gameState, pending.scene, target.dataset.choice, pending.characters);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) {
+        gameState.pendingGroupScene = null;
+        if (gameState.stats) gameState.stats.groupScenesPlayed = (gameState.stats.groupScenesPlayed || 0) + 1;
+        saveGame(gameState);
+        closeModal();
+        render();
+      }
+    }
+    if (action === 'dismiss-group') {
+      gameState.pendingGroupScene = null;
+      saveGame(gameState);
+      closeModal();
+    }
+    if (action === 'ng-plus') {
+      const bonus = applyNgPlus(gameState, target.dataset.bonus);
+      showToast(`NG+ bonus: ${bonus.label}`);
+      gameState.pendingEnding = null;
+      saveGame(gameState);
+      closeModal();
+      render();
     }
     if (action === 'close-modal') {
       closeModal();

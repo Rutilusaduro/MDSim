@@ -16,6 +16,9 @@ export const ACHIEVEMENTS = [
   { id: 'wardrobe_crisis', name: 'Button Pop', desc: 'Trigger a wardrobe strain event.', check: (s) => s.stats?.wardrobeEvents >= 1 },
   { id: 'relationship_spark', name: 'Office Tension', desc: 'Witness a staff relationship beat.', check: (s) => s.stats?.relationshipBeats >= 1 },
   { id: 'perfect_ap', name: 'Clean Week', desc: 'Spend every AP in a week.', check: (s, ctx) => ctx.perfectApWeek },
+  { id: 'chapter_one', name: 'Soft Opening', desc: 'Complete Chapter 1.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_1') },
+  { id: 'rival_win', name: 'Annex Silenced', desc: 'Defeat ThriveWell Annex.', check: (s) => s.rivalState?.defeated },
+  { id: 'group_scene', name: 'Crowd Scene', desc: 'Play a group scene.', check: (s) => (s.stats?.groupScenesPlayed || 0) >= 1 },
 ];
 
 export function ensureAchievementState(state) {

@@ -14,7 +14,7 @@ function stageScale(stageIndex) {
   return 1.3 + (stageIndex - 8) * 0.08;
 }
 
-export function renderSilhouette(character, stageIndex) {
+export function renderSilhouette(character, stageIndex, options = {}) {
   const shape = BODY_SHAPES[character.bodyType] || BODY_SHAPES.hourglass;
   const scale = stageScale(stageIndex);
   const bust = 22 * shape.bust * scale;
@@ -22,14 +22,29 @@ export function renderSilhouette(character, stageIndex) {
   const hip = 26 * shape.hip * scale;
   const belly = 8 * shape.belly * scale;
   const height = 120 + stageIndex * 4;
+  const ghost = options.ghost ? 'opacity-35' : '';
+  const label = options.label ? `<p class="text-center text-xs text-stone-400">${options.label}</p>` : '';
 
   return `
-    <svg viewBox="0 0 80 ${height + 20}" class="mx-auto w-24" aria-hidden="true">
-      <ellipse cx="40" cy="18" rx="11" ry="13" fill="currentColor" opacity="0.35"/>
-      <path d="M ${40 - bust / 2} 32 Q ${40 - waist / 2} 52 ${40 - hip / 2} 72 L ${40 + hip / 2} 72 Q ${40 + waist / 2} 52 ${40 + bust / 2} 32 Z" fill="currentColor" opacity="0.5"/>
-      <ellipse cx="40" cy="58" rx="${belly}" ry="${belly * 1.2}" fill="currentColor" opacity="0.25"/>
-      <rect x="${40 - hip / 2 + 4}" y="72" width="${hip / 2 - 6}" height="${height - 72}" rx="6" fill="currentColor" opacity="0.4"/>
-      <rect x="40" y="72" width="${hip / 2 - 6}" height="${height - 72}" rx="6" fill="currentColor" opacity="0.4"/>
-    </svg>
+    <div class="${ghost}">
+      ${label}
+      <svg viewBox="0 0 80 ${height + 20}" class="mx-auto w-24" aria-hidden="true">
+        <ellipse cx="40" cy="18" rx="11" ry="13" fill="currentColor" opacity="0.35"/>
+        <path d="M ${40 - bust / 2} 32 Q ${40 - waist / 2} 52 ${40 - hip / 2} 72 L ${40 + hip / 2} 72 Q ${40 + waist / 2} 52 ${40 + bust / 2} 32 Z" fill="currentColor" opacity="0.5"/>
+        <ellipse cx="40" cy="58" rx="${belly}" ry="${belly * 1.2}" fill="currentColor" opacity="0.25"/>
+        <rect x="${40 - hip / 2 + 4}" y="72" width="${hip / 2 - 6}" height="${height - 72}" rx="6" fill="currentColor" opacity="0.4"/>
+        <rect x="40" y="72" width="${hip / 2 - 6}" height="${height - 72}" rx="6" fill="currentColor" opacity="0.4"/>
+      </svg>
+    </div>
+  `;
+}
+
+export function renderSilhouetteCompare(character, oldStage, newStage) {
+  return `
+    <div class="flex items-end justify-center gap-6 text-pink-300">
+      ${renderSilhouette(character, oldStage, { ghost: true, label: `Stage ${oldStage + 1}` })}
+      <span class="text-stone-500">→</span>
+      ${renderSilhouette(character, newStage, { label: `Stage ${newStage + 1}` })}
+    </div>
   `;
 }

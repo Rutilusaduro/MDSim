@@ -271,6 +271,48 @@ export const archetypes = {
       devoted: 'I fly in monthly now. Fatter every time. Keep me on your best schedule.',
     },
   },
+  rivalSpy: {
+    label: "Rival's Mole",
+    appetiteMod: 0.95,
+    trustMod: 0.6,
+    hook: 'Sent from ThriveWell Annex. Curiosity wins over loyalty fast.',
+    lines: {
+      professional: 'Just researching wellness trends. Your lobby is... different.',
+      noticing: 'Okay. The chairs are nicer. And the snacks. Stop looking at me.',
+      hungry: 'I was supposed to report back. I ordered seconds instead.',
+      pleased: 'ThriveWell can wait. I am learning things about appetite.',
+      indulgent: 'Fine. I am a convert. Their juice bar can rot.',
+      devoted: 'I work for you now. Fat, happy, and done with detox culture.',
+    },
+  },
+  foodBlogger: {
+    label: 'Food Blogger',
+    appetiteMod: 1.2,
+    trustMod: 1.1,
+    hook: 'Reviews clinics like restaurants. Yours is trending.',
+    lines: {
+      professional: 'Great lighting. Good vibes. Content potential is insane.',
+      noticing: 'My ring light catches new curves. Engagement is up. So is my waist.',
+      hungry: 'I came for a post. Stayed for the casserole. Filmed both.',
+      pleased: 'The comments love my softness. I love the trays.',
+      indulgent: 'Sponsor me or feed me. Ideally both. I am not stopping.',
+      devoted: 'My channel is just me getting fatter here. Subscribers thank you.',
+    },
+  },
+  gymDefector: {
+    label: 'Gym Defector',
+    appetiteMod: 1.3,
+    trustMod: 0.9,
+    hook: 'Cancelled the membership. Kept the hunger.',
+    lines: {
+      professional: 'My trainer fired me. I needed a softer practice.',
+      noticing: 'Leggings dig in now. Good. That is data.',
+      hungry: 'I replaced cardio with your vending wall. No regrets yet.',
+      pleased: 'Muscle memory fading. Softness memory strong.',
+      indulgent: 'I want to be the cautionary tale that makes people jealous.',
+      devoted: 'Immobility is a goal now. Feed me like a retirement plan.',
+    },
+  },
 };
 
 const staffTemplates = [
@@ -408,8 +450,12 @@ export function createStartingStaff(rng) {
 export function createPatient(rng, options = {}) {
   const bodyType = options.bodyType || rng.pick(bodyTypeKeys);
   let archetype = options.archetype || rng.pick(archetypeKeys);
-  if (!options.archetype && rng.next() < 0.18) {
+  if (!options.archetype && options.styleBias?.length && rng.next() < 0.35) {
+    archetype = rng.pick(options.styleBias);
+  } else if (!options.archetype && rng.next() < 0.18) {
     archetype = rng.pick(['patron', 'vip']);
+  } else if (!options.archetype && rng.next() < 0.08) {
+    archetype = rng.pick(['rivalSpy', 'foodBlogger', 'gymDefector']);
   }
   const profile = bodyTypes[bodyType];
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
@@ -443,9 +489,22 @@ export function createPatient(rng, options = {}) {
     preferences: defaultPreferences(),
     seenThisWeek: false,
     visits: 0,
+    loyalty: 0,
     consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
     lastStage: 0,
   };
+}
+
+export function bumpLoyalty(patient, amount = 1) {
+  if (!patient || patient.type !== 'patient') return;
+  patient.loyalty = Math.min(10, (patient.loyalty || 0) + amount);
+}
+
+export function loyaltyRecruitDiscount(patient) {
+  const loyalty = patient.loyalty || 0;
+  if (loyalty >= 8) return 200;
+  if (loyalty >= 5) return 100;
+  return 0;
 }
 
 export function createPatientRoster(rng, count = 4) {

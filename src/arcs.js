@@ -133,9 +133,54 @@ export const STAFF_ARC_TRACKS = {
   },
 };
 
+const PROCEDURAL_BEAT_TEMPLATES = [
+  {
+    trustMin: 5,
+    stageMin: 0,
+    title: 'After Hours',
+    text: (name) =>
+      `${name} stays late without being asked. A snack tray appears. She eats while finishing charts. Nobody mentions the crumbs.`,
+  },
+  {
+    trustMin: 7,
+    stageMin: 2,
+    title: 'Uniform Reality',
+    text: (name) =>
+      `${name} holds up scrubs that fit last month. She orders the next size without shame. You approve before she finishes the sentence.`,
+  },
+  {
+    trustMin: 9,
+    stageMin: 4,
+    title: 'Break Room Regular',
+    text: (name) =>
+      `${name} claims the best couch spot. Trays find her. She laughs when the seat groans. She does not move.`,
+  },
+  {
+    trustMin: 10,
+    stageMin: 6,
+    title: 'Full Belly Confidence',
+    text: (name) =>
+      `${name} tells you hunger feels like part of the job now. Belly forward. Voice warm. She wants the clinic to keep pace with her.`,
+  },
+];
+
+export function buildProceduralArc(character) {
+  const first = character.name.split(' ')[0];
+  return {
+    title: `${first}'s Appetite Arc`,
+    beats: PROCEDURAL_BEAT_TEMPLATES.map((t, id) => ({
+      id,
+      trustMin: t.trustMin,
+      stageMin: t.stageMin,
+      title: t.title,
+      text: t.text(character.name),
+    })),
+  };
+}
+
 export function getArcTrack(character) {
   if (character.type !== 'staff') return null;
-  return STAFF_ARC_TRACKS[character.name] || null;
+  return STAFF_ARC_TRACKS[character.name] || buildProceduralArc(character);
 }
 
 export function getArcProgress(character) {

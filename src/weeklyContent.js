@@ -1,4 +1,6 @@
 import { getStageIndex } from './characters.js';
+import { recordRelationshipBeat } from './relationships.js';
+import { V3_RELATIONSHIP_BEATS, V3_WEEKLY_EVENTS, getActiveSeasonalWeek } from './v3WeeklyContent.js';
 
 export const WEEKLY_EVENTS = [
   {
@@ -129,6 +131,8 @@ export const WEEKLY_EVENTS = [
   },
 ];
 
+export const ALL_WEEKLY_EVENTS = [...WEEKLY_EVENTS, ...V3_WEEKLY_EVENTS];
+
 export const WARDROBE_EVENTS = [
   {
     id: 'button_strain',
@@ -214,22 +218,33 @@ export const RELATIONSHIP_BEATS = [
       });
     },
   },
+  ...V3_RELATIONSHIP_BEATS,
 ];
 
 export function pickWeeklyEvent(state, rng) {
   const owned = state.ownedUpgrades || [];
-  const pool = WEEKLY_EVENTS.filter((ev) => {
+  const seasonal = getActiveSeasonalWeek(state);
+  const pool = ALL_WEEKLY_EVENTS.filter((ev) => {
     if (ev.requiresUpgrade && !owned.includes(ev.requiresUpgrade)) return false;
+    if (ev.minWeek && state.week < ev.minWeek) return false;
     return true;
   });
   if (!pool.length) return null;
-  const total = pool.reduce((s, e) => s + e.weight, 0);
+
+  const weighted = pool.map((ev) => {
+    let w = ev.weight;
+    if (seasonal && ev.seasonal === seasonal.eventBoost) w *= 2;
+    if (state.challengeWeek === 'caterer' && ev.id.includes('feast')) w *= 2;
+    if (state.challengeWeek === 'button' && ev.id.includes('button')) w *= 2;
+    return { ev, w };
+  });
+  const total = weighted.reduce((s, e) => s + e.w, 0);
   let roll = rng.next() * total;
-  for (const ev of pool) {
-    roll -= ev.weight;
+  for (const { ev, w } of weighted) {
+    roll -= w;
     if (roll <= 0) return ev;
   }
-  return pool[pool.length - 1];
+  return weighted[weighted.length - 1].ev;
 }
 
 export function fireWardrobeEvents(state, rng) {
@@ -264,6 +279,7 @@ export function fireRelationshipBeat(state, rng) {
     if (chars.length < beat.pair.length) continue;
     beat.effect(state, chars);
     state.firedEvents.push(beat.id);
+    recordRelationshipBeat(state, beat);
     if (state.stats) state.stats.relationshipBeats = (state.stats.relationshipBeats || 0) + 1;
     return { beat, chars };
   }

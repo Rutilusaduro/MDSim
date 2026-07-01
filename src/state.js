@@ -1,8 +1,11 @@
 import { createPatientRoster, createStartingStaff, defaultPreferences } from './characters.js';
 import { shopItems } from './clinic.js';
+import { defaultRoomLayout } from './rooms.js';
+import { defaultRivalState } from './rival.js';
+import { defaultClinicStyle } from './clinicStyle.js';
 
-export const SAVE_KEY = 'indulgecare-clinic-save-v2';
-export const GAME_VERSION = 2;
+export const SAVE_KEY = 'indulgecare-clinic-save-v3';
+export const GAME_VERSION = 3;
 
 export function createRng(seed = Date.now()) {
   let value = Math.abs(Math.floor(seed)) % 2147483647;
@@ -36,6 +39,8 @@ function defaultStats() {
     wardrobeEvents: 0,
     relationshipBeats: 0,
     allInstallablesOwned: false,
+    groupScenesPlayed: 0,
+    chaptersCompleted: 0,
   };
 }
 
@@ -83,6 +88,15 @@ export function createNewGame(options = {}) {
     lastResolution: null,
     pendingStageHighlights: [],
     rngSeed: rng.seed,
+    rooms: defaultRoomLayout(),
+    rivalState: defaultRivalState(),
+    chapter: 1,
+    chapterGoalsMet: [],
+    clinicStyle: defaultClinicStyle(),
+    relationshipHistory: [],
+    pendingGroupScene: null,
+    ngPlus: 0,
+    ngPlusGain: 0,
   };
 }
 
@@ -150,12 +164,14 @@ export function formatMoney(value) {
 export function saveGame(state = gameState) {
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   localStorage.removeItem('indulgecare-clinic-save-v1');
+  localStorage.removeItem('indulgecare-clinic-save-v2');
 }
 
 function migrateCharacter(c) {
   if (!c.preferences) c.preferences = defaultPreferences();
   if (!c.arc) c.arc = { completedBeats: [] };
   if (c.type === 'staff' && !c.arc.completedBeats) c.arc = { completedBeats: [] };
+  if (c.type === 'patient' && c.loyalty == null) c.loyalty = Math.min(3, c.visits || 0);
   return c;
 }
 
@@ -182,14 +198,22 @@ function normaliseState(raw) {
   merged.pendingStageHighlights = raw.pendingStageHighlights || [];
   merged.actionPointsMax = raw.actionPointsMax || fresh.actionPointsMax;
   merged.actionPoints = Math.min(raw.actionPoints ?? fresh.actionPoints, merged.actionPointsMax);
+  merged.rooms = raw.rooms || defaultRoomLayout();
+  merged.rivalState = raw.rivalState || defaultRivalState();
+  merged.chapter = raw.chapter || 1;
+  merged.chapterGoalsMet = raw.chapterGoalsMet || [];
+  merged.clinicStyle = raw.clinicStyle || defaultClinicStyle();
+  merged.relationshipHistory = raw.relationshipHistory || [];
+  merged.pendingGroupScene = raw.pendingGroupScene || null;
+  merged.ngPlus = raw.ngPlus || 0;
+  merged.ngPlusGain = raw.ngPlusGain || 0;
   return merged;
 }
 
 export function loadGame() {
   let saved = localStorage.getItem(SAVE_KEY);
-  if (!saved) {
-    saved = localStorage.getItem('indulgecare-clinic-save-v1');
-  }
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v2');
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v1');
   if (!saved) return null;
   gameState = normaliseState(JSON.parse(saved));
   saveGame(gameState);

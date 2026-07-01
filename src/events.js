@@ -10,11 +10,13 @@ import {
 import { applyPendingInstallations, computeClinicEffects } from './clinic.js';
 import {
   createPatient,
+  bumpLoyalty,
   getAttitudeKey,
   getCharacterDialogue,
   getGainTemperament,
   getStageIndex,
   getStageInfo,
+  loyaltyRecruitDiscount,
   summarizeStageChange,
 } from './characters.js';
 import { advanceArc, canAdvanceArc, getArcProgress } from './arcs.js';
@@ -24,6 +26,12 @@ import {
   fireWardrobeEvents,
   pickWeeklyEvent,
 } from './weeklyContent.js';
+import { tickRival, rivalBlocksRecruitment } from './rival.js';
+import { checkChapterAdvance } from './chapters.js';
+import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchetypeBias } from './clinicStyle.js';
+import { pickGroupScene, setPendingGroupScene } from './groupScenes.js';
+import { getActiveSeasonalWeek } from './v3WeeklyContent.js';
+import { canShowEnding, computeEnding } from './endings.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -96,7 +104,6 @@ export function getInteractionOptions(state, character) {
     .filter(([, action]) => action.scope.includes(character.type))
     .map(([id, action]) => {
       const inventoryMissing = action.inventory && (state.inventory[action.inventory] || 0) <= 0;
-      const moneyMissing = action.cost && state.money < action.cost;
       let extraDisabled = false;
       let extraReason = '';
 
@@ -118,29 +125,36 @@ export function getInteractionOptions(state, character) {
         } else if (getStageIndex(character) < 4) {
           extraDisabled = true;
           extraReason = 'Need stage 5+';
-        } else if ((character.visits || 0) < 3) {
+        } else if ((character.visits || 0) < 3 && (character.loyalty || 0) < 5) {
           extraDisabled = true;
-          extraReason = 'Need 3+ visits';
+          extraReason = 'Need 3+ visits or loyalty 5+';
         } else if (state.staff.length >= 8) {
           extraDisabled = true;
           extraReason = 'Staff roster full';
+        } else if (rivalBlocksRecruitment(state)) {
+          extraDisabled = true;
+          extraReason = 'Reputation below rival. Win the race first.';
         }
       }
+
+      const recruitCost =
+        id === 'recruit' ? Math.max(400, 750 - loyaltyRecruitDiscount(character)) : action.cost;
 
       return {
         id,
         ...action,
+        cost: recruitCost,
         disabled:
           state.actionPoints <= 0 ||
           inventoryMissing ||
-          moneyMissing ||
+          (recruitCost && state.money < recruitCost) ||
           extraDisabled,
         reason:
           state.actionPoints <= 0
             ? 'No AP remaining'
             : inventoryMissing
               ? 'Out of stock'
-              : moneyMissing
+              : recruitCost && state.money < recruitCost
                 ? 'Insufficient funds'
                 : extraReason,
       };
@@ -209,7 +223,8 @@ export function performInteraction(state, characterId, actionId) {
   if (option?.disabled) return { ok: false, message: option.reason };
   if (!spendActionPoint(state)) return { ok: false, message: 'No action points remain.' };
 
-  if (action.cost) state.money -= action.cost;
+  const cost = option?.cost ?? action.cost;
+  if (cost) state.money -= cost;
   if (action.inventory) {
     state.inventory[action.inventory] -= 1;
     if (state.stats) state.stats.compoundsUsed = (state.stats.compoundsUsed || 0) + 1;
@@ -224,6 +239,7 @@ export function performInteraction(state, characterId, actionId) {
       character.trust += 0.65;
       character.openness += 2.5;
       character.weeklyMomentum += 0.65;
+      bumpLoyalty(character, 1);
       break;
     case 'personalTalk':
       character.trust += 0.7;
@@ -289,6 +305,7 @@ export function performInteraction(state, characterId, actionId) {
   }
 
   const text = actionFlavor(character, actionId);
+  bumpStyle(state, styleFromInteraction(actionId));
   addWeekNote({
     type: 'interaction',
     title: `${action.label}: ${character.name}`,
@@ -322,6 +339,9 @@ function buildResolutionHtml({
   weeklyEvent,
   wardrobeFired,
   relationshipBeat,
+  rivalEvent,
+  chapterAdvance,
+  seasonal,
 }) {
   const installedText = installed.length
     ? `Sunday night. ${installed.map((item) => item.name).join(', ')} slots into place.`
@@ -349,12 +369,24 @@ function buildResolutionHtml({
   const relBlock = relationshipBeat
     ? `<p><strong>${relationshipBeat.beat.title}:</strong> ${relationshipBeat.beat.text}</p>`
     : '';
+  const rivalBlock = rivalEvent
+    ? `<p><strong>${rivalEvent.title}:</strong> ${rivalEvent.text}</p>`
+    : '';
+  const chapterBlock = chapterAdvance
+    ? `<p><strong>Chapter complete:</strong> ${chapterAdvance.completed.name}. Reward ${formatMoney(chapterAdvance.reward.money || 0)}.</p>`
+    : '';
+  const seasonalBlock = seasonal
+    ? `<p><strong>${seasonal.name}:</strong> ${seasonal.modifier}</p>`
+    : '';
 
   return `
     <p>${installedText}</p>
+    ${seasonalBlock}
     ${eventBlock}
+    ${rivalBlock}
     ${wardrobeBlock}
     ${relBlock}
+    ${chapterBlock}
     <p>Week ${state.week} closes. ${
       bestStaff
         ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.`
@@ -373,6 +405,8 @@ export function endWeek(state) {
   const rng = rngForState(state);
   const installed = applyPendingInstallations(state);
   updateInstallableAchievement(state);
+  applyStyleWeekTick(state);
+  const seasonal = getActiveSeasonalWeek(state);
   const effects = computeClinicEffects(state);
   const staffGains = [];
   const patientGains = [];
@@ -383,6 +417,25 @@ export function endWeek(state) {
     weeklyEvent.effect(state);
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
+
+  if (rng.chance(12) && !state.challengeWeek) {
+    state.challengeWeek = rng.pick(['caterer', 'button']);
+    addWeekNote(
+      {
+        type: 'challenge',
+        title: state.challengeWeek === 'caterer' ? 'Caterer Convention Week' : 'Button Crisis Week',
+        text:
+          state.challengeWeek === 'caterer'
+            ? 'Challenge week: food events weigh double.'
+            : 'Challenge week: wardrobe strain everywhere.',
+      },
+      state,
+    );
+  } else if (state.challengeWeek) {
+    state.challengeWeek = null;
+  }
+
+  const rivalEvent = tickRival(state, rng);
 
   [...state.staff, ...state.patients].forEach((character) => {
     const oldStage = getStageIndex(character);
@@ -413,6 +466,17 @@ export function endWeek(state) {
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
 
+  const groupPick = pickGroupScene(state, rng);
+  if (groupPick) setPendingGroupScene(state, groupPick);
+
+  const chapterAdvance = checkChapterAdvance(state);
+  if (chapterAdvance && state.stats) {
+    state.stats.chaptersCompleted = (state.stats.chaptersCompleted || 0) + 1;
+  }
+
+  const ending = canShowEnding(state) ? computeEnding(state) : null;
+  if (ending) state.pendingEnding = ending;
+
   const clinicRevenue = effects.weeklyRevenue;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
   state.money += clinicRevenue - bills;
@@ -430,8 +494,9 @@ export function endWeek(state) {
   state.archivedPatients.push(...leaving);
 
   const newPatientCount = Math.min(5, 2 + Math.floor(state.reputation / 28) + (effects.newPatients || 0) + rng.int(0, 1));
+  const styleBias = stylePatientArchetypeBias(state);
   const newPatients = Array.from({ length: newPatientCount }, () => {
-    const patient = createPatient(rng);
+    const patient = createPatient(rng, { styleBias });
     patient.weeklyMomentum += effects.patientMomentum || 0;
     return patient;
   });
@@ -452,6 +517,9 @@ export function endWeek(state) {
     weeklyEvent,
     wardrobeFired,
     relationshipBeat,
+    rivalEvent,
+    chapterAdvance,
+    seasonal,
   });
 
   state.pendingStageHighlights = stageChanges;
@@ -480,6 +548,10 @@ export function endWeek(state) {
     weeklyEvent,
     wardrobeFired,
     relationshipBeat,
+    rivalEvent,
+    chapterAdvance,
+    seasonal,
+    ending,
     newAchievements,
     html: resolutionHtml,
   };
