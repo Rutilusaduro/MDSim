@@ -4,7 +4,7 @@ import {
   generatePatientAppearance,
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
-import { patientArchetypeLines } from './patientDialogue.js';
+import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientEarlyHook } from './patientDialogue.js';
 
 export { getPatientAppearanceSummary };
 
@@ -596,6 +596,10 @@ export function getStageInfo(character) {
   if (character.type === 'patient') {
     ensurePatientAppearance(character);
     const apparel = composePatientAppearance(character, stage);
+    const attitude = getAttitudeKey(character);
+    if (isEarlyPatientVoice(character)) {
+      description = getPatientEarlyBodyLine(character.bodyType, attitude);
+    }
     description = `${description} ${apparel.clothingLine}`;
   }
   return {
@@ -615,6 +619,12 @@ export function getAttitudeKey(character) {
   if (stage <= 7) return 'pleased';
   if (stage <= 9) return 'indulgent';
   return 'devoted';
+}
+
+export function isEarlyPatientVoice(character) {
+  if (character?.type !== 'patient') return false;
+  const attitude = getAttitudeKey(character);
+  return attitude === 'professional' || attitude === 'noticing';
 }
 
 export function getCharacterDialogue(character) {
@@ -638,12 +648,18 @@ export function describeCharacter(character) {
     const extras = [];
     if (apparel.beat.showHair) extras.push(`<p>${apparel.hairLine}</p>`);
     if (apparel.beat.showHeight) extras.push(`<p>${apparel.heightLine}</p>`);
+    const early = isEarlyPatientVoice(character);
+    const preferenceLine = early ? '' : ` Favors ${character.preference}.`;
+    const bodyLine = early
+      ? getPatientEarlyBodyLine(character.bodyType, getAttitudeKey(character))
+      : bodyTypes[character.bodyType]?.descriptions[stage.index] || stage.description;
+    const hookLine = early ? getPatientEarlyHook(character.archetype) : archetype.hook;
     return `
-    <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. ${getPatientAppearanceSummary(character)}. Favors ${character.preference}.</p>
-    <p>${bodyTypes[character.bodyType]?.descriptions[stage.index] || stage.description}</p>
+    <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. ${getPatientAppearanceSummary(character)}.${preferenceLine}</p>
+    <p>${bodyLine}</p>
     <p><em>Wardrobe:</em> ${apparel.clothingLine}</p>
     ${extras.join('')}
-    <p>${archetype.hook}</p>
+    <p>${hookLine}</p>
     <p><em>"${getCharacterDialogue(character)}"</em></p>
   `;
   }
@@ -664,6 +680,9 @@ export function summarizeStageChange(character, oldStage, newStage) {
   if (character.type === 'patient') {
     ensurePatientAppearance(character);
     const apparel = composePatientAppearance(character, newStage);
+    if (isEarlyPatientVoice(character)) {
+      base = `${character.name} reaches ${stage.name}. ${getPatientEarlyBodyLine(character.bodyType, attitude)}`;
+    }
     base += ` ${apparel.clothingLine}`;
   }
 

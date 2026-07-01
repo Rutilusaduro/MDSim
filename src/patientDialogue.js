@@ -137,3 +137,62 @@ export const patientArchetypeLines = {
     devoted: 'I defected from rest culture entirely. Feed the comfort plan.',
   },
 };
+
+/** Mundane patient hooks — no staff roles, trays, or appetite foreshadowing. */
+export const patientEarlyHooks = {
+  nurturer: 'Warm and considerate. Arrives on time with questions written down.',
+  perfectionist: 'Organized and detail-oriented. Keeps her own visit notes.',
+  socialite: 'Friendly at intake. Comments on the lobby before the exam room.',
+  rebel: 'Independent. Chose this practice after a bad experience elsewhere.',
+  scholar: 'Reads the pamphlets. Asks careful questions. Takes her own measurements.',
+  dreamer: 'Quiet in the waiting room. Seems relieved by the calm pace.',
+  athlete: 'Formerly active. Here for follow-up after a minor injury.',
+  hedonist: 'Easygoing. Picked this clinic for comfort, not urgency.',
+  patron: 'Family connection to the wing. Here as a patient today, not a donor.',
+  vip: 'Has tried other clinics. Shopping for a better patient experience.',
+  rivalSpy: 'Wellness consult. Polite. Observant. Noncommittal.',
+  foodBlogger: 'Works in media. Reviewing patient experience this quarter.',
+  gymDefector: 'Left a high-pressure gym program. Wants gentler care.',
+  housewifeDonor: 'Community volunteer. Trying the practice personally for once.',
+  rivalDoctor: 'Sent for a second opinion. Skeptical but courteous.',
+  foodTruckOwner: 'Runs a small business. Scheduling around a packed calendar.',
+  sleepClinicDefector: 'Insomnia clinic did not help. Hoping a different model will.',
+};
+
+/** Civilian body blurbs for early patients (replaces staff scrubs copy in bodyTypes). */
+export const patientEarlyBody = {
+  hourglass: {
+    professional: 'She carries herself neatly. Everyday clothes sit where they should.',
+    noticing: 'Her usual outfits feel a touch snug at the waist. She blames the season.',
+  },
+  pear: {
+    professional: 'Slim shoulders. Casual clothes. A figure that still looks like her ID photo.',
+    noticing: 'Her hips and thighs feel fuller in old jeans. Laundry shrinks things, she says.',
+  },
+  apple: {
+    professional: 'Flat middle. Brisk step. A normal Tuesday body in street clothes.',
+    noticing: 'Her blouse tents slightly at the front. She smooths it down without thinking.',
+  },
+  athletic: {
+    professional: 'Athletic build. Firm posture. Clothes fit the way they should.',
+    noticing: 'Stomach less flat. Thighs fill the pant leg. Definition blurs at the edges.',
+  },
+  willowy: {
+    professional: 'Slender. Long limbs. Light on her feet.',
+    noticing: 'Padding at hip and lower belly. She notices in the bathroom mirror.',
+  },
+  compact: {
+    professional: 'Petite. Clothes tidy. Still matches the photo on her chart.',
+    noticing: 'A few pounds land fast on a short frame. Waistband snug. Face softer.',
+  },
+};
+
+export function getPatientEarlyBodyLine(bodyType, attitude) {
+  const tier = attitude === 'noticing' ? 'noticing' : 'professional';
+  const lines = patientEarlyBody[bodyType] || patientEarlyBody.hourglass;
+  return lines[tier];
+}
+
+export function getPatientEarlyHook(archetype) {
+  return patientEarlyHooks[archetype] || patientEarlyHooks.nurturer;
+}
