@@ -30,9 +30,19 @@ npm run lint:prose
 
 ### Where prose lives
 
+### Prose Lab (debug)
+
+Open the game with `?debug=1` (or click **Debug** in the header) to access **Prose Lab**:
+
+- Pick a text type, randomize variables, preview generated prose.
+- Flag an issue and use **Copy for Cursor Agent** (paste into Agent chat), **Open GitHub issue**, or **Download .md**.
+
+Fix requests include text type, source files, variables, sample output, and your explanation.
+
 | File | Content |
 |------|---------|
-| `src/characters.js` | Body descriptions, archetype dialogue, stage summaries |
+| `src/proseLab.js` | Prose Lab UI, mock characters, agent fix prompt builder |
+| `src/characters.js` | Body descriptions, staff archetype dialogue, stage summaries |
 | `src/events.js` | Interaction flavor, end-of-week narrative |
 | `src/clinic.js` | Shop taglines, item descriptions, purchase notes |
 | `src/state.js` | Opening log, system messages |

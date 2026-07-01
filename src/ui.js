@@ -19,6 +19,19 @@ import { getLoyaltyArcProgress } from './loyaltyArcs.js';
 import { canUseRivalClinic, getRivalClinicProgress, performRivalClinicAction, RIVAL_CLINIC_ACTIONS } from './rivalClinic.js';
 import { copyWeekSummary } from './export.js';
 import { initAudio, isAudioMuted, playPurchase, playStageUp, playUiClick, playWeekEnd, toggleAudioMuted } from './audio.js';
+import {
+  copyAgentFixPrompt,
+  downloadFixRequest,
+  generateProseLabText,
+  getGithubIssueUrl,
+  initDebugModeFromUrl,
+  isDebugMode,
+  proseLabState,
+  randomizeProseLabVars,
+  renderProseLabPanel,
+  setDebugMode,
+  syncProseLabFromForm,
+} from './proseLab.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -140,6 +153,11 @@ function renderTopNav(state) {
           <button class="dark-button rounded-2xl px-4 py-4 text-sm font-bold" data-action="toggle-audio" title="Toggle sound">
             ${isAudioMuted() ? 'Sound off' : 'Sound on'}
           </button>
+          ${
+            isDebugMode()
+              ? `<button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="tab" data-tab="prose-lab">Prose Lab</button>`
+              : `<button class="dark-button rounded-2xl px-4 py-3 text-xs font-bold opacity-70" data-action="toggle-debug" title="Add ?debug=1 to URL">Debug</button>`
+          }
         </div>
       </div>
     </header>
@@ -214,6 +232,7 @@ function renderTabs() {
     ['log', 'Log / This Week'],
     ['achievements', 'Achievements'],
   ];
+  if (isDebugMode()) tabs.push(['prose-lab', 'Prose Lab']);
   return `
     <nav class="mb-6 flex flex-wrap gap-3">
       ${tabs
@@ -567,6 +586,16 @@ function renderLog(state) {
 }
 
 function renderMain(state) {
+  if (activeTab === 'prose-lab' && isDebugMode()) {
+    return `
+      <main class="mx-auto max-w-[1600px] px-5 py-6">
+        <div class="glass-panel min-h-[48rem] rounded-[2rem] p-5 md:p-7">
+          ${renderProseLabPanel()}
+        </div>
+      </main>
+    `;
+  }
+
   const panel =
     activeTab === 'management'
       ? renderManagement(state)
@@ -870,9 +899,52 @@ function bindEvents() {
     if (!target) return;
 
     const action = target.dataset.action;
+    if (action === 'toggle-debug') {
+      const next = !isDebugMode();
+      setDebugMode(next);
+      if (next) {
+        activeTab = 'prose-lab';
+        generateProseLabText();
+      } else if (activeTab === 'prose-lab') {
+        activeTab = 'management';
+      }
+      render();
+      showToast(next ? 'Debug mode on — Prose Lab open.' : 'Debug mode off.');
+    }
+    if (action === 'prose-generate') {
+      syncProseLabFromForm();
+      generateProseLabText();
+      render();
+    }
+    if (action === 'prose-randomize') {
+      syncProseLabFromForm();
+      randomizeProseLabVars();
+      generateProseLabText();
+      render();
+    }
+    if (action === 'prose-copy-agent') {
+      syncProseLabFromForm();
+      if (!proseLabState.output) generateProseLabText();
+      copyAgentFixPrompt(proseLabState.issueText)
+        .then(() => showToast('Copied — paste into Cursor Agent chat (Ctrl+L or Composer).'))
+        .catch(() => showToast('Could not copy to clipboard.', 'error'));
+    }
+    if (action === 'prose-github-issue') {
+      syncProseLabFromForm();
+      if (!proseLabState.output) generateProseLabText();
+      window.open(getGithubIssueUrl(proseLabState.issueText), '_blank', 'noopener');
+      showToast('GitHub issue form opened — submit to queue an agent fix.');
+    }
+    if (action === 'prose-download') {
+      syncProseLabFromForm();
+      if (!proseLabState.output) generateProseLabText();
+      downloadFixRequest(proseLabState.issueText);
+      showToast('Fix request downloaded.');
+    }
     if (action === 'tab') {
       playUiClick();
       activeTab = target.dataset.tab;
+      if (activeTab === 'prose-lab' && isDebugMode()) generateProseLabText();
       render();
     }
     if (action === 'buy') {
@@ -1044,6 +1116,7 @@ function bindEvents() {
 }
 
 export function initUI() {
+  initDebugModeFromUrl();
   try {
     loadGame();
   } catch (error) {

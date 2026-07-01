@@ -251,6 +251,10 @@ function actionFlavor(character, actionId) {
   return copy[actionId];
 }
 
+export function previewInteractionFlavor(character, actionId) {
+  return actionFlavor(character, actionId) || `No flavor for action "${actionId}".`;
+}
+
 export function performInteraction(state, characterId, actionId) {
   const character = findCharacter(state, characterId);
   const action = interactionCatalog[actionId];
