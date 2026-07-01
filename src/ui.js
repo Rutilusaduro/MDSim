@@ -22,6 +22,9 @@ import { initAudio, isAudioMuted, playPurchase, playStageUp, playUiClick, playWe
 
 let activeTab = 'management';
 let toastTimer = null;
+let characterModalTab = 'profile';
+let characterModalId = null;
+let dialogueCloseCallback = null;
 
 const app = () => document.querySelector('#app');
 const modalRoot = () => document.querySelector('#modal-root');
@@ -49,6 +52,17 @@ function showToast(message, type = 'success') {
   document.body.appendChild(toast);
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.remove(), 3200);
+}
+
+function openDialogueModal(message, title = 'Outcome', onClose = null) {
+  dialogueCloseCallback = onClose;
+  openModal(`
+    <div class="flex min-h-[12rem] flex-col items-center justify-center text-center">
+      <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(title)}</p>
+      <p class="mt-6 max-w-2xl text-base leading-8 text-stone-100 md:text-lg">${e(message)}</p>
+      <button class="gold-button mt-8 rounded-2xl px-8 py-3 font-bold" data-action="close-dialogue">Close</button>
+    </div>
+  `);
 }
 
 function stageMeter(character, compact = false) {
@@ -600,9 +614,13 @@ function closeModal() {
   modalRoot().innerHTML = '';
 }
 
-function openCharacterModal(id) {
+function openCharacterModal(id, tab = null) {
   const character = findCharacter(gameState, id);
   if (!character) return;
+  if (tab) characterModalTab = tab;
+  else if (characterModalId !== id) characterModalTab = 'profile';
+  characterModalId = id;
+
   const stage = getStageInfo(character);
   const stageIdx = getStageIndex(character);
   const options = getInteractionOptions(gameState, character);
@@ -611,60 +629,58 @@ function openCharacterModal(id) {
   const arcHtml = arc
     ? `<p class="mt-3 rounded-2xl bg-pink-500/10 px-3 py-2 text-xs text-pink-100"><strong>${e(arc.track.title)}</strong><br>${character.type === 'patient' ? 'Loyalty' : 'Arc'} ${arc.completed} / ${arc.total}${arc.done ? ' (complete)' : ''}</p>`
     : '';
+  const tabClass = (name) =>
+    characterModalTab === name
+      ? 'rounded-2xl bg-amber-200/15 px-4 py-2 text-sm font-bold text-amber-50'
+      : 'rounded-2xl px-4 py-2 text-sm font-bold text-stone-400 hover:text-stone-200';
 
-  openModal(`
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(character.type)} profile</p>
-        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(character.name)}</h2>
-        <p class="mt-1 text-stone-300">${e(character.role)} - ${e(stage.bodyType)} - ${Math.round(character.weight)} lb</p>
-      </div>
-      <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
+  const statsBlock = `
+    <div class="space-y-3 text-sm text-stone-300">
+      <div class="flex justify-between"><span>Appetite</span><strong>${character.appetite.toFixed(1)}</strong></div>
+      <div class="flex justify-between"><span>Trust</span><strong>${character.trust.toFixed(1)}</strong></div>
+      <div class="flex justify-between"><span>Openness</span><strong>${Math.round(character.openness)}</strong></div>
+      <div class="flex justify-between"><span>Indulgence</span><strong>${Math.round(character.indulgence)}</strong></div>
+      <div class="flex justify-between"><span>Momentum</span><strong>${character.weeklyMomentum.toFixed(1)}</strong></div>
     </div>
-    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_18rem]">
-      <div class="rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5">
-        ${describeCharacter(character)}
-      </div>
-      <aside class="soft-card rounded-3xl p-5">
-        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
-        <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(stage.name)}</p>
-        ${stageMeter(character)}
-        ${arcHtml}
-        ${character.type === 'patient' ? `<p class="mt-2 text-xs text-stone-400">Loyalty ${character.loyalty || 0} · Visits ${character.visits || 0}</p>` : ''}
-        <div class="mt-5 space-y-3 text-sm text-stone-300">
-          <div class="flex justify-between"><span>Appetite</span><strong>${character.appetite.toFixed(1)}</strong></div>
-          <div class="flex justify-between"><span>Trust</span><strong>${character.trust.toFixed(1)}</strong></div>
-          <div class="flex justify-between"><span>Openness</span><strong>${Math.round(character.openness)}</strong></div>
-          <div class="flex justify-between"><span>Indulgence</span><strong>${Math.round(character.indulgence)}</strong></div>
-          <div class="flex justify-between"><span>Momentum</span><strong>${character.weeklyMomentum.toFixed(1)}</strong></div>
-        </div>
-        <div class="mt-4 space-y-2 text-xs text-stone-300">
-          <p class="font-bold text-amber-100">Comfort preferences</p>
-          <label class="block">Pace
-            <select data-action="set-pref" data-id="${e(character.id)}" data-key="pace" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
-              <option value="gradual" ${prefs.pace === 'gradual' ? 'selected' : ''}>Gradual</option>
-              <option value="eager" ${prefs.pace === 'eager' ? 'selected' : ''}>Eager</option>
-            </select>
-          </label>
-          <label class="block">Focus
-            <select data-action="set-pref" data-id="${e(character.id)}" data-key="focus" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
-              <option value="comfort" ${prefs.focus === 'comfort' ? 'selected' : ''}>Comfort</option>
-              <option value="appetite" ${prefs.focus === 'appetite' ? 'selected' : ''}>Appetite</option>
-            </select>
-          </label>
-          <label class="block">Public display
-            <select data-action="set-pref" data-id="${e(character.id)}" data-key="public" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
-              <option value="private" ${prefs.public === 'private' ? 'selected' : ''}>Private</option>
-              <option value="open" ${prefs.public === 'open' ? 'selected' : ''}>Open</option>
-            </select>
-          </label>
-        </div>
-        <p class="mt-4 rounded-2xl bg-emerald-300/10 p-3 text-xs leading-5 text-emerald-100">${e(character.consent)}</p>
-      </aside>
+  `;
+
+  const prefsBlock = `
+    <div class="mt-4 space-y-2 text-xs text-stone-300">
+      <p class="font-bold text-amber-100">Comfort preferences</p>
+      <label class="block">Pace
+        <select data-action="set-pref" data-id="${e(character.id)}" data-key="pace" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+          <option value="gradual" ${prefs.pace === 'gradual' ? 'selected' : ''}>Gradual</option>
+          <option value="eager" ${prefs.pace === 'eager' ? 'selected' : ''}>Eager</option>
+        </select>
+      </label>
+      <label class="block">Focus
+        <select data-action="set-pref" data-id="${e(character.id)}" data-key="focus" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+          <option value="comfort" ${prefs.focus === 'comfort' ? 'selected' : ''}>Comfort</option>
+          <option value="appetite" ${prefs.focus === 'appetite' ? 'selected' : ''}>Appetite</option>
+        </select>
+      </label>
+      <label class="block">Public display
+        <select data-action="set-pref" data-id="${e(character.id)}" data-key="public" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+          <option value="private" ${prefs.public === 'private' ? 'selected' : ''}>Private</option>
+          <option value="open" ${prefs.public === 'open' ? 'selected' : ''}>Open</option>
+        </select>
+      </label>
     </div>
-    <div class="mt-6">
+  `;
+
+  const profilePanel = `
+    <div class="rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5">
+      ${describeCharacter(character)}
+    </div>
+    ${statsBlock}
+    ${prefsBlock}
+    <p class="rounded-2xl bg-emerald-300/10 p-3 text-xs leading-5 text-emerald-100">${e(character.consent)}</p>
+  `;
+
+  const actionsPanel = `
+    <div>
       <h3 class="text-xl font-bold text-amber-100">Choose interaction <span class="text-sm font-normal text-stone-400">(${gameState.actionPoints} AP remaining)</span></h3>
-      <div class="mt-4 grid gap-3 md:grid-cols-2">
+      <div class="mt-4 grid gap-3">
         ${options
           .map(
             (option) => `
@@ -679,6 +695,35 @@ function openCharacterModal(id) {
             `,
           )
           .join('')}
+      </div>
+    </div>
+  `;
+
+  openModal(`
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(character.type)} profile</p>
+        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(character.name)}</h2>
+        <p class="mt-1 text-stone-300">${e(character.role)} - ${e(stage.bodyType)} - ${Math.round(character.weight)} lb</p>
+      </div>
+      <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
+    </div>
+    <div class="mt-6 grid gap-6 lg:grid-cols-[18rem_1fr]">
+      <aside class="soft-card rounded-3xl p-5 lg:sticky lg:top-0 lg:self-start">
+        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
+        <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(stage.name)}</p>
+        ${stageMeter(character)}
+        ${arcHtml}
+        ${character.type === 'patient' ? `<p class="mt-2 text-center text-xs text-stone-400">Loyalty ${character.loyalty || 0} · Visits ${character.visits || 0}</p>` : ''}
+      </aside>
+      <div class="min-w-0">
+        <div class="mb-4 flex flex-wrap gap-2 border-b border-amber-100/10 pb-4">
+          <button class="${tabClass('profile')}" data-action="character-tab" data-id="${e(character.id)}" data-tab="profile">Profile &amp; stats</button>
+          <button class="${tabClass('actions')}" data-action="character-tab" data-id="${e(character.id)}" data-tab="actions">Actions</button>
+        </div>
+        <div class="space-y-5">
+          ${characterModalTab === 'actions' ? actionsPanel : profilePanel}
+        </div>
       </div>
     </div>
   `);
@@ -800,18 +845,21 @@ function handleBuy(id) {
 
 function handleInteraction(characterId, actionId) {
   const result = performInteraction(gameState, characterId, actionId);
-  showToast(result.ok ? result.message.slice(0, 120) : result.message, result.ok ? 'success' : 'error');
-  if (result.ok) {
-    saveGame(gameState);
-    render();
-    if (actionId === 'recruit') {
-      closeModal();
-      return;
-    }
-    const character = findCharacter(gameState, characterId);
-    if (character) openCharacterModal(characterId);
-    else closeModal();
+  if (!result.ok) {
+    showToast(result.message, 'error');
+    return;
   }
+  saveGame(gameState);
+  render();
+  if (actionId === 'recruit') {
+    openDialogueModal(result.message, 'Recruitment');
+    return;
+  }
+  const resumeTab = actionId === 'arcScene' ? 'profile' : 'actions';
+  openDialogueModal(result.message, 'Interaction result', () => {
+    const character = findCharacter(gameState, characterId);
+    if (character) openCharacterModal(characterId, resumeTab);
+  });
 }
 
 function bindEvents() {
@@ -832,6 +880,10 @@ function bindEvents() {
     }
     if (action === 'open-character') {
       openCharacterModal(target.dataset.id);
+    }
+    if (action === 'character-tab') {
+      playUiClick();
+      openCharacterModal(target.dataset.id, target.dataset.tab);
     }
     if (action === 'interact') {
       handleInteraction(target.dataset.id, target.dataset.interaction);
@@ -910,7 +962,14 @@ function bindEvents() {
       render();
     }
     if (action === 'close-modal') {
+      characterModalId = null;
       closeModal();
+    }
+    if (action === 'close-dialogue') {
+      const callback = dialogueCloseCallback;
+      dialogueCloseCallback = null;
+      closeModal();
+      if (callback) callback();
     }
     if (action === 'save') {
       saveGame(gameState);
@@ -980,6 +1039,7 @@ function bindEvents() {
     character.preferences[target.dataset.key] = target.value;
     saveGame(gameState);
     showToast('Preferences updated.');
+    if (characterModalId === character.id) openCharacterModal(character.id, 'profile');
   });
 }
 

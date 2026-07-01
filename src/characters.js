@@ -4,6 +4,7 @@ import {
   generatePatientAppearance,
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
+import { patientArchetypeLines } from './patientDialogue.js';
 
 export { getPatientAppearanceSummary };
 
@@ -617,8 +618,14 @@ export function getAttitudeKey(character) {
 }
 
 export function getCharacterDialogue(character) {
+  const attitude = getAttitudeKey(character);
+  if (character.type === 'patient') {
+    const patientLines =
+      patientArchetypeLines[character.archetype] || patientArchetypeLines.nurturer;
+    return patientLines[attitude];
+  }
   const archetype = archetypes[character.archetype] || archetypes.nurturer;
-  return archetype.lines[getAttitudeKey(character)];
+  return archetype.lines[attitude];
 }
 
 export function describeCharacter(character) {

@@ -171,6 +171,39 @@ function actionFlavor(character, actionId) {
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
   const mid = attitude === 'hungry' || attitude === 'pleased';
+  const isPatient = character.type === 'patient';
+
+  if (isPatient) {
+    const patientCopy = {
+      consult: early
+        ? `${name} checks out after the visit. Follow-up on the calendar. She liked how unrushed it felt. "${dialogue}"`
+        : mid
+          ? `${name} lingers in the lobby after checkout. Body and appetite occupy her more than the chart. "${dialogue}"`
+          : `${name} fills the exam chair. Talk turns to comfort and second helpings. She does not blush. "${dialogue}"`,
+      comfortPlan: early
+        ? `${name} takes the pamphlet home. Seems reassured. Routine wellness guidance.`
+        : mid
+          ? `${name} reads the plan twice in the car. Quiet. Already picturing slower evenings.`
+          : `${name} takes the plan like permission. Richer routines. Softer nights. Her face opens.`,
+      comfortBlend: early
+        ? `${name} drinks what you offered. Tastes fine, she says. Unremarkable. Back to her day.`
+        : mid
+          ? `Blend goes down smooth in the exam room. ${name} blinks. Hungry again before she reaches the lot.`
+          : `Vanilla and cream in a paper cup. ${name} drinks slow. Hand on her middle. The room feels closer.`,
+      appetiteTonic: early
+        ? `${name} swallows the dose. Standard supplement protocol. Clinical. Brief.`
+        : mid
+          ? `Tonic hits in the chair. ${name} exhales. Lunch suddenly urgent.`
+          : `Amber heat in the throat. ${name} laughs at how badly she wants more. Means it.`,
+      recoveryShake: early
+        ? `${name} finishes the shake before she leaves. Notes the flavor. Moves on.`
+        : mid
+          ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
+          : `Thick shake. Sweet. ${name} drains it in the recovery nook. Steady. Warm. Heavy-lidded at the end.`,
+      recruit: `${name} accepts the offer on the spot. HR paperwork waits. She asks about patient perks first.`,
+    };
+    return patientCopy[actionId];
+  }
 
   const copy = {
     consult: early
