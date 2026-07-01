@@ -4,7 +4,7 @@ import {
   generatePatientAppearance,
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
-import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientEarlyHook } from './patientDialogue.js';
+import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientHook } from './patientDialogue.js';
 import { staffArchetypeLines } from './staffDialogue.js';
 import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
@@ -667,7 +667,7 @@ export function describeCharacter(character) {
       : (patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass)[
           stage.index
         ] || stage.description;
-    const hookLine = early ? getPatientEarlyHook(character.archetype) : archetype.hook;
+    const hookLine = getPatientHook(character.archetype);
     return `
     <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. ${getPatientAppearanceSummary(character)}.${preferenceLine}</p>
     <p>${bodyLine}</p>

@@ -79,6 +79,7 @@ export function createNewGame(options = {}) {
     stats: defaultStats(),
     firedEvents: [],
     apSpentThisWeek: 0,
+    weekConsultIncome: 0,
     log: [
       {
         id: 'welcome',
@@ -206,6 +207,7 @@ function normaliseState(raw) {
   merged.stats = { ...defaultStats(), ...(raw.stats || {}) };
   merged.firedEvents = raw.firedEvents || [];
   merged.apSpentThisWeek = raw.apSpentThisWeek || 0;
+  merged.weekConsultIncome = raw.weekConsultIncome || 0;
   merged.pendingStageHighlights = raw.pendingStageHighlights || [];
   merged.actionPointsMax = raw.actionPointsMax || fresh.actionPointsMax;
   merged.actionPoints = Math.min(raw.actionPoints ?? fresh.actionPoints, merged.actionPointsMax);

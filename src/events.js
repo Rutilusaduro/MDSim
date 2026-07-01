@@ -12,13 +12,13 @@ import {
   createPatient,
   bumpLoyalty,
   getAttitudeKey,
-  getCharacterDialogue,
   getGainTemperament,
   getStageIndex,
   getStageInfo,
   loyaltyRecruitDiscount,
   summarizeStageChange,
 } from './characters.js';
+import { getInteractionBanter } from './interactionDialogue.js';
 import { advanceArc, canAdvanceArc, getArcProgress } from './arcs.js';
 import { checkAchievements } from './achievements.js';
 import {
@@ -166,86 +166,87 @@ export function getInteractionOptions(state, character) {
 
 function actionFlavor(character, actionId) {
   const name = character.name;
-  const dialogue = getCharacterDialogue(character);
+  const banter = getInteractionBanter(character, actionId);
   const preference = character.preference;
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
   const mid = attitude === 'hungry' || attitude === 'pleased';
   const isPatient = character.type === 'patient';
+  const quote = banter ? ` ${banter}` : '';
 
   if (isPatient) {
     const patientCopy = {
       consult: early
-        ? `${name} checks out after the visit. Follow-up on the calendar. She liked how unrushed it felt. "${dialogue}"`
+        ? `${name} checks out after the visit. Follow-up on the calendar.${quote}`
         : mid
-          ? `${name} lingers in the lobby after checkout. Body and appetite occupy her more than the chart. "${dialogue}"`
-          : `${name} fills the exam chair. Talk turns to comfort and second helpings. She does not blush. "${dialogue}"`,
+          ? `${name} lingers in the lobby after checkout, hand at her middle.${quote}`
+          : `${name} fills the exam chair, cheeks flushed.${quote}`,
       comfortPlan: early
-        ? `${name} takes the pamphlet home. Seems reassured. Routine wellness guidance.`
+        ? `${name} takes the pamphlet home, reassured.${quote}`
         : mid
-          ? `${name} reads the plan twice in the car. Quiet. Already picturing slower evenings.`
-          : `${name} takes the plan like permission. Richer routines. Softer nights. Her face opens.`,
+          ? `${name} reads the plan in the car, engine running.${quote}`
+          : `${name} hugs the plan to her chest before she stands.${quote}`,
       comfortBlend: early
-        ? `${name} drinks what you offered. Tastes fine, she says. Unremarkable. Back to her day.`
+        ? `${name} drinks the blend in the exam room, unhurried.${quote}`
         : mid
-          ? `Blend goes down smooth in the exam room. ${name} blinks. Hungry again before she reaches the lot.`
-          : `Vanilla and cream in a paper cup. ${name} drinks slow. Hand on her middle. The room feels closer.`,
+          ? `${name} finishes the cup and blinks at the empty bottom.${quote}`
+          : `${name} savors the last swallow, eyes half closed.${quote}`,
       appetiteTonic: early
-        ? `${name} swallows the dose. Standard supplement protocol. Clinical. Brief.`
+        ? `${name} takes the dose at the sink, clinical and brief.${quote}`
         : mid
-          ? `Tonic hits in the chair. ${name} exhales. Lunch suddenly urgent.`
-          : `Amber heat in the throat. ${name} laughs at how badly she wants more. Means it.`,
+          ? `${name} exhales after the tonic, already thinking about lunch.${quote}`
+          : `${name} laughs at the heat in her throat.${quote}`,
       recoveryShake: early
-        ? `${name} finishes the shake before she leaves. Notes the flavor. Moves on.`
+        ? `${name} finishes the shake before she leaves.${quote}`
         : mid
-          ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
-          : `Thick shake. Sweet. ${name} drains it in the recovery nook. Steady. Warm. Heavy-lidded at the end.`,
-      recruit: `${name} accepts the offer on the spot. HR paperwork waits. She asks about patient perks first.`,
+          ? `${name} grips the cup until the ice rattles empty.${quote}`
+          : `${name} leans back, belly rising with the last swallow.${quote}`,
+      recruit: `${name} accepts the offer on the spot.${quote}`,
     };
     return patientCopy[actionId];
   }
 
   const copy = {
     consult: early
-      ? `${name} leaves on time. Visit went fine. She likes the lobby. "${dialogue}"`
+      ? `${name} leaves on time. Visit went fine.${quote}`
       : mid
-        ? `${name} lingers at the door. Food and fit occupy her mind more than the chart. "${dialogue}"`
-        : `${name} fills the chair. Talk turns to ${preference} and second helpings. She does not blush. "${dialogue}"`,
+        ? `${name} lingers at the door, distracted.${quote}`
+        : `${name} fills the chair, talk turning to ${preference}.${quote}`,
     personalTalk: early
-      ? `${name} checks in easy. Talks shop. Praises the team. "${dialogue}"`
+      ? `${name} checks in easy after a long shift.${quote}`
       : mid
-        ? `${name} unloads about hunger and tight scrubs. Voice low. Honest. "${dialogue}"`
-        : `${name} speaks plain about weight and want. No filter left. "${dialogue}"`,
+        ? `${name} unloads about hunger and tight scrubs.${quote}`
+        : `${name} speaks plain about weight and want.${quote}`,
     cateredBreak: early
-      ? `${name} eats from the tray. Chats between bites of ${preference}. Polite. Present.`
+      ? `${name} eats from the tray between bites of ${preference}.${quote}`
       : mid
-        ? `${name} clears the tray faster than planned. ${preference} goes first. She looks stunned at herself.`
-        : `Tray lands heavy with scent. ${name} sinks into cushions over ${preference}. Flesh settles. Eyes half close.`,
+        ? `${name} clears the tray faster than she planned.${quote}`
+        : `Tray lands heavy. ${name} sinks into cushions over ${preference}.${quote}`,
     comfortPlan: early
-      ? `${name} nods through the advice. Files it with the rest. Routine.`
+      ? `${name} nods through the advice and files it.${quote}`
       : mid
-        ? `${name} reads the plan twice. Quiet. Already picturing dinner.`
-        : `${name} takes the plan like permission. Richer snacks. Slower nights. Her face opens.`,
+        ? `${name} reads the plan twice, quiet.${quote}`
+        : `${name} takes the plan like permission.${quote}`,
     comfortBlend: early
-      ? `${name} drinks it down. Tastes fine, she says. Back to work.`
+      ? `${name} drinks it down between tasks.${quote}`
       : mid
-        ? `Blend goes down smooth. ${name} blinks. Hungry again. Already.`
-        : `Vanilla and cream. ${name} drinks slow. Hand on her middle. The room feels closer.`,
+        ? `Blend goes down smooth. ${name} blinks, hungry again.${quote}`
+        : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
     appetiteTonic: early
-      ? `${name} swallows the dose. Clinical. Unremarkable.`
+      ? `${name} swallows the dose between rooms.${quote}`
       : mid
-        ? `Tonic hits. ${name} exhales. Lunch suddenly urgent.`
-        : `Amber heat in the throat. ${name} laughs at how badly she wants more. Means it.`,
+        ? `Tonic hits. ${name} exhales. Lunch urgent.${quote}`
+        : `Amber heat in the throat. ${name} laughs, wanting more.${quote}`,
     recoveryShake: early
-      ? `${name} finishes the shake between tasks. Notes the flavor. Moves on.`
+      ? `${name} finishes the shake on the walk to the next room.${quote}`
       : mid
-        ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
-        : `Thick shake. Sweet. ${name} drains it. Steady. Warm. Heavy-lidded at the end.`,
+        ? `${name} grips the cup with both hands until it is empty.${quote}`
+        : `Thick shake. Sweet. ${name} drains it, heavy-lidded.${quote}`,
     arcScene: (() => {
       const progress = getArcProgress(character);
-      return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}. "${dialogue}"`;
+      return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}.${quote}`;
     })(),
-    recruit: `${name} accepts the offer on the spot. New hire paperwork waits. She asks about the break room menu first.`,
+    recruit: `${name} accepts the offer. Paperwork waits.${quote}`,
   };
 
   return copy[actionId];
@@ -273,6 +274,7 @@ export function performInteraction(state, characterId, actionId) {
   switch (actionId) {
     case 'consult':
       state.money += action.money;
+      state.weekConsultIncome = (state.weekConsultIncome || 0) + action.money;
       state.reputation += 1 + consultReputationBonus(state);
       character.visits += 1;
       character.seenThisWeek = true;
@@ -355,14 +357,18 @@ export function performInteraction(state, characterId, actionId) {
   }
 
   const text = actionFlavor(character, actionId);
+  let message = text;
+  if (actionId === 'consult' && action.money) {
+    message = `${text} Billed ${formatMoney(action.money)}.`;
+  }
   bumpStyle(state, styleFromInteraction(actionId));
   addWeekNote({
     type: 'interaction',
     title: `${action.label}: ${character.name}`,
-    text,
+    text: message,
   }, state);
 
-  return { ok: true, message: text };
+  return { ok: true, message };
 }
 
 function calculateGain(state, character, effects, rng) {
@@ -385,6 +391,7 @@ function buildResolutionHtml({
   stageChanges,
   bills,
   clinicRevenue,
+  weekConsultIncome,
   newPatients,
   weeklyEvent,
   wardrobeFired,
@@ -429,6 +436,16 @@ function buildResolutionHtml({
     ? `<p><strong>${seasonal.name}:</strong> ${seasonal.modifier}</p>`
     : '';
 
+  const net = (weekConsultIncome || 0) + clinicRevenue - bills;
+  const incomeLines = [
+    weekConsultIncome ? `Visit fees ${formatMoney(weekConsultIncome)}` : null,
+    clinicRevenue ? `Clinic revenue ${formatMoney(clinicRevenue)}` : null,
+    `Bills ${formatMoney(bills)}`,
+    `Net ${formatMoney(net)}`,
+  ]
+    .filter(Boolean)
+    .join('. ');
+
   return `
     <p>${installedText}</p>
     ${seasonalBlock}
@@ -447,7 +464,7 @@ function buildResolutionHtml({
         : ''
     }</p>
     ${stageText}
-    <p>Revenue ${formatMoney(clinicRevenue)}. Bills ${formatMoney(bills)}. ${closingTone}</p>
+    <p>${incomeLines}. ${closingTone}</p>
   `;
 }
 
@@ -511,6 +528,7 @@ export function endWeek(state) {
   if (ending) state.pendingEnding = ending;
 
   const clinicRevenue = effects.weeklyRevenue;
+  const weekConsultIncome = state.weekConsultIncome || 0;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
   state.money += clinicRevenue - bills;
   state.reputation = Math.max(0, state.reputation);
@@ -546,6 +564,7 @@ export function endWeek(state) {
     stageChanges,
     bills,
     clinicRevenue,
+    weekConsultIncome,
     newPatients,
     weeklyEvent,
     wardrobeFired,
@@ -600,6 +619,7 @@ export function endWeek(state) {
   state.week += 1;
   state.actionPoints = state.actionPointsMax;
   state.apSpentThisWeek = 0;
+  state.weekConsultIncome = 0;
   state.thisWeek = [];
   state.campaignBoost = null;
   startNewWeekChallenge(state);

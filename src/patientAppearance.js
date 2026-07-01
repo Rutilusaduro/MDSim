@@ -306,46 +306,43 @@ export const STRAIN = {
   abundant: 'Clothes surrendered with grace.',
 };
 
-/** Fuller fit prose appended to every wardrobe line (band-keyed). */
-export const STRAIN_DETAIL = {
+/** Drawable fit detail per band (hem, waist, skin, seams). */
+export const FIT_VISUAL = {
   slim:
-    'Everything sits flat against her. Seams stay quiet at hip and waist. She has not needed the next size yet, and her reflection still matches the mental picture she carries into the morning.',
+    'Hem hits mid-hip. Waistband lies flat. Collar sits square on her shoulders. No crease at the small of her back.',
   softening:
-    'Fabric pulls when she sits and does not fully release when she stands. Waistbands leave a faint line. She notices it in passing, tells herself it is temporary, and keeps wearing the same favorites anyway.',
+    'Tee hem rides up a finger width when she sits. Waistband leaves a pink line. Buttons stay closed. Thigh fabric pulls when she kneels.',
   rounded:
-    'Seams work harder than she admits. Buttons hold, but only if she breathes shallow. Stretch fabric earns its name every time she reaches or bends. Mirrors have started showing a body that outpaces her shopping list.',
+    'Side seam bows at the hip. Lower belly pushes the front hem outward. Neckline gap shows collarbone and the start of soft chest.',
   plush:
-    'Hems ride up. Necklines dip when she leans. Clothes that fit last month tell the truth about her now. She buys soft fabrics on purpose because nothing else forgives the curve of her belly and the width of her thighs.',
+    'Stretch waistband rolls under her navel. Thighs fill the leg holes smooth and dark. Sleeve cuffs dig a faint ring at the upper arm.',
   heavy:
-    'Buttons negotiate peace terms. Zippers need coaxing. Getting dressed takes longer than it used to, and she owns mirrors now without flinching. What she wears still flatters, but only because she has learned which cuts surrender with grace.',
+    'Top button strains with a horizontal wrinkle. Zipper bowed at the fly. Soft belly overlaps the waistband in a pale crescent when she exhales.',
   abundant:
-    'Getting dressed is negotiation: pins, stretch panels, stubborn hope. Nothing hides her anymore, and she has stopped pretending it should. Fabric maps every fold. She dresses like someone who knows the room will look anyway.',
+    'Fabric thin at the seat and thighs. Belly rests on the waistband like a shelf. Short sleeves end high on thick upper arms. Hem cannot cover both hips at once.',
 };
 
-/** For stubborn_crop: midriff exposure by band. */
-export const MIDRIFF = {
-  slim: 'A strip of bare midriff shows.',
-  softening: 'Belly peeks when she reaches up.',
-  rounded: 'Soft belly meets open air.',
-  plush: 'Midriff mostly on display.',
-  heavy: 'Belly out; crop top unchanged.',
-  abundant: 'Bare middle, proud and warm.',
+export const MIDRIFF_VISUAL = {
+  slim: 'Bare strip of skin between hem and waistband, flat and tan.',
+  softening: 'Soft curve of belly visible when she lifts both arms.',
+  rounded: 'Crop hem ends above the navel. Rounded belly presses against the waistband.',
+  plush: 'Several inches of bare midriff. Navel centered. Skin warm and lightly flushed.',
+  heavy: 'Heavy belly spills over low jeans. Crop top barely covers the underside of her chest.',
+  abundant: 'Wide bare middle between short top and stretched waistband. Belly domes forward, skin smooth and exposed.',
 };
 
-export const MIDRIFF_DETAIL = {
-  slim:
-    'A strip of bare midriff shows when she lifts her arms. Flat. Casual. The kind of detail nobody comments on yet.',
-  softening:
-    'When she reaches overhead, her top rides up and a soft curve peeks beneath. She tugs the hem down once and forgets about it until the next time.',
-  rounded:
-    'Her crop top ends where softness begins. Belly meets open air when she stretches or sits. She stopped sucking in weeks ago.',
-  plush:
-    'Midriff is mostly on display now. Warm skin above the waistband. The top has not grown with her, and she seems to prefer it that way.',
-  heavy:
-    'Belly out, crop unchanged. She dresses like someone who decided modesty was optional. The contrast makes every hallway glance linger.',
-  abundant:
-    'Bare middle, proud and warm. Her top is a formality. She moves through rooms with the unhurried confidence of a woman who knows exactly how much she fills a frame.',
-};
+export const GARMENT_COLORS = [
+  'black',
+  'cream',
+  'white',
+  'dusty rose',
+  'navy',
+  'sage',
+  'rust',
+  'charcoal',
+  'lavender',
+  'camel',
+];
 
 /** For lengthen_hem: skirt clause beyond hem word. */
 export const SKIRT_HEM_EXTRA = {
@@ -359,41 +356,27 @@ export const SKIRT_HEM_EXTRA = {
 
 /** Wardrobe behaviors modify how bottom/top combine. */
 export const BEHAVIORS = {
-  none: {
-    label: 'classic mix',
-    hook:
-      'She still dresses like someone with options. Favorites hang beside new purchases. Normal stops fitting gradually, and she reorders her closet one reluctant sale rack at a time.',
-  },
+  none: { label: 'classic mix' },
   stubborn_crop: {
     label: 'keeps the crop',
-    hook:
-      'The crop top stays. Midriff is a commitment, not a phase. Every pound makes the gesture bolder, and she has stopped pretending she does not know that.',
     requires: { top: 'crop_top' },
     add: 'midriff',
   },
   lengthen_hem: {
     label: 'longer hems',
-    hook:
-      'Skirts lengthen as she does. Hemlines migrate down her thigh like a timeline she can read without scales. She buys fabric, not denial.',
     requires: { bottom: 'skirt' },
     replaceBottom: 'hem_skirt',
   },
   denim_loyal: {
     label: 'denim loyal',
-    hook:
-      'Jeans or nothing. She has worn denim through every size and treats stretch denim like a treaty between vanity and appetite.',
     forceBottom: 'jeans',
   },
   leggings_layer: {
     label: 'leggings always',
-    hook:
-      'Leggings are law. Pants are optional. She builds outfits from softness outward and refuses anything that digs when she sits.',
     forceBottom: 'leggings',
   },
   oversized_shift: {
     label: 'sizes up late',
-    hook:
-      'She sizes up tops before bottoms, buying drape while denial still fits below the waist. Eventually the leggings surrender too.',
     topBandOffset: 1,
   },
 };
@@ -470,24 +453,32 @@ function composeTop(topId, behaviorId, bandId) {
   return top.bands[band] || top.bands.slim;
 }
 
+function withColor(phrase, color) {
+  if (!phrase || !color) return phrase;
+  if (phrase.startsWith('a ')) return `a ${color} ${phrase.slice(2)}`;
+  if (phrase.startsWith('the ')) return `the ${color} ${phrase.slice(4)}`;
+  return `a ${color} ${phrase}`;
+}
+
 export function composeWardrobeLine(appearance, stageIndex) {
   const band = getStageBand(stageIndex);
   const bandId = band.id;
   const { top, bottom, behavior: behaviorId, presetLabel } = resolveWardrobe(appearance);
   const behavior = BEHAVIORS[behaviorId] || BEHAVIORS.none;
+  const topColor = appearance.topColor || 'black';
+  const bottomColor = appearance.bottomColor || 'navy';
 
-  const topPiece = composeTop(top, behavior, bandId);
-  const bottomPiece = composeBottom(bottom, behaviorId, bandId);
+  const topPiece = withColor(composeTop(top, behavior, bandId), topColor);
+  const bottomPiece = withColor(composeBottom(bottom, behaviorId, bandId), bottomColor);
   const sentences = [`She wears ${topPiece} with ${bottomPiece}.`];
 
-  if (behavior.add === 'midriff' && MIDRIFF_DETAIL[bandId]) {
-    sentences.push(MIDRIFF_DETAIL[bandId]);
+  if (behavior.add === 'midriff' && MIDRIFF_VISUAL[bandId]) {
+    sentences.push(MIDRIFF_VISUAL[bandId]);
   }
-  if (STRAIN_DETAIL[bandId]) sentences.push(STRAIN_DETAIL[bandId]);
-  if (behavior.hook) sentences.push(behavior.hook);
+  if (FIT_VISUAL[bandId]) sentences.push(FIT_VISUAL[bandId]);
 
   const line = sentences.join(' ');
-  return { line, presetLabel, behaviorHook: behavior.hook || '' };
+  return { line, presetLabel, behaviorHook: '' };
 }
 
 export function composeHairLine(hairColorId, hairStyleId, bandId) {
@@ -495,25 +486,23 @@ export function composeHairLine(hairColorId, hairStyleId, bandId) {
   const style = HAIR_STYLES[hairStyleId];
   if (!color || !style) return '';
   const mod = HAIR_BAND_MOD[bandId] || '';
-  const faceNote =
-    bandId === 'plush' || bandId === 'heavy' || bandId === 'abundant'
-      ? 'It frames a face that has grown softer with her.'
-      : bandId === 'softening' || bandId === 'rounded'
-        ? 'It still moves freely, though her jawline has rounded.'
-        : 'It catches light when she turns her head.';
-  return `${style.snippet}${mod}. ${color.label} tones. ${faceNote}`;
+  const lengthNote =
+    bandId === 'heavy' || bandId === 'abundant'
+      ? 'Ends rest on her shoulders and upper back.'
+      : 'Falls to shoulder length.';
+  return `${style.snippet}${mod}. ${color.label} hair, ${lengthNote}`;
 }
 
 export function composeHeightLine(inches, bandId) {
   const tier = heightTier(inches);
   const posture = HEIGHT_BAND_POSTURE[tier]?.[bandId] || '';
-  const frame =
+  const stance =
     tier === 'tall'
-      ? 'Long lines give every gained pound a vertical stage.'
+      ? 'Long legs. Narrow ankles. Shoulders level.'
       : tier === 'petite'
-        ? 'A shorter frame makes each new curve look deliberate and close.'
-        : 'Average height, but her silhouette fills more doorway than it used to.';
-  return `She stands ${formatHeight(inches)} and ${posture}. ${frame}`;
+        ? 'Short stride. Compact frame. Head height near the door handle.'
+        : 'Average height. Hips square. Feet shoulder width.';
+  return `She stands ${formatHeight(inches)}, ${posture}. ${stance}`;
 }
 
 export function generatePatientAppearance(rng) {
@@ -523,6 +512,8 @@ export function generatePatientAppearance(rng) {
     heightInches: rng.int(HEIGHT_RANGE_IN[0], HEIGHT_RANGE_IN[1]),
     hairColor: rng.pick(hairColorKeys),
     hairStyle: rng.pick(hairStyleKeys),
+    topColor: rng.pick(GARMENT_COLORS),
+    bottomColor: rng.pick(GARMENT_COLORS),
     preset: presetKey,
     wardrobe: {
       top: preset.top,
@@ -537,6 +528,11 @@ export function ensurePatientAppearance(character, rng = null) {
   if (character.appearance?.heightInches) {
     if (!character.appearance.wardrobe && (character.appearance.preset || character.appearance.clothingStyle)) {
       character.appearance.wardrobe = resolveWardrobe(character.appearance);
+    }
+    if (!character.appearance.topColor) {
+      const seed = character.id?.split('').reduce((s, c) => s + c.charCodeAt(0), 0) || 0;
+      character.appearance.topColor = GARMENT_COLORS[seed % GARMENT_COLORS.length];
+      character.appearance.bottomColor = GARMENT_COLORS[(seed + 3) % GARMENT_COLORS.length];
     }
     return character;
   }

@@ -314,6 +314,8 @@ function renderInteract(state) {
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Action phase</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Spend AP on people</h2>
         <p class="mt-2 max-w-3xl text-stone-300">Each visit shifts trust, appetite, and how fast they gain.</p>
+        <p class="mt-2 text-sm text-stone-400">Income this week: patient consults bill ${formatMoney(225)} each (shown at week end). Passive clinic revenue comes from upgrades like the vending wall. Staff check-ins do not bill.</p>
+        ${state.weekConsultIncome ? `<p class="mt-1 text-sm text-emerald-200">Visit fees so far: ${formatMoney(state.weekConsultIncome)}</p>` : ''}
       </div>
       <div class="grid gap-6 2xl:grid-cols-2">
         <div>

@@ -13,6 +13,7 @@ const targets = [
   'src/staffDialogue.js',
   'src/bodyProse.js',
   'src/patientAppearance.js',
+  'src/interactionDialogue.js',
 ];
 
 let failed = false;

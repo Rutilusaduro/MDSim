@@ -240,45 +240,38 @@ export const patientArchetypeLines = {
   },
 };
 
-/** Mundane patient hooks — no staff roles, trays, or appetite foreshadowing. */
-export const patientEarlyHooks = {
-    nurturer:
-      'She arrives on time with questions written down on a folded notepad that she keeps in her purse between visits. She asks after the receptionist before she mentions herself, and the warmth she extends to strangers in waiting rooms is something the clinic notices without commenting on. Her coat is folded neatly over one arm and her shoes are practical. She looks like someone who has spent years arranging care for other people and is only now learning to arrange it for herself.',
-    perfectionist:
-      'She keeps her own visit records in a small notebook that she updates in the parking lot before she comes inside. Every question she asks was written down before she arrived and she refers to the list without apology. The intake forms go home with her for a second review because she does not trust a single pass to catch everything. Her bag is organized in a way that suggests she has thought about what this appointment requires.',
-    socialite:
-      'She comments on the lobby before the receptionist finishes the greeting and she means every compliment she offers. Two friends already have her recommendation and a third is on the way because she does not keep good discoveries to herself. She notices the lighting in the exam room and says it is good in a tone that makes the observation feel like a gift. She moves through the space as though she belongs in well-designed rooms.',
-    rebel:
-      'She chose this practice after a frustrating experience elsewhere and mentions it once, plainly, without elaboration. She answers intake questions in as few words as the form allows and she does not fill silence she did not ask for. She is not here to be chatty, and she is here. Her posture says she will leave the moment the clinic wastes her time, which is why the staff take her time seriously.',
-    scholar:
-      'She reads the patient FAQ in the waiting room rather than her phone and she underlines one passage with a pencil she brought for that purpose. Her questions during intake are specific and follow a logic the staff can see working in real time. She brought her own notes and refers to them without apology because she treats this visit like material worth studying. The receptionist has already learned not to rush her.',
-    dreamer:
-      'She sits quietly in the waiting room without looking at her phone and she seems to be listening to the building rather than to anything electronic. The unhurried pace of the clinic settles her before the appointment even begins, and her shoulders drop a fraction when she exhales. She thanks the receptionist with a sincerity that reads as genuine rather than reflexive. She looks like someone who came here because the world outside was too loud.',
-    athlete:
-      'She carries herself with a residual discipline that still shows in her posture and her timing at check-in. She was formerly very active and is here for follow-up after a minor injury forced a change in routine that she has not fully accepted yet. The intake forms do not quite capture what she is looking for, and she fills them out carefully anyway because she respects the process. Her athletic shoes are worn in a way that tells its own story.',
-    hedonist:
-      'She picked this clinic because a friend described the chairs as the best she had ever sat in and she took that recommendation seriously enough to book the same week. She is easy at intake, unhurried, and not in the room for urgency of any kind. The calm here is what she came for and she receives it the way other people receive good news. She has already decided she likes the place before the nurse calls her name.',
-    patron:
-      'Her family has a connection to the clinic through the foundation and she mentions it once at check-in, then does not mention it again for the rest of the visit. She is here as a patient and she wants to be treated as one, which the intake process does without making a performance of equality. She watches how the staff handle ordinary patients and seems satisfied with what she sees. Her coat is expensive and her expectations are measured.',
-    vip:
-      'She has visited other clinics and she knows what a well-run one looks and feels like from the moment she crosses the threshold. She is looking for a patient experience rather than a diagnosis delivered at speed, and she evaluates the lobby the way a person evaluates a hotel. The desk passes the first test before she reaches it. She signs in with the confidence of someone who has done this many times and chosen to come back.',
-    rivalSpy:
-      'She booked under a wellness consultation and keeps the stated purpose deliberately vague at intake without being rude about it. She is polite and observant and noncommittal in her answers in a way that reads as professional caution rather than disinterest. She takes in the lobby with a careful thoroughness that looks like appreciation and is also something else entirely. The receptionist notes her clipboard and her timing.',
-    foodBlogger:
-      'She works in media and is reviewing patient experience this quarter for an audience that trusts her eye for detail. She notices the lighting, the pace, and the atmosphere before the appointment begins and she files each observation somewhere internal. She is not filming today, and she is cataloguing everything with the focus of someone who will use it later. Her notebook is small and her pen never stops moving.',
-    gymDefector:
-      'She cancelled her gym membership three weeks ago and has not missed it the way she expected to when she made the call. She is here because a gentler approach to wellness was overdue and she finally admitted it to herself in the parking lot before her first visit. The intake form is the first health-related document she has filled out without tension in her shoulders in years. She looks relieved before anything has even happened.',
-    housewifeDonor:
-      'She funds community health programs professionally and decided that visiting this one personally was something she should have done earlier. The donation and the appointment are two separate relationships and she holds the line at check-in with a politeness that does not invite confusion. She is trying the practice as a patient because the donor perspective has limits she is honest about. Her calendar is full and she made room for this anyway.',
-    rivalDoctor:
-      'She was referred for a second opinion and arrived with the clinical skepticism that her background makes unavoidable. She is courteous in a way that is clearly deliberate and leaves room for revision without promising it. The intake form gets her full professional attention because she treats every form like a document that might matter later. She has the stillness of someone who is always taking notes even when her hands are still.',
-    foodTruckOwner:
-      'She runs a small food business and her schedule is genuinely difficult to predict, which is why the clinic flexibility with appointments matters to her. She mentions the truck twice in the first five minutes because it is how she explains her life, then gets down to the intake with surprising focus. Her hands smell faintly of citrus and spice from the morning prep. She looks tired in the way people look when they are always working.',
-    sleepClinicDefector:
-      'She left an insomnia treatment program after it failed to produce anything she could use and she does not dress that history up into a better story. She is here hoping that a different model offers a different result, and she says so without performance. The absence of enthusiasm in her intake answers is exhaustion from having hoped before, not hostility toward the room she is sitting in. She holds her cup of water with both hands.',
+/** One-line patient hooks (profile blurb above dialogue). */
+export const patientHooks = {
+  nurturer: 'Warm and considerate; arrives with questions written down.',
+  perfectionist: 'Organized; keeps her own visit notes in a small notebook.',
+  socialite: 'Friendly at intake; comments on the lobby before the exam room.',
+  rebel: 'Independent; chose this practice after a bad experience elsewhere.',
+  scholar: 'Reads the pamphlets and asks careful, specific questions.',
+  dreamer: 'Quiet in the waiting room; seems relieved by the calm pace.',
+  athlete: 'Formerly active; here for follow-up after a minor injury.',
+  hedonist: 'Easygoing; picked this clinic for comfort, not urgency.',
+  patron: 'Family connection to the wing; here as a patient today.',
+  vip: 'Has tried other clinics; shopping for a better patient experience.',
+  rivalSpy: 'Wellness consult; polite, observant, noncommittal.',
+  foodBlogger: 'Works in media; reviewing patient experience this quarter.',
+  gymDefector: 'Left a high-pressure gym program; wants gentler care.',
+  housewifeDonor: 'Community volunteer; trying the practice personally.',
+  rivalDoctor: 'Sent for a second opinion; skeptical but courteous.',
+  foodTruckOwner: 'Runs a small business; scheduling around a packed calendar.',
+  sleepClinicDefector: 'Insomnia clinic did not help; hoping a different model will.',
 };
 
-/** Civilian body blurbs for early patients (replaces staff scrubs copy in bodyTypes). */
+/** @deprecated use patientHooks */
+export const patientEarlyHooks = patientHooks;
+
+export function getPatientHook(archetype) {
+  return patientHooks[archetype] || patientHooks.nurturer;
+}
+
+/** @deprecated use getPatientHook */
+export function getPatientEarlyHook(archetype) {
+  return getPatientHook(archetype);
+}
 export const patientEarlyBody = {
     hourglass: {
       professional:
@@ -322,8 +315,4 @@ export function getPatientEarlyBodyLine(bodyType, attitude) {
   const tier = attitude === 'noticing' ? 'noticing' : 'professional';
   const lines = patientEarlyBody[bodyType] || patientEarlyBody.hourglass;
   return lines[tier];
-}
-
-export function getPatientEarlyHook(archetype) {
-  return patientEarlyHooks[archetype] || patientEarlyHooks.nurturer;
 }
