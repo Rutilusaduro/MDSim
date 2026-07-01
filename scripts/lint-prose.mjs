@@ -14,6 +14,7 @@ const targets = [
   'src/bodyProse.js',
   'src/patientAppearance.js',
   'src/interactionDialogue.js',
+  'src/staffArcScenes.js',
 ];
 
 let failed = false;

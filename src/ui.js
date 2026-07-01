@@ -3,7 +3,7 @@ import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSum
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
-import { getArcProgress } from './arcs.js';
+import { getArcProgress, getArcSceneForCharacter, advanceArc } from './arcs.js';
 import { getReputationBlockReason, getReputationTier, isItemUnlockedByReputation } from './reputation.js';
 import { renderSilhouette, renderSilhouetteCompare } from './silhouettes.js';
 import { ROOMS, assignItemToRoom, getRoomBonusSummary } from './rooms.js';
@@ -47,6 +47,7 @@ import {
   performVisitAction,
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
+import { formatArcSceneNote } from './staffArcScenes.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -705,6 +706,79 @@ function startPatientVisit(patientId) {
   });
 }
 
+function openStaffArcModal(characterId) {
+  const character = findCharacter(gameState, characterId);
+  if (!character) return;
+
+  const payload = getArcSceneForCharacter(character);
+  if (!payload.ok) {
+    showToast(payload.reason, 'error');
+    return;
+  }
+
+  const { beat, scene, progress } = payload;
+  const stageIdx = getStageIndex(character);
+
+  openModal(`
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Staff arc · ${progress.completed + 1} / ${progress.total}</p>
+        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(beat.title)}</h2>
+        <p class="mt-1 text-stone-400">${e(progress.track.title)} · ${e(character.name)}</p>
+      </div>
+      <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[14rem_1fr]">
+      <aside class="soft-card rounded-3xl p-4 lg:sticky lg:top-0">
+        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
+        <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(getStageInfo(character).name)}</p>
+        <p class="mt-2 text-center text-xs text-stone-400">Trust ${character.trust.toFixed(1)}</p>
+      </aside>
+      <div class="min-w-0 space-y-5">
+        <div class="rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5 text-base">
+          ${scene.opening
+            .split('\n\n')
+            .map((para, i) => `<p class="${i ? 'mt-4' : ''} leading-8 text-stone-100">${e(para)}</p>`)
+            .join('')}
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-amber-100">What do you do?</h3>
+          <p class="mt-1 text-xs text-stone-400">Costs 1 AP · ${gameState.actionPoints} AP remaining</p>
+          <div class="mt-3 grid gap-3">
+            ${scene.choices
+              .map(
+                (choice) => `
+              <button class="soft-card rounded-2xl p-4 text-left hover:border-amber-200/40" data-action="arc-choice" data-id="${e(character.id)}" data-choice="${e(choice.id)}" ${gameState.actionPoints <= 0 ? 'disabled' : ''}>
+                <strong class="text-stone-50">${e(choice.label)}</strong>
+              </button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function handleArcChoice(characterId, choiceId) {
+  const character = findCharacter(gameState, characterId);
+  if (!character) return;
+
+  const result = advanceArc(character, gameState, choiceId);
+  if (!result.ok) {
+    showToast(result.message || result.reason, 'error');
+    return;
+  }
+
+  saveGame(gameState);
+  render();
+  const noteText = formatArcSceneNote(result.opening, result.text);
+  openDialogueModal(noteText, `${result.beat.title}: ${character.name}`, () => {
+    openCharacterModal(characterId, 'profile');
+  });
+}
+
 function openCharacterModal(id, tab = null) {
   const character = findCharacter(gameState, id);
   if (!character) return;
@@ -1102,7 +1176,16 @@ function bindEvents() {
       openCharacterModal(target.dataset.id, target.dataset.tab);
     }
     if (action === 'interact') {
+      if (target.dataset.interaction === 'arcScene') {
+        playUiClick();
+        openStaffArcModal(target.dataset.id);
+        return;
+      }
       handleInteraction(target.dataset.id, target.dataset.interaction);
+    }
+    if (action === 'arc-choice') {
+      playUiClick();
+      handleArcChoice(target.dataset.id, target.dataset.choice);
     }
     if (action === 'end-week') {
       const unvisited = getUnvisitedPatients(gameState);

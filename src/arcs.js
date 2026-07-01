@@ -1,4 +1,6 @@
 import { getAttitudeKey, getStageIndex } from './characters.js';
+import { spendActionPoint, addWeekNote } from './state.js';
+import { formatArcSceneNote, getStaffArcScene } from './staffArcScenes.js';
 
 export const STAFF_ARC_TRACKS = {
   'Maya Okafor': {
@@ -241,21 +243,77 @@ export function canAdvanceArc(character) {
   return { ok: true, beat };
 }
 
-export function advanceArc(character, state) {
+export function advanceArc(character, state, choiceId) {
   const check = canAdvanceArc(character);
   if (!check.ok) return check;
+
+  const scene = getStaffArcScene(character, check.beat);
+  if (!scene) return { ok: false, reason: 'Arc scene unavailable.' };
+
+  const choice = scene.choices.find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, reason: 'Unknown choice.' };
+
+  if (state && !spendActionPoint(state)) {
+    return { ok: false, reason: 'No action points remain.' };
+  }
+
   if (!character.arc) character.arc = { completedBeats: [] };
   character.arc.completedBeats.push(check.beat.id);
-  character.trust += 0.5;
-  character.openness += 4;
-  character.weeklyMomentum += 1.2;
-  character.indulgence += 3;
+
+  character.trust = Math.round((character.trust + 0.5 + (choice.effects?.trust || 0)) * 100) / 100;
+  character.openness = Math.min(100, character.openness + 4 + (choice.effects?.openness || 0));
+  character.weeklyMomentum += 1.2 + (choice.effects?.weeklyMomentum || 0);
+  character.indulgence = Math.min(100, character.indulgence + 3 + (choice.effects?.indulgence || 0));
+
+  if (choice.effects?.weight) {
+    character.weight = Math.round((character.weight + choice.effects.weight) * 10) / 10;
+  }
+  if (choice.effects?.appetite) {
+    character.appetite = Math.round((character.appetite + choice.effects.appetite) * 100) / 100;
+  }
+  if (choice.effects?.money && state) {
+    state.money += choice.effects.money;
+  }
+  if (choice.effects?.reputation && state) {
+    state.reputation += choice.effects.reputation;
+  }
+
   if (state?.stats) state.stats.arcBeatsCompleted = (state.stats.arcBeatsCompleted || 0) + 1;
-  return { ok: true, beat: check.beat, text: check.beat.text };
+
+  const noteText = formatArcSceneNote(scene.opening, choice.outcome);
+  if (state) {
+    addWeekNote(
+      {
+        type: 'arc',
+        title: `Arc: ${character.name} — ${check.beat.title}`,
+        text: noteText,
+      },
+      state,
+    );
+  }
+
+  return {
+    ok: true,
+    beat: check.beat,
+    choice,
+    opening: scene.opening,
+    text: choice.outcome,
+    message: choice.outcome,
+  };
+}
+
+export function getArcSceneForCharacter(character) {
+  const check = canAdvanceArc(character);
+  if (!check.ok) return { ok: false, reason: check.reason };
+  const scene = getStaffArcScene(character, check.beat);
+  if (!scene) return { ok: false, reason: 'Arc scene unavailable.' };
+  return { ok: true, beat: check.beat, scene, progress: getArcProgress(character) };
 }
 
 export function getArcScenePreview(character) {
   const progress = getArcProgress(character);
   if (!progress?.nextBeat) return '';
-  return progress.nextBeat.text.slice(0, 120) + '…';
+  const scene = getStaffArcScene(character, progress.nextBeat);
+  if (!scene?.opening) return progress.nextBeat.title;
+  return scene.opening.slice(0, 140) + '…';
 }

@@ -89,7 +89,7 @@ export const interactionCatalog = {
   arcScene: {
     label: 'Advance Personal Arc',
     scope: ['staff'],
-    description: 'Private scene. Trust deepens. Story moves forward.',
+    description: 'Private scene with choices. Trust and stage must be high enough. Costs 1 AP when you commit.',
   },
   recruit: {
     label: 'Recruit to Staff',
@@ -329,16 +329,8 @@ export function performInteraction(state, characterId, actionId) {
       character.indulgence += 3;
       character.weeklyMomentum += 1.35;
       break;
-    case 'arcScene': {
-      const arcResult = advanceArc(character, state);
-      if (!arcResult.ok) return { ok: false, message: arcResult.reason };
-      addWeekNote({
-        type: 'arc',
-        title: `Arc: ${character.name}`,
-        text: arcResult.text,
-      }, state);
-      return { ok: true, message: arcResult.text };
-    }
+    case 'arcScene':
+      return { ok: false, message: 'Use the arc scene modal.' };
     case 'recruit': {
       const role = RECRUIT_ROLES[state.staff.length % RECRUIT_ROLES.length];
       character.type = 'staff';

@@ -209,9 +209,9 @@ const BANTER = {
       ],
     },
     arcScene: {
-      early: ['She stays after her shift without being asked.'],
-      mid: ['She closes the door and tells you she has been thinking about food all day.'],
-      late: ['She sits, belly forward, and says she is ready for the next beat.'],
+      early: ['She asked if we could talk after her shift. I said yes.'],
+      mid: ['She closed the door and told me what she actually wanted from this job.'],
+      late: ['She sat down like she had been saving this conversation all week.'],
     },
   },
 };
