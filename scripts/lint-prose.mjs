@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { lintSourceStrings } from '../src/prose.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const targets = ['src/characters.js', 'src/events.js', 'src/state.js'];
+const targets = ['src/characters.js', 'src/events.js', 'src/state.js', 'src/clinic.js'];
 
 let failed = false;
 

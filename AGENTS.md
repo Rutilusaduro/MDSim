@@ -34,6 +34,7 @@ npm run lint:prose
 |------|---------|
 | `src/characters.js` | Body descriptions, archetype dialogue, stage summaries |
 | `src/events.js` | Interaction flavor, end-of-week narrative |
+| `src/clinic.js` | Shop taglines, item descriptions, purchase notes |
 | `src/state.js` | Opening log, system messages |
 
 ### Lint utility

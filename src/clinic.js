@@ -8,9 +8,8 @@ export const shopItems = [
     cost: 900,
     install: true,
     maintenance: 35,
-    tagline: 'Wide caramel leather seats that make every waiting-room visit feel slow and safe.',
-    description:
-      'Patients settle in deeper, linger longer, and leave faint warm impressions in the cushions.',
+    tagline: 'Wide caramel leather. Low arms. Patients stay seated longer.',
+    description: 'Cushions hold heat. Waistbands loosen. Nobody rushes the wait.',
     effects: { patientGain: 0.07, reputation: 1, trust: 0.25 },
   },
   {
@@ -20,9 +19,8 @@ export const shopItems = [
     cost: 1250,
     install: true,
     maintenance: 45,
-    tagline: 'A deep velvet couch for long lunches, warm naps, and staff-only trays.',
-    description:
-      'Staff breaks become softer and more indulgent, with cushions that encourage another bite before returning to rounds.',
+    tagline: 'Deep velvet. Long lunches. Staff trays welcome.',
+    description: 'Breaks stretch. Bites multiply. Rounds start late.',
     effects: { staffGain: 0.16, staffMomentum: 0.35 },
   },
   {
@@ -32,9 +30,8 @@ export const shopItems = [
     cost: 1100,
     install: true,
     maintenance: 60,
-    tagline: 'A glowing wall of fortified shakes, honeyed bars, and creamy "recovery" snacks.',
-    description:
-      'The machine hums like a promise. Everyone passes it; almost everyone leaves with something rich in hand.',
+    tagline: 'Shakes, bars, cream cups behind glowing glass.',
+    description: 'The machine hums. Everyone passes it. Most stop.',
     effects: { patientGain: 0.11, staffGain: 0.09, weeklyRevenue: 95 },
   },
   {
@@ -44,9 +41,8 @@ export const shopItems = [
     cost: 675,
     install: true,
     maintenance: 25,
-    tagline: 'Subtle notes of vanilla, toasted sugar, and warm bread in every hallway.',
-    description:
-      'The clinic smells quietly irresistible, softening resolve before anyone notices.',
+    tagline: 'Vanilla, toasted sugar, warm bread in every hall.',
+    description: 'Smell hits before thought. Resolve softens.',
     effects: { gainMultiplier: 0.08, trust: 0.15, reputation: 1 },
   },
   {
@@ -56,9 +52,8 @@ export const shopItems = [
     cost: 1550,
     install: true,
     maintenance: 50,
-    tagline: 'Warm, reinforced exam tables with generous padding and rose-gold rails.',
-    description:
-      'Check-ups feel dignified at any size, and larger bodies are treated as expected, welcome, and beautiful.',
+    tagline: 'Reinforced tables. Generous padding. Rose-gold rails.',
+    description: 'Large bodies fit without apology. Exams stay dignified.',
     effects: { patientGain: 0.06, reputation: 3, trust: 0.45 },
   },
   {
@@ -68,9 +63,8 @@ export const shopItems = [
     cost: 1850,
     install: true,
     maintenance: 70,
-    tagline: 'A curtained room with a recliner, dim lights, blankets, and a warmed snack cabinet.',
-    description:
-      'One-on-one care becomes intimate and unhurried, especially after comfort-focused consultations.',
+    tagline: 'Curtained nook. Recliner. Warmed snack cabinet.',
+    description: 'Consults run long. Voices drop. Cabinets empty by dusk.',
     effects: { staffGain: 0.08, patientGain: 0.1, actionPointsMax: 1 },
   },
   {
@@ -80,9 +74,8 @@ export const shopItems = [
     cost: 420,
     install: false,
     stock: { comfortBlend: 6 },
-    tagline: 'Six doses of vanilla supplement powder for calm appetite and heavy rest.',
-    description:
-      'Best used during personal check-ins or patient care plans to increase weekly momentum.',
+    tagline: 'Six vanilla doses. Calm gut. Heavy lids.',
+    description: 'Use during check-ins. Momentum follows.',
   },
   {
     id: 'appetite-tonic-pack',
@@ -91,9 +84,8 @@ export const shopItems = [
     cost: 620,
     install: false,
     stock: { appetiteTonic: 4 },
-    tagline: 'Four amber vials that make second helpings feel medically reasonable.',
-    description:
-      'A stronger option for patients or staff who are ready to lean into fuller appetites.',
+    tagline: 'Four amber vials. Second helpings feel clinical.',
+    description: 'Stronger hunger. Faster results. Use when they are ready.',
   },
   {
     id: 'recovery-shake-crate',
@@ -102,9 +94,8 @@ export const shopItems = [
     cost: 520,
     install: false,
     stock: { recoveryShake: 5 },
-    tagline: 'Five rich shakes labeled for energy restoration and soft-tissue support.',
-    description:
-      'Reliable, sweet, and warmly filling. A low-risk boost to weekly gain.',
+    tagline: 'Five thick shakes. Labeled for tissue support.',
+    description: 'Sweet. Filling. Low risk. Reliable gain.',
   },
   {
     id: 'luxury-comfort-campaign',
@@ -113,9 +104,8 @@ export const shopItems = [
     cost: 850,
     install: false,
     campaign: { reputation: 4, newPatients: 2 },
-    tagline: 'Glossy ads promising compassionate care, generous seating, and no judgment.',
-    description:
-      'Draws curious adult patients who want a clinic where comfort is treated as medicine.',
+    tagline: 'Print ads. Generous seating. No judgment copy.',
+    description: 'Curious adults call. They want a clinic that expects softness.',
   },
   {
     id: 'concierge-followups',
@@ -124,9 +114,8 @@ export const shopItems = [
     cost: 500,
     install: false,
     campaign: { reputation: 2, patientMomentum: 0.35 },
-    tagline: 'Handwritten reminders with meal suggestions, soft encouragement, and elegant branding.',
-    description:
-      'Patients feel personally seen and return warmer, more trusting, and more receptive.',
+    tagline: 'Handwritten notes. Meal ideas. Clinic letterhead.',
+    description: 'Patients return warmer. Trust rises. Resistance thins.',
   },
 ];
 
@@ -155,7 +144,7 @@ export function buyManagementItem(state, id) {
     addWeekNote({
       type: 'purchase',
       title: `${item.name} ordered`,
-      text: `${item.tagline} Installation is scheduled for the end of the week.`,
+      text: `${item.tagline} Installs end of week.`,
     }, state);
     return { ok: true, message: `${item.name} ordered for ${formatMoney(item.cost)}.` };
   }

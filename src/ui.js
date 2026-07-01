@@ -180,8 +180,8 @@ function renderManagement(state) {
     <section>
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Management phase</p>
-        <h2 class="mt-2 text-3xl font-black text-stone-50">Shape the clinic before the week resolves</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">Purchases are free of AP. Furniture installs at the end of the week; compounds and campaigns apply immediately.</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Buy before the week turns</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">Money only. No AP. Furniture lands end of week. Stock and campaigns apply now.</p>
       </div>
       <div class="space-y-8">
         ${categories
@@ -230,8 +230,8 @@ function renderInteract(state) {
     <section>
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Action phase</p>
-        <h2 class="mt-2 text-3xl font-black text-stone-50">Spend AP on intimate care</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">Every interaction changes trust, appetite, weekly momentum, and how openly each adult participant embraces softness.</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Spend AP on people</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">Each visit shifts trust, appetite, and how fast they gain.</p>
       </div>
       <div class="grid gap-6 2xl:grid-cols-2">
         <div>
@@ -254,7 +254,7 @@ function renderInteract(state) {
 function renderLog(state) {
   const notes = state.thisWeek.length
     ? state.thisWeek
-    : [{ title: 'No actions yet', text: 'The week is waiting for your careful, generous direction.' }];
+    : [{ title: 'Quiet week', text: 'No notes yet. Spend AP or end the week.' }];
   return `
     <section>
       <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
@@ -403,7 +403,7 @@ function openResolutionModal(resolution) {
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
         <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">End of week resolution</p>
-        <h2 class="mt-1 text-3xl font-black text-stone-50">Week ${resolution.week} settles into softness</h2>
+        <h2 class="mt-1 text-3xl font-black text-stone-50">Week ${resolution.week} closes</h2>
       </div>
       <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
     </div>

@@ -22,42 +22,42 @@ export const interactionCatalog = {
     label: 'Standard Comfort Consultation',
     scope: ['patient'],
     money: 225,
-    description: 'Earns income, builds trust, and frames comfort as a serious care goal.',
+    description: 'Billable visit. Builds trust. Keeps her on the schedule.',
   },
   personalTalk: {
     label: 'Private Staff Check-In',
     scope: ['staff'],
-    description: 'A warm one-on-one talk that makes the staff member feel seen and safe.',
+    description: 'One-on-one talk. No charting. Just time and attention.',
   },
   cateredBreak: {
     label: 'Catered Break Tray',
     scope: ['staff'],
     cost: 180,
-    description: 'A quiet staff-only spread of rich favorites and generous portions.',
+    description: 'Staff-only tray. Rich food. Generous portions.',
   },
   comfortPlan: {
     label: 'Holistic Comfort Plan',
     scope: ['staff', 'patient'],
     cost: 90,
-    description: 'Personalized advice: slower evenings, richer meals, and permission to be full.',
+    description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
   },
   comfortBlend: {
     label: 'Use Comfort Blend',
     scope: ['staff', 'patient'],
     inventory: 'comfortBlend',
-    description: 'A vanilla powder that supports calm appetite, warmth, and heavy rest.',
+    description: 'Vanilla powder. Calms nerves. Opens appetite.',
   },
   appetiteTonic: {
     label: 'Use Appetite Tonic',
     scope: ['staff', 'patient'],
     inventory: 'appetiteTonic',
-    description: 'An amber dose for participants ready to enjoy stronger hunger cues.',
+    description: 'Amber dose. Hunger arrives fast and stays.',
   },
   recoveryShake: {
     label: 'Use Recovery Shake',
     scope: ['staff', 'patient'],
     inventory: 'recoveryShake',
-    description: 'A creamy shake that makes nourishment feel restorative and professional.',
+    description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
 };
 
@@ -94,7 +94,6 @@ export function getInteractionOptions(state, character) {
 }
 
 function actionFlavor(character, actionId) {
-  const stage = getStageInfo(character);
   const name = character.name;
   const dialogue = getCharacterDialogue(character);
   const preference = character.preference;
@@ -104,40 +103,40 @@ function actionFlavor(character, actionId) {
 
   const copy = {
     consult: early
-      ? `${name} leaves the consultation on schedule, satisfied with the visit and easy to talk to. She mentions liking the clinic atmosphere. "${dialogue}"`
+      ? `${name} leaves on time. Visit went fine. She likes the lobby. "${dialogue}"`
       : mid
-        ? `${name} lingers a moment after the consult, still thinking about food and the way her clothes fit lately. "${dialogue}"`
-        : `${name} leaves glowing, clearly enjoying how her body fills the chair and the conversation alike. The talk drifts to ${preference} and how good it feels to stop holding back. "${dialogue}"`,
+        ? `${name} lingers at the door. Food and fit occupy her mind more than the chart. "${dialogue}"`
+        : `${name} fills the chair. Talk turns to ${preference} and second helpings. She does not blush. "${dialogue}"`,
     personalTalk: early
-      ? `${name} settles into the check-in easily: professional, warm, happy to be here. She talks about the team and how much she likes the work. "${dialogue}"`
+      ? `${name} checks in easy. Talks shop. Praises the team. "${dialogue}"`
       : mid
-        ? `${name} opens up more than usual, venting about hunger, tighter scrubs, and not understanding what her body is doing. "${dialogue}"`
-        : `${name} relaxes completely into the private talk, speaking openly about weight, appetite, and how much she is starting to want more. "${dialogue}"`,
+        ? `${name} unloads about hunger and tight scrubs. Voice low. Honest. "${dialogue}"`
+        : `${name} speaks plain about weight and want. No filter left. "${dialogue}"`,
     cateredBreak: early
-      ? `${name} enjoys the break-room spread politely, chatting with coworkers between bites of ${preference}.`
+      ? `${name} eats from the tray. Chats between bites of ${preference}. Polite. Present.`
       : mid
-        ? `${name} demolishes the catered tray faster than she meant to, surprised by her own appetite. ${preference} disappears first.`
-        : `The catered tray arrives glossy and fragrant. ${name} lingers over ${preference}, growing drowsy and pleased as her ${stage.bodyType.toLowerCase()} body settles heavier into the break-room cushions.`,
+        ? `${name} clears the tray faster than planned. ${preference} goes first. She looks stunned at herself.`
+        : `Tray lands heavy with scent. ${name} sinks into cushions over ${preference}. Flesh settles. Eyes half close.`,
     comfortPlan: early
-      ? `${name} listens to the wellness advice with a nod. Sensible, routine, nothing she would think twice about.`
+      ? `${name} nods through the advice. Files it with the rest. Routine.`
       : mid
-        ? `${name} receives the comfort plan and goes quiet, already imagining richer meals and softer evenings.`
-        : `${name} takes the plan like a gift: richer snacks, slower nights, and full permission to keep growing. Her expression turns openly eager.`,
+        ? `${name} reads the plan twice. Quiet. Already picturing dinner.`
+        : `${name} takes the plan like permission. Richer snacks. Slower nights. Her face opens.`,
     comfortBlend: early
-      ? `${name} drinks the supplement without fuss, remarking that it tastes fine.`
+      ? `${name} drinks it down. Tastes fine, she says. Back to work.`
       : mid
-        ? `The Comfort Blend goes down easy. ${name} blinks, suddenly aware of how hungry she already is again.`
-        : `The Comfort Blend tastes of vanilla cream and warm sleep. ${name} drinks slowly, one hand resting near her middle as the clinic seems to soften around her.`,
+        ? `Blend goes down smooth. ${name} blinks. Hungry again. Already.`
+        : `Vanilla and cream. ${name} drinks slow. Hand on her middle. The room feels closer.`,
     appetiteTonic: early
-      ? `${name} takes the tonic as directed, treating it like any other clinic supplement.`
+      ? `${name} swallows the dose. Clinical. Unremarkable.`
       : mid
-        ? `The amber tonic hits fast. ${name} exhales, embarrassed by how immediately she wants lunch.`
-        : `The amber tonic leaves a honeyed heat behind. ${name} blushes at the sudden clarity of wanting more, then laughs softly at how natural it feels.`,
+        ? `Tonic hits. ${name} exhales. Lunch suddenly urgent.`
+        : `Amber heat in the throat. ${name} laughs at how badly she wants more. Means it.`,
     recoveryShake: early
-      ? `${name} finishes the shake between tasks, appreciative but otherwise unchanged.`
+      ? `${name} finishes the shake between tasks. Notes the flavor. Moves on.`
       : mid
-        ? `${name} holds the recovery shake with both hands and does not want it to end. By the last sip she looks heavier-lidded and hungry.`
-        : `${name} takes the recovery shake in both hands, savoring its thick sweetness. By the final sip she looks steadier, warmer, and pleasantly heavy-lidded.`,
+        ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
+        : `Thick shake. Sweet. ${name} drains it. Steady. Warm. Heavy-lidded at the end.`,
   };
 
   return copy[actionId];
@@ -236,33 +235,33 @@ function buildResolutionHtml({
   newPatients,
 }) {
   const installedText = installed.length
-    ? `By Sunday evening, ${installed.map((item) => item.name).join(', ')} settles into the clinic like it always belonged there.`
-    : 'No new installations arrive this week, leaving the clinic to hum with its existing comforts.';
+    ? `Sunday night. ${installed.map((item) => item.name).join(', ')} slots into place.`
+    : 'No new gear this week. The clinic runs on what it already has.';
 
   const bestStaff = staffGains.slice().sort((a, b) => b.gain - a.gain)[0];
   const bestPatient = patientGains.slice().sort((a, b) => b.gain - a.gain)[0];
   const stageText = stageChanges.length
     ? stageChanges.map((change) => `<p><strong>${change.name}</strong>: ${change.text}</p>`).join('')
-    : '<p>No one crosses a formal stage threshold this week. Maybe a button sits tighter. Maybe someone mentions being hungry. Small changes, easy to shrug off.</p>';
+    : '<p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>';
 
   const closingTone =
     state.week <= 3
-      ? `${newPatients.length} new patients join the roster, referred by word of mouth. The clinic feels busy, normal, promising.`
-      : `${newPatients.length} new patients join the waiting list, drawn by the clinic's growing reputation for attentive, generous care.`;
+      ? `${newPatients.length} new patients on the roster. Word of mouth. Busy rooms.`
+      : `${newPatients.length} new patients waitlisted. Reputation does the recruiting now.`;
 
   return `
     <p>${installedText}</p>
-    <p>The clinic ends Week ${state.week} with the low hum of a good workweek behind it. ${
+    <p>Week ${state.week} closes. ${
       bestStaff
-        ? `<strong>${bestStaff.name}</strong> is up ${bestStaff.gain.toFixed(1)} lb since last Sunday.`
+        ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.`
         : ''
     } ${
       bestPatient
-        ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier after this week's visits.`
+        ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier.`
         : ''
     }</p>
     ${stageText}
-    <p>Billing closes with ${formatMoney(clinicRevenue)} in clinic revenue and ${formatMoney(bills)} in rent, salaries, supplies, and upkeep. ${closingTone}</p>
+    <p>Revenue ${formatMoney(clinicRevenue)}. Bills ${formatMoney(bills)}. ${closingTone}</p>
   `;
 }
 

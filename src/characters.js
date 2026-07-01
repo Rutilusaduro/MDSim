@@ -19,18 +19,18 @@ export const bodyTypes = {
     baseRange: [148, 178],
     stageSize: 18,
     descriptions: [
-      'She has a neat, professional figure. Fitted scrubs, good posture, the easy confidence of someone who likes her job.',
-      'She still looks trim and capable, though her uniform sits a touch closer after long shifts than it used to.',
-      'Softness gathers at her waist and hips now. Subtle enough that she might not have mentioned it yet.',
-      'Weight gathers like velvet on her thighs, belly, and chest, making her silhouette plush while her waist remains beautifully defined.',
-      'Her curves press into the world with new confidence: fuller arms, deeper cleavage, and hips that brush chair arms with a soft whisper.',
-      'She moves with a warm, breathy rhythm now, her belly rounding enough to rest against waistbands while her hips roll with deliberate ease.',
-      'Every part of her hourglass has become lush and tactile, from the heavy softness of her chest to the wide, cushiony sweep of her hips.',
-      'Her clothes strain in graceful arcs, seams outlining a body grown decadent, soft, and impossible to ignore in the amber clinic light.',
-      'She carries a sumptuous weight that announces itself before she speaks, her belly and hips arriving with a slow, satisfying sway.',
-      'Her curves are grand and radiant, spreading warmly into chairs and exam rooms while her breathing turns softly audible after each unhurried walk.',
-      'Her body has become a magnificent architecture of softness: heavy belly, lavish hips, full arms, and a serene pride in taking up space.',
-      'She is commanding abundance in motion, every step a deep, plush ripple of weight, warmth, and cultivated indulgence.',
+      'She wears her scrubs like a uniform. Posture straight. Waist and hips where they belong.',
+      'Long shifts leave a mark. The fabric sits closer at the hips. She has not said a word about it.',
+      'Softness gathers at her waist and hips. Small enough to blame on the dryer.',
+      'Weight lands on thighs, belly, chest. Her waist still pinches in. The hourglass deepens.',
+      'Hips catch chair arms when she sits. The top button fights her chest. Her walk slows.',
+      'Her belly meets the waistband when she exhales. Hips roll crossing the linoleum.',
+      'Heavy chest. Wide hips. A waist that still dips but fills in. Flesh shifts when she shifts.',
+      'Seams strain at hip and bust. Sweat darkens her collar after one long hall.',
+      'She arrives before her voice does. Belly and hips sway. Breath fogs the air between words.',
+      'Chairs complain under her. Heat trails her through the clinic.',
+      'Belly, arms, hips: all thick now. She takes space without asking.',
+      'Each step sends weight through her frame. Plush. Warm. Impossible to miss.',
     ],
   },
   pear: {
@@ -38,18 +38,18 @@ export const bodyTypes = {
     baseRange: [142, 172],
     stageSize: 19,
     descriptions: [
-      'She is slim and professional, shoulders back, scrubs hanging cleanly over a figure that has not changed much yet.',
-      'Her hips and thighs feel a fraction fuller lately. Nothing dramatic. Just a snugger fit after laundry day.',
-      'Weight is gathering lower on her frame now, and her walk has a faint new sway she keeps catching herself doing.',
-      'Her lower body blooms beautifully, hips widening into chairs while her waistbands ride over an increasingly soft belly.',
-      'She carries most of her indulgence below the waist now, with thick, cushiony thighs and a generous seat that settles heavily into furniture.',
-      'Her hips have become a soft horizon, brushing doorframes and chair arms while her belly adds a tender forward curve.',
-      'Every walk is a sensual negotiation of weight and balance, thighs rubbing, hips swaying, and fabric pulling smooth over her softness.',
-      'Her pear shape grows extravagant, lower curves spreading warmly beneath a smaller upper body that makes the contrast intoxicating.',
-      'She fills seats with a plush certainty, thighs and hips overflowing edges while her belly rests in a rounded, contented fold.',
-      'Her steps are slower and heavier, each movement sending a visible roll through hips that have become lavishly wide and soft.',
-      'Her body is a celebration of lower-body abundance, built from thick thighs, a deep belly fold, and a grand, yielding seat.',
-      'She has become statuesque in her softness, with hips that define the room and a stride made lush by beautiful, deliberate weight.',
+      'Slim shoulders. Clean scrubs. A figure that still looks like the hire photo.',
+      'Her hips and thighs feel fuller. Laundry shrinks things. That is the story she tells.',
+      'Weight settles low. Her walk picks up a sway she keeps noticing in window glass.',
+      'Hips widen into chairs. Waistbands ride up over a belly that was flat in March.',
+      'Most of the gain lives below the belt: thick thighs, a heavy seat, hips that spread on the cushion.',
+      'Her hips brush doorframes. Belly adds a forward curve. Balance takes thought now.',
+      'Thighs rub when she walks. Fabric pulls smooth over hip and flank.',
+      'Lower body outruns the top. The contrast makes every skirt a negotiation.',
+      'She overflows chair edges. Belly folds soft over her lap when she sits.',
+      'Steps come slower. Hips roll visible under thin scrubs.',
+      'Thick thighs. Deep belly crease. A seat that fills any room she enters.',
+      'Hips define the doorway. Weight in every stride. Statuesque and dense.',
     ],
   },
   apple: {
@@ -57,18 +57,18 @@ export const bodyTypes = {
     baseRange: [150, 182],
     stageSize: 20,
     descriptions: [
-      'She looks fit and put-together, with a flat middle and the brisk energy of someone still settling into the role.',
-      'Her blouse rests a little differently now. A faint roundness at her middle that was not there on day one.',
-      'Her belly is starting to soften and press forward, noticeable enough that she tugs her top down more often.',
-      'Her middle grows heavy and inviting, lifting her chest and making every seated breath shift fabric in small, visible waves.',
-      'Her belly now leads her movement, soft and round enough to brush counters while her arms and face take on a fresh glow.',
-      'She has a ripe, centered softness, her abdomen settling warmly into her lap whenever she sits down with a private sigh.',
-      'Her apple shape is lush and unmistakable, all radiant belly, full cheeks, and a torso that fills every cardigan with decadent weight.',
-      'She moves around her own softness now, one hand often resting on the curve as if admiring the warmth she has cultivated.',
-      'Her belly is grand and pillowy, nudging tables and rounding beneath clothes until every outfit becomes a statement of indulgence.',
-      'Her breathing turns softly labored after busy halls, chest rising over a magnificent middle that sways with slow assurance.',
-      'She is richly centered and powerful, her belly heavy, warm, and serene as it settles into every chair and lap.',
-      'Her abundance is regal: a commanding, rounded torso, soft arms, full face, and the calm pleasure of being beautifully overfed by comfort.',
+      'Flat middle. Brisk step. She still looks like someone new to the job.',
+      'Her blouse tents slightly at the front. She smooths it down without thinking.',
+      'Belly softens and pushes forward. She tugs her top down twice a shift now.',
+      'Her middle thickens. Chest lifts with it. Seated breaths move fabric in small waves.',
+      'Belly leads when she walks. It brushes the counter edge. Color rises in her cheeks.',
+      'Abdomen settles into her lap when she sits. She sighs. Stays seated longer.',
+      'Torso dominates the silhouette: round belly, full cheeks, cardigans that gap.',
+      'One hand rests on her middle when she stands, as if checking the weight is still there.',
+      'Belly nudges tables. Clothes round over it. Every outfit looks one size too small.',
+      'Hall work leaves her breathing loud. Chest heaves over a middle that sways when she stops.',
+      'Belly heavy on every chair. Warm. Serene. She does not suck it in anymore.',
+      'Rounded torso. Soft arms. Full face. She carries her weight high and proud.',
     ],
   },
   athletic: {
@@ -76,18 +76,18 @@ export const bodyTypes = {
     baseRange: [145, 176],
     stageSize: 17,
     descriptions: [
-      'She still has an athletic build: firm posture, defined lines, scrubs that fit the way they are supposed to.',
-      'The sharp edges are blurring a little; her stomach is not quite as flat and her thighs fill her pants more.',
-      'Softness is replacing definition across her middle and hips, and her uniform is clearly working harder than before.',
-      'Strength remains beneath the gain, but every movement now carries a soft bounce at her belly, chest, and hips.',
-      'She looks powerful and plush at once, with broadened curves and a newly heavy ease that turns quick strides into deliberate sways.',
-      'Her body has shifted from performance to pleasure, muscles hidden under warm padding and waistbands sitting tight at her middle.',
-      'She fills out with confident mass, thick legs, soft arms, a full belly, and the glow of someone learning to enjoy every pound.',
-      'Her former sharpness is almost gone, replaced by dense, luxurious softness that rolls gently over the strength beneath.',
-      'She has become a heavy, graceful presence, still capable, but slower, warmer, and visibly cushioned by cultivated indulgence.',
-      'Each movement sends a deep ripple through a once-athletic body made lavish, her breathing warm and her posture proud.',
-      'Her softness is monumental because the old strength supports it, creating a powerful body of thick limbs, belly, and sway.',
-      'She is abundance with muscle memory, commanding and plush, every heavy step radiating earned pleasure and physical power.',
+      'Athletic build. Firm posture. Scrubs fit the way they should.',
+      'Stomach less flat. Thighs fill the pant leg. Definition blurs at the edges.',
+      'Softness replaces muscle lines across middle and hip. Uniform fabric works harder.',
+      'Strength still shows in her shoulders. Belly and chest bounce when she moves.',
+      'Power and padding share the same body. Quick strides turn into a heavier sway.',
+      'Muscle hides under warm flesh. Waistband digs in after lunch.',
+      'Thick legs. Soft arms. Full belly. She carries mass with new ease.',
+      'Sharp lines gone. Dense softness rolls over what muscle remains.',
+      'Capable still. Slower. Warmer. Cushioned in a way she cannot hide.',
+      'Each step ripples through a body that once ran miles for fun.',
+      'Old strength holds up new weight. Limbs thick. Belly heavy. Sway constant.',
+      'Plush and powerful. Every footfall lands with earned mass.',
     ],
   },
   willowy: {
@@ -95,18 +95,18 @@ export const bodyTypes = {
     baseRange: [126, 152],
     stageSize: 16,
     descriptions: [
-      'She is slender and composed, long-limbed and light on her feet. A normal figure for a normal workday.',
-      'A little padding has appeared at her hips and lower belly, soft enough that she keeps checking if it is real.',
-      'Her once-narrow frame is rounding visibly now, and fitted clothes are starting to tell the story for her.',
-      'Her limbs remain elegant, but now they carry plushness that makes every movement look slower and more sensual.',
-      'The contrast is striking: a formerly willowy silhouette growing soft at the chest, belly, thighs, and face.',
-      'Her new weight hangs sweetly on her frame, a rounded belly and softened arms making her seem warmer in every room.',
-      'She has become lush instead of slight, her body draping into chairs with a softness that feels newly discovered and treasured.',
-      'Every pound shows beautifully on her, from the full curve beneath her blouse to thighs that press together when she walks.',
-      'Her long frame is now richly padded, belly swaying low and soft while her cheeks glow with private delight.',
-      'She moves with a dreamy heaviness, each step carrying more body than she once imagined and all of it beautifully welcomed.',
-      'Her transformation is lavish and dramatic, a slender memory wrapped in deep folds, warm curves, and slow confidence.',
-      'She is a tall, magnificent column of softness, abundant from cheeks to thighs and radiant with the pleasure of taking up space.',
+      'Slender. Long limbs. Light on her feet. A normal Tuesday body.',
+      'Padding at hip and lower belly. She pokes it in the bathroom mirror.',
+      'Her narrow frame rounds. Fitted clothes tell the story she will not.',
+      'Limbs stay long. They carry plush now. Movement looks slower, deliberate.',
+      'Once-slight silhouette swells at chest, belly, thigh, face.',
+      'Weight hangs on her bones. Rounded belly. Soft arms. Warmer in every room.',
+      'No longer slight. She drapes into chairs. Flesh settles where it lands.',
+      'Every pound shows: blouse strain, thighs touching mid-stride.',
+      'Long frame packed soft. Low belly sways. Cheeks flush after meals.',
+      'Steps drag with new mass. More body than she thought she could hold.',
+      'Slender memory buried in folds. Deep curves. Slow confidence.',
+      'Tall column of fat from cheek to thigh. She owns the hallway now.',
     ],
   },
   compact: {
@@ -114,18 +114,18 @@ export const bodyTypes = {
     baseRange: [136, 162],
     stageSize: 18,
     descriptions: [
-      'She is petite and professional, her scrubs tidy and her frame still close to how she looked when she was hired.',
-      'A few pounds show quickly on her shorter body. Snugger waistband, softer face.',
-      'Her compact frame is rounding fast now, belly and hips pressing into her uniform with unmistakable new weight.',
-      'She grows delightfully dense, each pound making her look softer, shorter, and more satisfyingly rounded.',
-      'Her compact curves push outward with charming insistence, filling chairs quickly and making every outfit look carefully negotiated.',
-      'She has a cushiony fullness now, belly resting close, thighs thick, and arms soft enough to round her gestures.',
-      'Her softness feels gathered and intense, a warm little avalanche of curves that moves with gentle bounce and sway.',
-      'She fills the clinic with a grounded presence, plush and dense, her breathing soft as she settles into reinforced chairs.',
-      'Her belly and hips claim space first, pressing into desks and armrests with a warm confidence she no longer hides.',
-      'Every movement carries a deep, compact jiggle, her body grown richly heavy in a way that makes small rooms feel intimate.',
-      'She is an opulent bundle of softness, all rounded belly, full cheeks, thick thighs, and radiant, settled pleasure.',
-      'Her abundance is concentrated and commanding, a short, lush body made grand by warmth, weight, and unapologetic appetite.',
+      'Petite. Scrubs tidy. Still matches the photo on her ID badge.',
+      'A few pounds land fast on a short frame. Waistband snug. Face softer.',
+      'Belly and hips press the uniform. The gain is obvious now.',
+      'Each pound stacks dense. She looks shorter. Rounder. Fuller.',
+      'Curves push the fabric outward. Chairs fill fast when she sits.',
+      'Belly rests on her lap. Thighs thick. Arms soften every gesture.',
+      'Softness packed tight. Warm. Bounce in every step.',
+      'Grounded presence. Dense flesh. Breath shallow in reinforced chairs.',
+      'Belly and hips hit the desk first. She does not apologize for it.',
+      'Compact jiggle when she moves. Small rooms feel smaller.',
+      'Rounded belly. Full cheeks. Thick thighs. Pleasure in her posture.',
+      'Short body. Grand weight. Appetite written in every seam.',
     ],
   },
 };
@@ -444,7 +444,7 @@ export function describeCharacter(character) {
   const stage = getStageInfo(character);
   const archetype = archetypes[character.archetype] || archetypes.nurturer;
   return `
-    <p><strong>${character.name}</strong> is a ${character.age}-year-old ${character.ethnicity} ${character.role}, a ${archetype.label.toLowerCase()} with a taste for <em>${character.preference}</em>.</p>
+    <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. Favors ${character.preference}.</p>
     <p>${stage.description}</p>
     <p>${archetype.hook}</p>
     <p><em>"${getCharacterDialogue(character)}"</em></p>
@@ -458,15 +458,15 @@ export function summarizeStageChange(character, oldStage, newStage) {
   const base = `${character.name} reaches ${stage.name}. ${profile.descriptions[newStage]}`;
 
   if (attitude === 'professional' || attitude === 'noticing') {
-    return `${base} She has noticed something shifting, but she is not ready to name it yet.`;
+    return `${base} Something shifted. She has not named it yet.`;
   }
   if (attitude === 'hungry') {
-    return `${base} The change is harder to ignore. So is the hunger that keeps following her through the halls.`;
+    return `${base} The body changed. So did the appetite. Both follow her down the hall.`;
   }
   if (attitude === 'pleased' || attitude === 'indulgent') {
-    return `${base} The transformation is impossible to miss now: slower steps, softer posture, and a body that has stopped pretending it wants less.`;
+    return `${base} Slower steps. Softer posture. A body that stopped pretending it wants less.`;
   }
-  return `${base} She has become a monument of glorious weight: radiant, hungry, utterly unashamed.`;
+  return `${base} Weight made visible. Hunger made plain. No shame left in her.`;
 }
 
 export function getGainTemperament(character) {
