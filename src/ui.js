@@ -1,5 +1,5 @@
 import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './clinic.js';
-import { describeCharacter, getStageIndex, getStageInfo, weightStageNames } from './characters.js';
+import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSummary, weightStageNames } from './characters.js';
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
@@ -81,6 +81,7 @@ function characterCard(character, variant = 'standard') {
           <p class="text-xs uppercase tracking-[0.22em] text-amber-200/70">${isPatient ? 'Patient' : e(character.role)}</p>
           <h3 class="mt-1 text-lg font-semibold text-stone-50">${e(character.name)}</h3>
           <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb${isPatient && character.loyalty ? ` - Loyalty ${character.loyalty}` : ''}</p>
+          ${isPatient ? `<p class="mt-1 text-xs text-stone-400">${e(getPatientAppearanceSummary(character))}</p>` : ''}
         </div>
         <span class="rounded-full bg-pink-500/15 px-3 py-1 text-xs text-pink-100">${e(stage.name)}</span>
       </div>

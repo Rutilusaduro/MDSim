@@ -4,6 +4,7 @@ import { defaultRoomLayout } from './rooms.js';
 import { defaultRivalState } from './rival.js';
 import { defaultClinicStyle } from './clinicStyle.js';
 import { defaultRivalClinicState } from './rivalClinic.js';
+import { ensurePatientAppearance } from './patientAppearance.js';
 
 export const SAVE_KEY = 'indulgecare-clinic-save-v4';
 export const GAME_VERSION = 4;
@@ -181,6 +182,7 @@ function migrateCharacter(c) {
   if (c.type === 'staff' && !c.arc.completedBeats) c.arc = { completedBeats: [] };
   if (c.type === 'patient' && c.loyalty == null) c.loyalty = Math.min(3, c.visits || 0);
   if (c.type === 'patient' && !c.loyaltyArc) c.loyaltyArc = { completedBeats: [] };
+  if (c.type === 'patient') ensurePatientAppearance(c);
   return c;
 }
 
