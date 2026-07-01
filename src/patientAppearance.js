@@ -8,14 +8,15 @@ export const HEIGHT_RANGE_IN = [58, 74];
 
 import { STAGE_MAX } from './characters.js';
 
-/** Six wardrobe bands cover stages 0–6 (one stage per band; max shares abundant). */
+/** Seven wardrobe bands cover stages 0–6 (stage 6 / ~350 lb; stage 7 / ton scale). */
 export const STAGE_BANDS = [
   { id: 'slim', label: 'slim', stages: [0] },
   { id: 'softening', label: 'softening', stages: [1] },
   { id: 'rounded', label: 'rounded', stages: [2] },
   { id: 'plush', label: 'plush', stages: [3] },
   { id: 'heavy', label: 'heavy', stages: [4] },
-  { id: 'abundant', label: 'abundant', stages: [5, 6] },
+  { id: 'abundant', label: 'abundant', stages: [5] },
+  { id: 'titanic', label: 'titanic', stages: [6] },
 ];
 
 export function getStageBand(stageIndex) {
@@ -61,6 +62,7 @@ export const HAIR_BAND_MOD = {
   plush: ' and looks thicker against a softer jaw',
   heavy: ' with new weight in her face',
   abundant: ', heavy and glossy, unmistakable',
+  titanic: ', plastered to a face that fills the mirror',
 };
 
 // --- Height (tier + band posture, composed) ---
@@ -85,6 +87,7 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'takes vertical space without apology',
     heavy: 'rises into rooms before her voice',
     abundant: 'a tall, warm presence that blocks light',
+    titanic: 'a wall of height and heat; doorframes are suggestions',
   },
   petite: {
     slim: 'compact and quick on her feet',
@@ -93,6 +96,7 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'dense and curvy for her height',
     heavy: 'short and wide; chairs feel smaller',
     abundant: 'petite only in memory; plush in fact',
+    titanic: 'short only on paper; mass fills every cubic inch',
   },
   average: {
     slim: 'average height; easy to overlook',
@@ -101,6 +105,7 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'grounded, thickened, hard to miss',
     heavy: 'weight arrived without adding inches',
     abundant: 'solid height; massive softness',
+    titanic: 'tonnage without added inches; floors remember her',
   },
 };
 
@@ -296,6 +301,7 @@ export const HEM_LENGTH = {
   plush: 'midi',
   heavy: 'long',
   abundant: 'floor-length',
+  titanic: 'floor-length',
 };
 
 /** Universal fit / strain clauses (any outfit). */
@@ -306,6 +312,7 @@ export const STRAIN = {
   plush: 'Stretch fabric earns its name.',
   heavy: 'Buttons negotiate peace terms.',
   abundant: 'Clothes surrendered with grace.',
+  titanic: 'Fabric gave up weeks ago. Skin and stretch win.',
 };
 
 /** Drawable fit detail per band (hem, waist, skin, seams). */
@@ -322,6 +329,8 @@ export const FIT_VISUAL = {
     'Top button strains with a horizontal wrinkle. Zipper bowed at the fly. Soft belly overlaps the waistband in a pale crescent when she exhales.',
   abundant:
     'Fabric thin at the seat and thighs. Belly rests on the waistband like a shelf. Short sleeves end high on thick upper arms. Hem cannot cover both hips at once.',
+  titanic:
+    'Seams split hours ago. Belly drapes in layered folds to her lap and beyond. Arms rest on her own sides like bolsters. Every hem rides high on acres of skin.',
 };
 
 export const MIDRIFF_VISUAL = {
@@ -331,6 +340,7 @@ export const MIDRIFF_VISUAL = {
   plush: 'Several inches of bare midriff. Navel centered. Skin warm and lightly flushed.',
   heavy: 'Heavy belly spills over low jeans. Crop top barely covers the underside of her chest.',
   abundant: 'Wide bare middle between short top and stretched waistband. Belly domes forward, skin smooth and exposed.',
+  titanic: 'Crop and waistband lost the fight. Belly spills in waves from chest to thigh, bare and shining under clinic lights.',
 };
 
 export const GARMENT_COLORS = [
@@ -354,6 +364,7 @@ export const SKIRT_HEM_EXTRA = {
   plush: 'hides less than she hoped.',
   heavy: 'sways with her belly.',
   abundant: 'pools at her ankles when she stops.',
+  titanic: 'fabric vanishes under hip and belly; hem is decorative fiction',
 };
 
 /** Wardrobe behaviors modify how bottom/top combine. */
@@ -435,16 +446,21 @@ function resolveWardrobe(appearance) {
   return { top, bottom, behavior: preset.behavior, presetKey, presetLabel: preset.label };
 }
 
+function pieceBandLine(piece, bandId) {
+  if (!piece?.bands) return '';
+  return piece.bands[bandId] || (bandId === 'titanic' ? piece.bands.abundant : '') || '';
+}
+
 function composeBottom(bottomId, behaviorId, bandId) {
   const behavior = BEHAVIORS[behaviorId] || BEHAVIORS.none;
   if (behavior.replaceBottom === 'hem_skirt') {
-    const hem = HEM_LENGTH[bandId];
-    const extra = SKIRT_HEM_EXTRA[bandId];
+    const hem = HEM_LENGTH[bandId] || HEM_LENGTH.abundant;
+    const extra = SKIRT_HEM_EXTRA[bandId] || SKIRT_HEM_EXTRA.abundant;
     return `a ${hem} skirt ${extra}`;
   }
   const bottom = BOTTOMS[bottomId];
   if (!bottom) return '';
-  return bottom.bands[bandId] || '';
+  return pieceBandLine(bottom, bandId);
 }
 
 function composeTop(topId, behaviorId, bandId) {
@@ -452,7 +468,7 @@ function composeTop(topId, behaviorId, bandId) {
   const band = topBandId(behavior, bandId);
   const top = TOPS[topId];
   if (!top) return '';
-  return top.bands[band] || top.bands.slim;
+  return pieceBandLine(top, band) || top.bands.slim;
 }
 
 function withColor(phrase, color) {
@@ -489,7 +505,7 @@ export function composeHairLine(hairColorId, hairStyleId, bandId) {
   if (!color || !style) return '';
   const mod = HAIR_BAND_MOD[bandId] || '';
   const lengthNote =
-    bandId === 'heavy' || bandId === 'abundant'
+    bandId === 'heavy' || bandId === 'abundant' || bandId === 'titanic'
       ? 'Ends rest on her shoulders and upper back.'
       : 'Falls to shoulder length.';
   return `${style.snippet}${mod}. ${color.label} hair, ${lengthNote}`;

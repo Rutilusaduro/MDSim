@@ -1,12 +1,9 @@
-import { bodyTypes, getStageIndex, STAGE_MAX } from './characters.js';
+import { getStageIndex, STAGE_MAX, weightForStageIndex } from './characters.js';
 
-/** Snap weight to mid-band for a target stage index (0–6). */
+/** Snap weight to a representative value for a target stage index (0–6). */
 export function applyDebugStage(character, targetStage) {
-  const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
-  const scaledStageSize = profile.stageSize * (11 / 6);
   const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(targetStage)));
-  character.weight =
-    Math.round((character.baselineWeight + stage * scaledStageSize + scaledStageSize * 0.55) * 10) / 10;
+  character.weight = Math.round(weightForStageIndex(character, stage) * 10) / 10;
   character.lastStage = stage;
   character.indulgence = Math.min(100, Math.max(character.indulgence, stage * 8));
   character.openness = Math.min(100, Math.max(character.openness, stage * 2 + 10));

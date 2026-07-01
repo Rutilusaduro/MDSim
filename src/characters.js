@@ -13,6 +13,10 @@ export { getPatientAppearanceSummary };
 export const STAGE_MAX = 6;
 export const STAGE_COUNT = 7;
 
+/** Minimum absolute weight (lb) to reach each stage index. Stage 6 (1-indexed) tops near 350; max stage reaches ~1 ton. */
+export const STAGE_WEIGHT_FLOORS = [0, 168, 200, 235, 272, 310, 350];
+export const STAGE_WEIGHT_CEILING = 2000;
+
 export const weightStageNames = [
   'Bright Beginning',
   'Comfortably Rounded',
@@ -20,7 +24,7 @@ export const weightStageNames = [
   'Lush Presence',
   'Room-Filling Warmth',
   'Magnificent Softness',
-  'Commanding Abundance',
+  'Titanic Abundance',
 ];
 
 export const bodyTypes = {
@@ -587,19 +591,36 @@ export function createPatientRoster(rng, count = 4) {
   return Array.from({ length: count }, () => createPatient(rng));
 }
 
+export function weightForStageIndex(character, stageIndex) {
+  const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(stageIndex)));
+  if (stage === 0) return character.baselineWeight;
+  if (stage === STAGE_MAX) return STAGE_WEIGHT_CEILING;
+  if (stage === STAGE_MAX - 1) return 345;
+  const low = STAGE_WEIGHT_FLOORS[stage];
+  const high = STAGE_WEIGHT_FLOORS[stage + 1];
+  return Math.round((low + high) / 2);
+}
+
 export function getStageIndex(character) {
-  const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
-  const scaledStageSize = profile.stageSize * (11 / 6);
-  return Math.max(
-    0,
-    Math.min(STAGE_MAX, Math.floor((character.weight - character.baselineWeight) / scaledStageSize)),
-  );
+  const weight = character.weight;
+  let stage = 0;
+  for (let i = STAGE_WEIGHT_FLOORS.length - 1; i >= 0; i -= 1) {
+    if (weight >= STAGE_WEIGHT_FLOORS[i]) {
+      stage = i;
+      break;
+    }
+  }
+  return Math.min(STAGE_MAX, stage);
 }
 
 export function getStageInfo(character) {
   const stage = getStageIndex(character);
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
   let description = profile.descriptions[stage];
+  const floor = STAGE_WEIGHT_FLOORS[stage];
+  const cap = stage < STAGE_MAX ? STAGE_WEIGHT_FLOORS[stage + 1] : STAGE_WEIGHT_CEILING;
+  const progress =
+    cap > floor ? Math.min(100, Math.round(((character.weight - floor) / (cap - floor)) * 100)) : 100;
   if (character.type === 'patient') {
     ensurePatientAppearance(character);
     const apparel = composePatientAppearance(character, stage);
@@ -618,7 +639,7 @@ export function getStageInfo(character) {
     name: weightStageNames[stage],
     bodyType: profile.label,
     description,
-    progress: Math.round((stage / (weightStageNames.length - 1)) * 100),
+    progress,
   };
 }
 

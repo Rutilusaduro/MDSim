@@ -8,6 +8,7 @@ import {
   getStageInfo,
   STAGE_MAX,
   summarizeStageChange,
+  weightForStageIndex,
 } from './characters.js';
 import { previewInteractionFlavor, interactionCatalog } from './events.js';
 import {
@@ -162,7 +163,8 @@ export function buildMockCharacter(state = proseLabState) {
   const rng = createRng(state.seed);
   const profile = bodyTypes[state.bodyType] || bodyTypes.hourglass;
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
-  const weight = baselineWeight + state.stageIndex * profile.stageSize * (11 / 6);
+  const stub = { baselineWeight, bodyType: state.bodyType };
+  const weight = weightForStageIndex(stub, state.stageIndex);
 
   const character = {
     id: 'prose-lab-mock',
