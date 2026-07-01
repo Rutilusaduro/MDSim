@@ -5,6 +5,8 @@ import {
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
 import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientEarlyHook } from './patientDialogue.js';
+import { staffArchetypeLines } from './staffDialogue.js';
+import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
 export { getPatientAppearanceSummary };
 
@@ -139,6 +141,12 @@ export const bodyTypes = {
     ],
   },
 };
+
+for (const key of Object.keys(bodyTypes)) {
+  if (staffBodyDescriptions[key]) {
+    bodyTypes[key].descriptions = staffBodyDescriptions[key];
+  }
+}
 
 export const archetypes = {
   nurturer: {
@@ -599,6 +607,10 @@ export function getStageInfo(character) {
     const attitude = getAttitudeKey(character);
     if (isEarlyPatientVoice(character)) {
       description = getPatientEarlyBodyLine(character.bodyType, attitude);
+    } else {
+      const patientBody =
+        patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass;
+      description = patientBody[stage] || profile.descriptions[stage];
     }
     description = `${description} ${apparel.clothingLine}`;
   }
@@ -634,8 +646,8 @@ export function getCharacterDialogue(character) {
       patientArchetypeLines[character.archetype] || patientArchetypeLines.nurturer;
     return patientLines[attitude];
   }
-  const archetype = archetypes[character.archetype] || archetypes.nurturer;
-  return archetype.lines[attitude];
+  const staffLines = staffArchetypeLines[character.archetype] || staffArchetypeLines.nurturer;
+  return staffLines[attitude];
 }
 
 export function describeCharacter(character) {
@@ -652,7 +664,9 @@ export function describeCharacter(character) {
     const preferenceLine = early ? '' : ` Favors ${character.preference}.`;
     const bodyLine = early
       ? getPatientEarlyBodyLine(character.bodyType, getAttitudeKey(character))
-      : bodyTypes[character.bodyType]?.descriptions[stage.index] || stage.description;
+      : (patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass)[
+          stage.index
+        ] || stage.description;
     const hookLine = early ? getPatientEarlyHook(character.archetype) : archetype.hook;
     return `
     <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. ${getPatientAppearanceSummary(character)}.${preferenceLine}</p>
@@ -682,6 +696,10 @@ export function summarizeStageChange(character, oldStage, newStage) {
     const apparel = composePatientAppearance(character, newStage);
     if (isEarlyPatientVoice(character)) {
       base = `${character.name} reaches ${stage.name}. ${getPatientEarlyBodyLine(character.bodyType, attitude)}`;
+    } else {
+      const patientBody =
+        patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass;
+      base = `${character.name} reaches ${stage.name}. ${patientBody[newStage] || profile.descriptions[newStage]}`;
     }
     base += ` ${apparel.clothingLine}`;
   }

@@ -5,7 +5,7 @@
 
 export const GAME_PROSE = {
   register: 'literary_modern',
-  density: 'standard',
+  density: 'dense',
   heat: 'warm',
 };
 

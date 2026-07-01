@@ -10,7 +10,7 @@ All game writing (character dialogue, body descriptions, event flavor, week summ
 
 ```
 REGISTER: literary_modern
-DENSITY: standard
+DENSITY: dense
 HEAT: warm
 ```
 
