@@ -6,6 +6,7 @@ import {
   getAttitudeKey,
   getCharacterDialogue,
   getStageInfo,
+  STAGE_MAX,
   summarizeStageChange,
 } from './characters.js';
 import { previewInteractionFlavor, interactionCatalog } from './events.js';
@@ -149,7 +150,7 @@ export function randomizeProseLabVars() {
   proseLabState.characterType = type;
   proseLabState.bodyType = rng.pick(bodyTypeKeys);
   proseLabState.archetype = rng.pick(archetypeKeys);
-  proseLabState.stageIndex = rng.int(0, 11);
+  proseLabState.stageIndex = rng.int(0, STAGE_MAX);
   const actions = actionKeys.filter((id) => interactionCatalog[id].scope.includes(type));
   proseLabState.actionId = rng.pick(actions.length ? actions : actionKeys);
   proseLabState.eventIndex = rng.int(0, Math.max(0, ALL_WEEKLY_EVENTS.length - 1));
@@ -161,7 +162,7 @@ export function buildMockCharacter(state = proseLabState) {
   const rng = createRng(state.seed);
   const profile = bodyTypes[state.bodyType] || bodyTypes.hourglass;
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
-  const weight = baselineWeight + state.stageIndex * profile.stageSize;
+  const weight = baselineWeight + state.stageIndex * profile.stageSize * (11 / 6);
 
   const character = {
     id: 'prose-lab-mock',
@@ -429,8 +430,8 @@ export function renderProseLabPanel() {
             </select>
           </label>
           <label class="block text-sm">
-            <span class="font-bold text-amber-100">Stage index (0–11)</span>
-            <input type="range" min="0" max="11" value="${s.stageIndex}" data-prose-field="stageIndex" class="mt-2 w-full" />
+            <span class="font-bold text-amber-100">Stage index (0–${STAGE_MAX})</span>
+            <input type="range" min="0" max="${STAGE_MAX}" value="${s.stageIndex}" data-prose-field="stageIndex" class="mt-2 w-full" />
             <span class="text-xs text-stone-400">Stage ${s.stageIndex + 1}</span>
           </label>
           `

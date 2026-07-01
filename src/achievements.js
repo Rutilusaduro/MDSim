@@ -2,7 +2,7 @@ import { getStageIndex } from './characters.js';
 
 export const ACHIEVEMENTS = [
   { id: 'first_week', name: 'Doors Open', desc: 'Complete your first week.', check: (s) => s.week >= 2 },
-  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 4+.', check: (s, ctx) => ctx.maxStage >= 3 },
+  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 4+.', check: (s, ctx) => ctx.maxStage >= 2 },
   { id: 'first_arc', name: 'Private Story', desc: 'Complete an arc beat.', check: (s) => s.stats?.arcBeatsCompleted >= 1 },
   { id: 'recruit_one', name: 'New Hire', desc: 'Recruit a patient to staff.', check: (s) => s.stats?.patientsRecruited >= 1 },
   { id: 'staff_six', name: 'Full Bench', desc: 'Employ 6 or more staff.', check: (s) => s.staff.length >= 6 },

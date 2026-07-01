@@ -35,6 +35,7 @@ import { canShowEnding, computeEnding } from './endings.js';
 import { startNewWeekChallenge } from './challenges.js';
 import { advanceLoyaltyArc, loyaltyRecruitVisitShortcut } from './loyaltyArcs.js';
 import { consultReputationBonus } from './clinicStyle.js';
+import { visitWeekPenalty, getUnvisitedPatients } from './patientVisit.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -46,9 +47,9 @@ const RECRUIT_ROLES = [
 export const interactionCatalog = {
   consult: {
     label: 'Standard Comfort Consultation',
-    scope: ['patient'],
+    scope: [],
     money: 225,
-    description: 'Billable visit. Builds trust. Keeps her on the schedule.',
+    description: 'Legacy consult. Patients use the visit desk instead.',
   },
   personalTalk: {
     label: 'Private Staff Check-In',
@@ -63,25 +64,25 @@ export const interactionCatalog = {
   },
   comfortPlan: {
     label: 'Holistic Comfort Plan',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     cost: 90,
     description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
   },
   comfortBlend: {
     label: 'Use Comfort Blend',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'comfortBlend',
     description: 'Vanilla powder. Calms nerves. Opens appetite.',
   },
   appetiteTonic: {
     label: 'Use Appetite Tonic',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'appetiteTonic',
     description: 'Amber dose. Hunger arrives fast and stays.',
   },
   recoveryShake: {
     label: 'Use Recovery Shake',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
@@ -125,9 +126,9 @@ export function getInteractionOptions(state, character) {
         if (character.trust < 8) {
           extraDisabled = true;
           extraReason = 'Need trust 8+';
-        } else if (getStageIndex(character) < 4) {
+        } else if (getStageIndex(character) < 2) {
           extraDisabled = true;
-          extraReason = 'Need stage 5+';
+          extraReason = 'Need stage 3+';
         } else if ((character.visits || 0) < 3 - loyaltyRecruitVisitShortcut(character) && (character.loyalty || 0) < 5) {
           extraDisabled = true;
           extraReason = 'Need 3+ visits or loyalty 5+';
@@ -526,6 +527,24 @@ export function endWeek(state) {
 
   const ending = canShowEnding(state) ? computeEnding(state) : null;
   if (ending) state.pendingEnding = ending;
+
+  const visitPenalty = visitWeekPenalty(state);
+  if (visitPenalty.unvisited > 0) {
+    state.reputation = Math.max(0, state.reputation - visitPenalty.reputation);
+    getUnvisitedPatients(state).forEach((patient) => {
+      patient.trust = Math.max(0, Math.round((patient.trust - visitPenalty.trustLossPerPatient) * 100) / 100);
+    });
+    addWeekNote({ type: 'penalty', title: 'Missed patient visits', text: visitPenalty.message }, state);
+  }
+
+  if (state.activePatientVisit) {
+    state.activePatientVisit = null;
+    addWeekNote({
+      type: 'system',
+      title: 'Visit abandoned',
+      text: 'An in-progress patient visit was cleared at week end.',
+    }, state);
+  }
 
   const clinicRevenue = effects.weeklyRevenue;
   const weekConsultIncome = state.weekConsultIncome || 0;

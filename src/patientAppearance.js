@@ -6,18 +6,20 @@
 
 export const HEIGHT_RANGE_IN = [58, 74];
 
-/** Six bands cover stages 0–11 (two stages per band). */
+import { STAGE_MAX } from './characters.js';
+
+/** Six wardrobe bands cover stages 0–6 (one stage per band; max shares abundant). */
 export const STAGE_BANDS = [
-  { id: 'slim', label: 'slim', stages: [0, 1] },
-  { id: 'softening', label: 'softening', stages: [2, 3] },
-  { id: 'rounded', label: 'rounded', stages: [4, 5] },
-  { id: 'plush', label: 'plush', stages: [6, 7] },
-  { id: 'heavy', label: 'heavy', stages: [8, 9] },
-  { id: 'abundant', label: 'abundant', stages: [10, 11] },
+  { id: 'slim', label: 'slim', stages: [0] },
+  { id: 'softening', label: 'softening', stages: [1] },
+  { id: 'rounded', label: 'rounded', stages: [2] },
+  { id: 'plush', label: 'plush', stages: [3] },
+  { id: 'heavy', label: 'heavy', stages: [4] },
+  { id: 'abundant', label: 'abundant', stages: [5, 6] },
 ];
 
 export function getStageBand(stageIndex) {
-  const idx = Math.max(0, Math.min(11, stageIndex));
+  const idx = Math.max(0, Math.min(STAGE_MAX, stageIndex));
   return STAGE_BANDS.find((b) => b.stages.includes(idx)) || STAGE_BANDS[0];
 }
 

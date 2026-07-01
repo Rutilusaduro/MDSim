@@ -1,11 +1,12 @@
-import { bodyTypes, getStageIndex } from './characters.js';
+import { bodyTypes, getStageIndex, STAGE_MAX } from './characters.js';
 
-/** Snap weight to mid-band for a target stage index (0–11). */
+/** Snap weight to mid-band for a target stage index (0–6). */
 export function applyDebugStage(character, targetStage) {
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
-  const stage = Math.max(0, Math.min(11, Math.floor(targetStage)));
+  const scaledStageSize = profile.stageSize * (11 / 6);
+  const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(targetStage)));
   character.weight =
-    Math.round((character.baselineWeight + stage * profile.stageSize + profile.stageSize * 0.55) * 10) / 10;
+    Math.round((character.baselineWeight + stage * scaledStageSize + scaledStageSize * 0.55) * 10) / 10;
   character.lastStage = stage;
   character.indulgence = Math.min(100, Math.max(character.indulgence, stage * 8));
   character.openness = Math.min(100, Math.max(character.openness, stage * 2 + 10));
@@ -40,7 +41,7 @@ export function fattenRoster(state, filter = 'all', mode = 'plus_one_stage') {
   if (filter === 'all' || filter === 'patients') roster.push(...state.patients);
 
   for (const character of roster) {
-    if (mode === 'max_stage') applyDebugStage(character, 11);
+    if (mode === 'max_stage') applyDebugStage(character, STAGE_MAX);
     else if (mode === 'plus_three_stages') applyDebugStageBump(character, 3);
     else if (mode === 'plus_twenty_lb') applyDebugWeightBump(character, 20);
     else applyDebugStageBump(character, 1);
@@ -55,7 +56,7 @@ export function renderCharacterDebugControls(characterId) {
       <div class="mt-2 flex flex-wrap gap-1">
         <button class="dark-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-stage" data-id="${characterId}" data-delta="1">+1 stage</button>
         <button class="dark-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-stage" data-id="${characterId}" data-delta="3">+3 stages</button>
-        <button class="gold-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-stage" data-id="${characterId}" data-target="11">Max</button>
+        <button class="gold-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-stage" data-id="${characterId}" data-target="${STAGE_MAX}">Max</button>
         <button class="dark-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-weight" data-id="${characterId}" data-pounds="20">+20 lb</button>
         <button class="dark-button rounded-lg px-2 py-1 text-xs font-bold" data-action="debug-weight" data-id="${characterId}" data-pounds="50">+50 lb</button>
         <button class="dark-button rounded-lg px-2 py-1 text-xs font-bold opacity-70" data-action="debug-reset" data-id="${characterId}">Reset slim</button>

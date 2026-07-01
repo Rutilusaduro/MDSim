@@ -10,17 +10,15 @@ import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
 export { getPatientAppearanceSummary };
 
+export const STAGE_MAX = 6;
+export const STAGE_COUNT = 7;
+
 export const weightStageNames = [
   'Bright Beginning',
-  'Softened Routine',
   'Comfortably Rounded',
-  'Plush Momentum',
   'Noticeable Bloom',
-  'Heavy-Lidded Ease',
   'Lush Presence',
-  'Opulent Curves',
   'Room-Filling Warmth',
-  'Radiant Heaviness',
   'Magnificent Softness',
   'Commanding Abundance',
 ];
@@ -591,9 +589,10 @@ export function createPatientRoster(rng, count = 4) {
 
 export function getStageIndex(character) {
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
+  const scaledStageSize = profile.stageSize * (11 / 6);
   return Math.max(
     0,
-    Math.min(11, Math.floor((character.weight - character.baselineWeight) / profile.stageSize)),
+    Math.min(STAGE_MAX, Math.floor((character.weight - character.baselineWeight) / scaledStageSize)),
   );
 }
 
@@ -625,11 +624,11 @@ export function getStageInfo(character) {
 
 export function getAttitudeKey(character) {
   const stage = getStageIndex(character);
-  if (stage <= 1) return 'professional';
-  if (stage <= 3) return 'noticing';
-  if (stage <= 5) return 'hungry';
-  if (stage <= 7) return 'pleased';
-  if (stage <= 9) return 'indulgent';
+  if (stage <= 0) return 'professional';
+  if (stage <= 1) return 'noticing';
+  if (stage <= 2) return 'hungry';
+  if (stage <= 3) return 'pleased';
+  if (stage <= 4) return 'indulgent';
   return 'devoted';
 }
 

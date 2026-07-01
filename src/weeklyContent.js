@@ -137,32 +137,32 @@ export const ALL_WEEKLY_EVENTS = [...WEEKLY_EVENTS, ...V3_WEEKLY_EVENTS];
 export const WARDROBE_EVENTS = [
   {
     id: 'button_strain',
-    stageMin: 3,
+    stageMin: 2,
     text: 'A button holds on by thread during rounds. She fixes it with a safety pin. Laughs. Eats lunch anyway.',
   },
   {
     id: 'seam_split',
-    stageMin: 4,
+    stageMin: 2,
     text: 'A side seam whispers apart when she sits. She covers it with a cardigan. The cardigan gaps too.',
   },
   {
     id: 'new_scrubs',
-    stageMin: 5,
+    stageMin: 3,
     text: 'She orders scrubs one size up. They fit. For now. She already eyes the next size on the catalog.',
   },
   {
     id: 'zip_fail',
-    stageMin: 6,
+    stageMin: 3,
     text: 'A skirt zip stops halfway. She stays in the break room until someone brings a stretch waist option.',
   },
   {
     id: 'uniform_upgrade',
-    stageMin: 7,
+    stageMin: 4,
     text: 'Clinic uniform upgrade arrives. Reinforced seams. She fills it by end of shift. Worth every dollar.',
   },
   {
     id: 'custom_fit',
-    stageMin: 8,
+    stageMin: 4,
     text: 'She asks for custom fit. Measurements taken twice. The tailor exhales. She grins. "Room to grow."',
   },
 ];

@@ -41,6 +41,12 @@ import {
   renderCharacterDebugControls,
   renderRosterDebugPanel,
 } from './debugTools.js';
+import {
+  completeVisit,
+  getUnvisitedPatients,
+  performVisitAction,
+} from './patientVisit.js';
+import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -102,7 +108,17 @@ function stageMeter(character, compact = false) {
   `;
 }
 
-function characterCard(character, variant = 'standard') {
+function patientVisitBadge(state, patient) {
+  if (state.activePatientVisit?.patientId === patient.id) {
+    return '<span class="mt-2 inline-block rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-bold text-amber-100">Visit in progress</span>';
+  }
+  if (patient.seenThisWeek) {
+    return '<span class="mt-2 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-200">Seen this week</span>';
+  }
+  return '<span class="mt-2 inline-block rounded-full bg-red-400/20 px-2 py-0.5 text-xs font-bold text-red-100">Needs visit</span>';
+}
+
+function characterCard(character, variant = 'standard', state = gameState) {
   const stage = getStageInfo(character);
   const isPatient = character.type === 'patient';
   const arc = isPatient ? getLoyaltyArcProgress(character) : getArcProgress(character);
@@ -110,14 +126,19 @@ function characterCard(character, variant = 'standard') {
     variant === 'sidebar' && arc
       ? `<p class="mt-2 text-xs text-amber-200/90">${isPatient ? 'Loyalty arc' : e(arc.track.title)}: ${arc.completed}/${arc.total}</p>`
       : '';
+  const openAction =
+    isPatient && (!character.seenThisWeek || state.activePatientVisit?.patientId === character.id)
+      ? 'open-visit'
+      : 'open-character';
   return `
-    <article class="soft-card cursor-pointer rounded-3xl p-4 transition duration-200" data-action="open-character" data-id="${e(character.id)}">
+    <article class="soft-card cursor-pointer rounded-3xl p-4 transition duration-200" data-action="${openAction}" data-id="${e(character.id)}">
       <div class="flex items-start justify-between gap-4">
         <div>
           <p class="text-xs uppercase tracking-[0.22em] text-amber-200/70">${isPatient ? 'Patient' : e(character.role)}</p>
           <h3 class="mt-1 text-lg font-semibold text-stone-50">${e(character.name)}</h3>
           <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb${isPatient && character.loyalty ? ` - Loyalty ${character.loyalty}` : ''}</p>
           ${isPatient ? `<p class="mt-1 text-xs text-stone-400">${e(getPatientAppearanceSummary(character))}</p>` : ''}
+          ${isPatient && variant !== 'sidebar' ? patientVisitBadge(state, character) : ''}
         </div>
         <span class="rounded-full bg-pink-500/15 px-3 py-1 text-xs text-pink-100">${e(stage.name)}</span>
       </div>
@@ -317,26 +338,42 @@ function renderShopCard(state, item) {
 }
 
 function renderInteract(state) {
+  const unvisited = getUnvisitedPatients(state);
+  const inProgress = state.activePatientVisit
+    ? state.patients.find((p) => p.id === state.activePatientVisit.patientId)
+    : null;
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Action phase</p>
-        <h2 class="mt-2 text-3xl font-black text-stone-50">Spend AP on people</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">Each visit shifts trust, appetite, and how fast they gain.</p>
-        <p class="mt-2 text-sm text-stone-400">Income this week: patient consults bill ${formatMoney(225)} each (shown at week end). Passive clinic revenue comes from upgrades like the vending wall. Staff check-ins do not bill.</p>
-        ${state.weekConsultIncome ? `<p class="mt-1 text-sm text-emerald-200">Visit fees so far: ${formatMoney(state.weekConsultIncome)}</p>` : ''}
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient visits</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Run the exam room</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">Click each patient to start her visit. Greet, weigh, bill, upsell — every action costs AP and trades money, weight, and trust. You must see every patient each week or reputation drops.</p>
+        <p class="mt-2 text-sm text-stone-400">Minimum path: greet → chart → weigh → bill consult → end visit (~4 AP). Staff still use the profile modal on the left.</p>
+        ${
+          unvisited.length
+            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still need a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
+            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">All patients seen this week.</p>`
+        }
+        ${
+          inProgress
+            ? `<p class="mt-2 text-sm text-amber-200">Visit in progress: <button class="underline" data-action="open-visit" data-id="${e(inProgress.id)}">${e(inProgress.name)}</button></p>`
+            : ''
+        }
+        ${state.weekConsultIncome ? `<p class="mt-2 text-sm text-emerald-200">Visit fees so far: ${formatMoney(state.weekConsultIncome)}</p>` : ''}
       </div>
       <div class="grid gap-6 2xl:grid-cols-2">
         <div>
           <h3 class="mb-3 text-xl font-bold text-amber-100">Staff</h3>
+          <p class="mb-3 text-xs text-stone-400">Check-ins, breaks, compounds — open profile for actions.</p>
           <div class="grid gap-4 md:grid-cols-2">
-            ${state.staff.map((member) => characterCard(member)).join('')}
+            ${state.staff.map((member) => characterCard(member, 'standard', state)).join('')}
           </div>
         </div>
         <div>
           <h3 class="mb-3 text-xl font-bold text-amber-100">Patients</h3>
+          <p class="mb-3 text-xs text-stone-400">Click to start or resume a visit. Seen patients open profile (recruit when ready).</p>
           <div class="grid gap-4 md:grid-cols-2">
-            ${state.patients.map((patient) => characterCard(patient)).join('')}
+            ${state.patients.map((patient) => characterCard(patient, 'standard', state)).join('')}
           </div>
         </div>
       </div>
@@ -654,6 +691,20 @@ function closeModal() {
   modalRoot().innerHTML = '';
 }
 
+function refreshPatientVisitModal() {
+  const visit = gameState.activePatientVisit;
+  if (!visit) return;
+  openModal(renderPatientVisitModal(gameState, visit.patientId));
+}
+
+function startPatientVisit(patientId) {
+  openPatientVisitFlow(gameState, patientId, {
+    showToast,
+    openModal: (html) => openModal(html),
+    onStart: () => saveGame(gameState),
+  });
+}
+
 function openCharacterModal(id, tab = null) {
   const character = findCharacter(gameState, id);
   if (!character) return;
@@ -719,7 +770,17 @@ function openCharacterModal(id, tab = null) {
 
   const actionsPanel = `
     <div>
+      ${
+        character.type === 'patient' && gameState.activePatientVisit?.patientId === character.id
+          ? `<button class="gold-button mb-4 rounded-2xl px-5 py-2 font-bold" data-action="open-visit" data-id="${e(character.id)}">Resume visit</button>`
+          : ''
+      }
       <h3 class="text-xl font-bold text-amber-100">Choose interaction <span class="text-sm font-normal text-stone-400">(${gameState.actionPoints} AP remaining)</span></h3>
+      ${
+        character.type === 'patient' && !character.seenThisWeek
+          ? `<p class="mt-2 text-sm text-amber-100">This patient still needs a visit this week. Use the Interact tab to run her exam.</p>`
+          : ''
+      }
       <div class="mt-4 grid gap-3">
         ${options
           .map(
@@ -1006,6 +1067,36 @@ function bindEvents() {
     if (action === 'open-character') {
       openCharacterModal(target.dataset.id);
     }
+    if (action === 'open-visit') {
+      playUiClick();
+      startPatientVisit(target.dataset.id);
+    }
+    if (action === 'visit-action') {
+      const visit = gameState.activePatientVisit;
+      if (!visit) return;
+      const result = performVisitAction(gameState, target.dataset.id);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      saveGame(gameState);
+      render();
+      refreshPatientVisitModal();
+    }
+    if (action === 'visit-complete') {
+      const result = completeVisit(gameState);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) {
+        saveGame(gameState);
+        closeModal();
+        render();
+      }
+    }
+    if (action === 'visit-abandon') {
+      saveGame(gameState);
+      closeModal();
+      render();
+    }
     if (action === 'character-tab') {
       playUiClick();
       openCharacterModal(target.dataset.id, target.dataset.tab);
@@ -1014,6 +1105,17 @@ function bindEvents() {
       handleInteraction(target.dataset.id, target.dataset.interaction);
     }
     if (action === 'end-week') {
+      const unvisited = getUnvisitedPatients(gameState);
+      const warnings = [];
+      if (unvisited.length) {
+        warnings.push(
+          `${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still need a visit (${unvisited.map((p) => p.name).join(', ')}). Reputation will drop.`,
+        );
+      }
+      if (gameState.activePatientVisit) {
+        warnings.push('An in-progress visit will be abandoned.');
+      }
+      if (warnings.length && !window.confirm(`${warnings.join(' ')}\n\nEnd the week anyway?`)) return;
       const resolution = endWeek(gameState);
       playWeekEnd();
       if (resolution.stageChanges?.length) playStageUp();
@@ -1178,6 +1280,11 @@ export function initUI() {
   initAudio(gameState);
   bindEvents();
   render();
+  if (gameState.activePatientVisit) {
+    activeTab = 'interact';
+    render();
+    setTimeout(() => startPatientVisit(gameState.activePatientVisit.patientId), 50);
+  }
   if (needsChallengePick(gameState)) {
     activeTab = 'campaign';
     render();

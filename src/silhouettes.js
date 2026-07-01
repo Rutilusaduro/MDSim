@@ -8,10 +8,10 @@ const BODY_SHAPES = {
 };
 
 function stageScale(stageIndex) {
-  if (stageIndex <= 2) return 0.85 + stageIndex * 0.04;
-  if (stageIndex <= 5) return 0.97 + (stageIndex - 2) * 0.05;
-  if (stageIndex <= 8) return 1.12 + (stageIndex - 5) * 0.06;
-  return 1.3 + (stageIndex - 8) * 0.08;
+  if (stageIndex <= 1) return 0.85 + stageIndex * 0.04;
+  if (stageIndex <= 3) return 0.93 + (stageIndex - 1) * 0.05;
+  if (stageIndex <= 5) return 1.08 + (stageIndex - 3) * 0.06;
+  return 1.2 + (stageIndex - 5) * 0.08;
 }
 
 export function renderSilhouette(character, stageIndex, options = {}) {
