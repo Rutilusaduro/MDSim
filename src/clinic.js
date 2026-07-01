@@ -1,4 +1,5 @@
 import { addWeekNote, formatMoney } from './state.js';
+import { getReputationBlockReason, isItemUnlockedByReputation } from './reputation.js';
 
 export const shopItems = [
   {
@@ -68,6 +69,17 @@ export const shopItems = [
     effects: { staffGain: 0.08, patientGain: 0.1, actionPointsMax: 1 },
   },
   {
+    id: 'staff-uniform-upgrade',
+    name: 'Staff Uniform Upgrade Program',
+    category: 'Staff Comfort',
+    cost: 680,
+    install: true,
+    maintenance: 30,
+    tagline: 'Reinforced seams. Stretch panels. Sizes through 5X.',
+    description: 'Wardrobe failures drop. Staff gain confidence when buttons stop popping.',
+    effects: { staffGain: 0.05, staffMomentum: 0.2 },
+  },
+  {
     id: 'comfort-blend-pack',
     name: 'Comfort Blend Pack',
     category: 'Compounds',
@@ -130,6 +142,9 @@ export function isOwnedOrPending(state, id) {
 export function buyManagementItem(state, id) {
   const item = getItem(id);
   if (!item) return { ok: false, message: 'Unknown purchase.' };
+  if (!isItemUnlockedByReputation(state, id)) {
+    return { ok: false, message: getReputationBlockReason(state, id) };
+  }
   if (item.install && isOwnedOrPending(state, id)) {
     return { ok: false, message: `${item.name} is already owned or awaiting installation.` };
   }

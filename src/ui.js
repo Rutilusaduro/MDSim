@@ -1,7 +1,11 @@
 import { buyManagementItem, computeClinicEffects, getClinicRating, shopItems } from './clinic.js';
-import { describeCharacter, getStageInfo, weightStageNames } from './characters.js';
+import { describeCharacter, getStageIndex, getStageInfo, weightStageNames } from './characters.js';
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame } from './state.js';
+import { getAchievementProgress } from './achievements.js';
+import { getArcProgress } from './arcs.js';
+import { getReputationBlockReason, getReputationTier, isItemUnlockedByReputation } from './reputation.js';
+import { renderSilhouette } from './silhouettes.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -113,7 +117,7 @@ function renderSidebar(state) {
         <div class="soft-card rounded-2xl p-4">
           <p class="text-xs text-stone-400">Reputation</p>
           <p class="text-2xl font-black text-amber-100">${state.reputation}</p>
-          <p class="text-xs text-stone-300">${e(getClinicRating(state))}</p>
+          <p class="text-xs text-stone-300">${e(getReputationTier(state.reputation).name)}</p>
         </div>
         <div class="soft-card rounded-2xl p-4">
           <p class="text-xs text-stone-400">Roster</p>
@@ -158,6 +162,7 @@ function renderTabs() {
     ['management', 'Management'],
     ['interact', 'Interact'],
     ['log', 'Log / This Week'],
+    ['achievements', 'Achievements'],
   ];
   return `
     <nav class="mb-6 flex flex-wrap gap-3">
@@ -205,8 +210,15 @@ function renderManagement(state) {
 function renderShopCard(state, item) {
   const owned = state.ownedUpgrades.includes(item.id);
   const pending = state.pendingInstallations.some((entry) => entry.id === item.id);
-  const disabled = owned || pending || state.money < item.cost;
-  const status = owned ? 'Owned' : pending ? 'Installing' : formatMoney(item.cost);
+  const repBlocked = !isItemUnlockedByReputation(state, item.id);
+  const disabled = owned || pending || state.money < item.cost || repBlocked;
+  const status = owned
+    ? 'Owned'
+    : pending
+      ? 'Installing'
+      : repBlocked
+        ? 'Locked'
+        : formatMoney(item.cost);
   return `
     <article class="soft-card flex min-h-72 flex-col rounded-3xl p-5 transition duration-200">
       <div class="flex items-start justify-between gap-4">
@@ -218,8 +230,9 @@ function renderShopCard(state, item) {
       </div>
       <p class="mt-4 text-sm font-semibold leading-6 text-amber-50">${e(item.tagline)}</p>
       <p class="mt-3 flex-1 text-sm leading-6 text-stone-300">${e(item.description)}</p>
+      ${repBlocked ? `<p class="mt-2 text-xs text-amber-200">${e(getReputationBlockReason(state, item.id))}</p>` : ''}
       <button class="mt-5 rounded-2xl px-4 py-3 font-bold transition ${disabled ? 'dark-button' : 'gold-button hover:scale-[1.01]'}" data-action="buy" data-id="${e(item.id)}" ${disabled ? 'disabled' : ''}>
-        ${owned ? 'Installed' : pending ? 'Arrives End Week' : `Buy - ${formatMoney(item.cost)}`}
+        ${owned ? 'Installed' : pending ? 'Arrives End Week' : repBlocked ? 'Locked' : `Buy - ${formatMoney(item.cost)}`}
       </button>
     </article>
   `;
@@ -246,6 +259,34 @@ function renderInteract(state) {
             ${state.patients.map((patient) => characterCard(patient)).join('')}
           </div>
         </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderAchievements(state) {
+  const progress = getAchievementProgress(state);
+  return `
+    <section>
+      <div class="mb-5">
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Milestones</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Achievements</h2>
+        <p class="mt-2 text-stone-300">${progress.unlocked} / ${progress.total} unlocked</p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        ${progress.list
+          .map(
+            (a) => `
+          <article class="soft-card rounded-3xl p-4 ${a.done ? 'border-amber-300/30' : 'opacity-70'}">
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="font-bold text-stone-50">${e(a.name)}</h4>
+              <span class="text-xs ${a.done ? 'text-emerald-300' : 'text-stone-500'}">${a.done ? 'Done' : 'Locked'}</span>
+            </div>
+            <p class="mt-2 text-sm text-stone-300">${e(a.desc)}</p>
+          </article>
+        `,
+          )
+          .join('')}
       </div>
     </section>
   `;
@@ -311,7 +352,9 @@ function renderMain(state) {
       ? renderManagement(state)
       : activeTab === 'interact'
         ? renderInteract(state)
-        : renderLog(state);
+        : activeTab === 'achievements'
+          ? renderAchievements(state)
+          : renderLog(state);
 
   return `
     <main class="mx-auto grid max-w-[1600px] gap-6 px-5 py-6 lg:grid-cols-[22rem_1fr]">
@@ -349,7 +392,14 @@ function openCharacterModal(id) {
   const character = findCharacter(gameState, id);
   if (!character) return;
   const stage = getStageInfo(character);
+  const stageIdx = getStageIndex(character);
   const options = getInteractionOptions(gameState, character);
+  const arc = getArcProgress(character);
+  const prefs = character.preferences || { pace: 'gradual', focus: 'comfort', public: 'private' };
+  const arcHtml = arc
+    ? `<p class="mt-3 rounded-2xl bg-pink-500/10 px-3 py-2 text-xs text-pink-100"><strong>${e(arc.track.title)}</strong><br>Arc ${arc.completed} / ${arc.total}${arc.done ? ' (complete)' : ''}</p>`
+    : '';
+
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -364,8 +414,10 @@ function openCharacterModal(id) {
         ${describeCharacter(character)}
       </div>
       <aside class="soft-card rounded-3xl p-5">
-        <p class="text-sm font-bold text-amber-100">${e(stage.name)}</p>
+        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
+        <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(stage.name)}</p>
         ${stageMeter(character)}
+        ${arcHtml}
         <div class="mt-5 space-y-3 text-sm text-stone-300">
           <div class="flex justify-between"><span>Appetite</span><strong>${character.appetite.toFixed(1)}</strong></div>
           <div class="flex justify-between"><span>Trust</span><strong>${character.trust.toFixed(1)}</strong></div>
@@ -373,7 +425,28 @@ function openCharacterModal(id) {
           <div class="flex justify-between"><span>Indulgence</span><strong>${Math.round(character.indulgence)}</strong></div>
           <div class="flex justify-between"><span>Momentum</span><strong>${character.weeklyMomentum.toFixed(1)}</strong></div>
         </div>
-        <p class="mt-5 rounded-2xl bg-emerald-300/10 p-3 text-xs leading-5 text-emerald-100">${e(character.consent)}</p>
+        <div class="mt-4 space-y-2 text-xs text-stone-300">
+          <p class="font-bold text-amber-100">Comfort preferences</p>
+          <label class="block">Pace
+            <select data-action="set-pref" data-id="${e(character.id)}" data-key="pace" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+              <option value="gradual" ${prefs.pace === 'gradual' ? 'selected' : ''}>Gradual</option>
+              <option value="eager" ${prefs.pace === 'eager' ? 'selected' : ''}>Eager</option>
+            </select>
+          </label>
+          <label class="block">Focus
+            <select data-action="set-pref" data-id="${e(character.id)}" data-key="focus" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+              <option value="comfort" ${prefs.focus === 'comfort' ? 'selected' : ''}>Comfort</option>
+              <option value="appetite" ${prefs.focus === 'appetite' ? 'selected' : ''}>Appetite</option>
+            </select>
+          </label>
+          <label class="block">Public display
+            <select data-action="set-pref" data-id="${e(character.id)}" data-key="public" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
+              <option value="private" ${prefs.public === 'private' ? 'selected' : ''}>Private</option>
+              <option value="open" ${prefs.public === 'open' ? 'selected' : ''}>Open</option>
+            </select>
+          </label>
+        </div>
+        <p class="mt-4 rounded-2xl bg-emerald-300/10 p-3 text-xs leading-5 text-emerald-100">${e(character.consent)}</p>
       </aside>
     </div>
     <div class="mt-6">
@@ -399,6 +472,30 @@ function openCharacterModal(id) {
 }
 
 function openResolutionModal(resolution) {
+  const stageBlock =
+    resolution.stageChanges?.length > 0
+      ? `<div class="mt-4 space-y-2">${resolution.stageChanges
+          .map(
+            (c) => `
+        <div class="stage-glow soft-card rounded-2xl p-3 text-sm">
+          <strong class="text-amber-100">${e(c.name)}</strong>
+          <span class="text-stone-400"> stage ${c.oldStage + 1} → ${c.newStage + 1}</span>
+          <p class="mt-1 text-stone-300">+${c.gain.toFixed(1)} lb this week</p>
+        </div>`,
+          )
+          .join('')}</div>`
+      : '';
+
+  const achBlock =
+    resolution.newAchievements?.length > 0
+      ? `<div class="mt-4 rounded-2xl border border-amber-300/20 bg-amber-950/30 p-4">
+          <p class="text-sm font-bold text-amber-100">Achievements unlocked</p>
+          <ul class="mt-2 space-y-1 text-sm text-stone-200">
+            ${resolution.newAchievements.map((a) => `<li>${e(a.name)}: ${e(a.desc)}</li>`).join('')}
+          </ul>
+        </div>`
+      : '';
+
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -407,6 +504,8 @@ function openResolutionModal(resolution) {
       </div>
       <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
     </div>
+    ${achBlock}
+    ${stageBlock}
     <div class="rich-copy mt-6 rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5 text-base">
       ${resolution.html}
     </div>
@@ -436,11 +535,17 @@ function handleBuy(id) {
 
 function handleInteraction(characterId, actionId) {
   const result = performInteraction(gameState, characterId, actionId);
-  showToast(result.ok ? 'Interaction recorded.' : result.message, result.ok ? 'success' : 'error');
+  showToast(result.ok ? result.message.slice(0, 120) : result.message, result.ok ? 'success' : 'error');
   if (result.ok) {
     saveGame(gameState);
     render();
-    openCharacterModal(characterId);
+    if (actionId === 'recruit') {
+      closeModal();
+      return;
+    }
+    const character = findCharacter(gameState, characterId);
+    if (character) openCharacterModal(characterId);
+    else closeModal();
   }
 }
 
@@ -469,6 +574,7 @@ function bindEvents() {
       const resolution = endWeek(gameState);
       render();
       openResolutionModal(resolution);
+      gameState.pendingStageHighlights = [];
     }
     if (action === 'close-modal') {
       closeModal();
@@ -511,6 +617,16 @@ function bindEvents() {
         render();
       }
     }
+  });
+  document.addEventListener('change', (event) => {
+    const target = event.target.closest('[data-action="set-pref"]');
+    if (!target) return;
+    const character = findCharacter(gameState, target.dataset.id);
+    if (!character) return;
+    if (!character.preferences) character.preferences = { pace: 'gradual', focus: 'comfort', public: 'private' };
+    character.preferences[target.dataset.key] = target.value;
+    saveGame(gameState);
+    showToast('Preferences updated.');
   });
 }
 

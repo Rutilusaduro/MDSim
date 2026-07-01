@@ -1,6 +1,8 @@
-import { createPatientRoster, createStartingStaff } from './characters.js';
+import { createPatientRoster, createStartingStaff, defaultPreferences } from './characters.js';
+import { shopItems } from './clinic.js';
 
-export const SAVE_KEY = 'indulgecare-clinic-save-v1';
+export const SAVE_KEY = 'indulgecare-clinic-save-v2';
+export const GAME_VERSION = 2;
 
 export function createRng(seed = Date.now()) {
   let value = Math.abs(Math.floor(seed)) % 2147483647;
@@ -26,13 +28,24 @@ export function createRng(seed = Date.now()) {
   };
 }
 
+function defaultStats() {
+  return {
+    arcBeatsCompleted: 0,
+    patientsRecruited: 0,
+    compoundsUsed: 0,
+    wardrobeEvents: 0,
+    relationshipBeats: 0,
+    allInstallablesOwned: false,
+  };
+}
+
 export function createNewGame(options = {}) {
   const rng = createRng(options.seed ?? Date.now());
   const staff = createStartingStaff(rng);
   const patients = createPatientRoster(rng, 5);
 
   return {
-    version: 1,
+    version: GAME_VERSION,
     clinicName: options.clinicName || 'IndulgeCare Clinic',
     doctorName: options.doctorName || 'Dr. Vale',
     week: 1,
@@ -53,6 +66,10 @@ export function createNewGame(options = {}) {
     staff,
     patients,
     archivedPatients: [],
+    achievements: { unlocked: [] },
+    stats: defaultStats(),
+    firedEvents: [],
+    apSpentThisWeek: 0,
     log: [
       {
         id: 'welcome',
@@ -64,6 +81,7 @@ export function createNewGame(options = {}) {
     ],
     thisWeek: [],
     lastResolution: null,
+    pendingStageHighlights: [],
     rngSeed: rng.seed,
   };
 }
@@ -117,6 +135,7 @@ export function addWeekNote(entry, state = gameState) {
 export function spendActionPoint(state = gameState) {
   if (state.actionPoints <= 0) return false;
   state.actionPoints -= 1;
+  state.apSpentThisWeek = (state.apSpentThisWeek || 0) + 1;
   return true;
 }
 
@@ -130,6 +149,14 @@ export function formatMoney(value) {
 
 export function saveGame(state = gameState) {
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  localStorage.removeItem('indulgecare-clinic-save-v1');
+}
+
+function migrateCharacter(c) {
+  if (!c.preferences) c.preferences = defaultPreferences();
+  if (!c.arc) c.arc = { completedBeats: [] };
+  if (c.type === 'staff' && !c.arc.completedBeats) c.arc = { completedBeats: [] };
+  return c;
 }
 
 function normaliseState(raw) {
@@ -137,25 +164,35 @@ function normaliseState(raw) {
   const merged = {
     ...fresh,
     ...raw,
+    version: GAME_VERSION,
     inventory: { ...fresh.inventory, ...(raw.inventory || {}) },
   };
 
-  merged.staff = raw.staff?.length ? raw.staff : fresh.staff;
-  merged.patients = raw.patients?.length ? raw.patients : fresh.patients;
+  merged.staff = (raw.staff?.length ? raw.staff : fresh.staff).map(migrateCharacter);
+  merged.patients = (raw.patients?.length ? raw.patients : fresh.patients).map(migrateCharacter);
   merged.log = raw.log?.length ? raw.log : fresh.log;
   merged.pendingInstallations = raw.pendingInstallations || [];
   merged.ownedUpgrades = raw.ownedUpgrades || [];
   merged.thisWeek = raw.thisWeek || [];
   merged.archivedPatients = raw.archivedPatients || [];
+  merged.achievements = raw.achievements || { unlocked: [] };
+  merged.stats = { ...defaultStats(), ...(raw.stats || {}) };
+  merged.firedEvents = raw.firedEvents || [];
+  merged.apSpentThisWeek = raw.apSpentThisWeek || 0;
+  merged.pendingStageHighlights = raw.pendingStageHighlights || [];
   merged.actionPointsMax = raw.actionPointsMax || fresh.actionPointsMax;
   merged.actionPoints = Math.min(raw.actionPoints ?? fresh.actionPoints, merged.actionPointsMax);
   return merged;
 }
 
 export function loadGame() {
-  const saved = localStorage.getItem(SAVE_KEY);
+  let saved = localStorage.getItem(SAVE_KEY);
+  if (!saved) {
+    saved = localStorage.getItem('indulgecare-clinic-save-v1');
+  }
   if (!saved) return null;
   gameState = normaliseState(JSON.parse(saved));
+  saveGame(gameState);
   return gameState;
 }
 
@@ -163,4 +200,9 @@ export function resetGame(options = {}) {
   gameState = createNewGame(options);
   saveGame(gameState);
   return gameState;
+}
+
+export function updateInstallableAchievement(state) {
+  const installables = shopItems.filter((i) => i.install).map((i) => i.id);
+  state.stats.allInstallablesOwned = installables.every((id) => state.ownedUpgrades.includes(id));
 }

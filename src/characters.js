@@ -243,6 +243,34 @@ export const archetypes = {
       devoted: 'I am so fucking fat now I love it. I just want to eat and grow until the ground cracks beneath me.',
     },
   },
+  patron: {
+    label: "Donor's Niece",
+    appetiteMod: 1.1,
+    trustMod: 1.15,
+    hook: 'Connected, polished, used to getting what she asks for.',
+    lines: {
+      professional: 'My aunt funded the wing. I am here to learn. And eat, apparently.',
+      noticing: 'These designer scrubs were tailored in March. Tailored tight now.',
+      hungry: 'The catering here is better than my gym meal plan. That is not a compliment to the gym.',
+      pleased: 'I posted a mirror pic. Deleted it. Reposted it. The curves won.',
+      indulgent: 'Bill it to the foundation. I want the rich stuff. All of it.',
+      devoted: 'Tell my aunt her clinic made me enormous. I want to thank her in person. Naked appetite.',
+    },
+  },
+  vip: {
+    label: 'Returning VIP',
+    appetiteMod: 1.25,
+    trustMod: 1.05,
+    hook: 'She came back on purpose. She knows what this place does.',
+    lines: {
+      professional: 'Last clinic bored me. You people seem to understand comfort.',
+      noticing: 'Already up a belt notch. Good. That is why I returned.',
+      hungry: 'I dream about your break room. That is not normal. I do not care.',
+      pleased: 'Other patients stare. Let them. I am the success story walking.',
+      indulgent: 'Double my plan. I am on vacation from skinny.',
+      devoted: 'I fly in monthly now. Fatter every time. Keep me on your best schedule.',
+    },
+  },
 };
 
 const staffTemplates = [
@@ -327,6 +355,19 @@ const preferences = [
 const bodyTypeKeys = Object.keys(bodyTypes);
 const archetypeKeys = Object.keys(archetypes);
 
+export function defaultPreferences() {
+  return { pace: 'gradual', focus: 'comfort', public: 'private' };
+}
+
+export function preferenceGainMod(prefs) {
+  if (!prefs) return 1;
+  let mod = 1;
+  if (prefs.pace === 'eager') mod *= 1.12;
+  if (prefs.focus === 'appetite') mod *= 1.1;
+  if (prefs.public === 'open') mod *= 1.05;
+  return mod;
+}
+
 function makeId(prefix, rng) {
   return `${prefix}-${Math.floor(rng.next() * 1000000).toString(16)}`;
 }
@@ -356,15 +397,20 @@ export function createStartingStaff(rng) {
       openness: rng.int(12, 24),
       weeklyMomentum: 0,
       preference: rng.pick(preferences),
+      preferences: defaultPreferences(),
+      arc: { completedBeats: [] },
       consent: 'Enrolled in IndulgeCare staff comfort and nourishment research, 21+.',
       lastStage: 0,
     };
   });
 }
 
-export function createPatient(rng) {
-  const bodyType = rng.pick(bodyTypeKeys);
-  const archetype = rng.pick(archetypeKeys);
+export function createPatient(rng, options = {}) {
+  const bodyType = options.bodyType || rng.pick(bodyTypeKeys);
+  let archetype = options.archetype || rng.pick(archetypeKeys);
+  if (!options.archetype && rng.next() < 0.18) {
+    archetype = rng.pick(['patron', 'vip']);
+  }
   const profile = bodyTypes[bodyType];
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
 
@@ -394,6 +440,7 @@ export function createPatient(rng) {
     openness: rng.int(6, 20),
     weeklyMomentum: 0,
     preference: rng.pick(preferences),
+    preferences: defaultPreferences(),
     seenThisWeek: false,
     visits: 0,
     consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
@@ -486,5 +533,8 @@ export function getGainTemperament(character) {
             : attitude === 'indulgent'
               ? 1.18
               : 1.25;
-  return Math.max(0.45, (appetite * 0.12 + trust * 0.08) * archetype.appetiteMod * resistance);
+  return Math.max(
+    0.45,
+    (appetite * 0.12 + trust * 0.08) * archetype.appetiteMod * resistance * preferenceGainMod(character.preferences),
+  );
 }
