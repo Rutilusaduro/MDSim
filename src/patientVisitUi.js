@@ -117,7 +117,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[16rem_1fr]">
       <aside class="soft-card rounded-3xl p-4 lg:sticky lg:top-0">
-        <div class="text-pink-300">${renderSilhouette(patient, stageIdx)}</div>
+        <div class="text-pink-300">${renderSilhouette(patient, stageIdx, { wide: true })}</div>
         <p class="mt-2 text-center text-sm font-bold text-amber-100">${esc(stage.name)}</p>
         <div class="mt-3 space-y-1 text-xs text-stone-400">
           <div class="flex justify-between"><span>Trust</span><strong class="text-stone-200">${patient.trust.toFixed(1)}</strong></div>

@@ -732,7 +732,7 @@ function openStaffArcModal(characterId) {
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside class="soft-card rounded-3xl p-4 lg:sticky lg:top-0">
-        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
+        <div class="text-pink-300">${renderSilhouette(character, stageIdx, { wide: true })}</div>
         <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(getStageInfo(character).name)}</p>
         <p class="mt-2 text-center text-xs text-stone-400">Trust ${character.trust.toFixed(1)}</p>
       </aside>
@@ -887,7 +887,7 @@ function openCharacterModal(id, tab = null) {
     </div>
     <div class="mt-6 grid gap-6 lg:grid-cols-[18rem_1fr]">
       <aside class="soft-card rounded-3xl p-5 lg:sticky lg:top-0 lg:self-start">
-        <div class="text-pink-300">${renderSilhouette(character, stageIdx)}</div>
+        <div class="text-pink-300">${renderSilhouette(character, stageIdx, { wide: true })}</div>
         <p class="mt-2 text-center text-sm font-bold text-amber-100">${e(stage.name)}</p>
         ${stageMeter(character)}
         ${arcHtml}
