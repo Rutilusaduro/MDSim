@@ -40,6 +40,11 @@ import { startNewWeekChallenge } from './challenges.js';
 import { advanceLoyaltyArc, loyaltyRecruitVisitShortcut } from './loyaltyArcs.js';
 import { consultReputationBonus } from './clinicStyle.js';
 import { visitWeekPenalty, getUnvisitedPatients } from './patientVisit.js';
+import { pickWeeklyInteractiveScene } from './sceneEngine/triggers.js';
+import { ensureSceneState } from './sceneEngine/flags.js';
+import { setWeekInterrupt, getWeekInterrupt } from './weekScenes.js';
+import { SCENE_CATALOG } from './scenes/catalog.js';
+import { checkAuditGameOver } from './gameOver.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -90,10 +95,17 @@ export const interactionCatalog = {
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
-    arcScene: {
+  arcScene: {
     label: 'Advance Personal Arc',
     scope: ['staff'],
     description: 'Branching scene with multiple paths. Prior choices shape later beats. Costs 1 AP when you commit.',
+  },
+  feedMole: {
+    label: 'Annex Quiet Tray',
+    scope: ['staff'],
+    moleOnly: true,
+    cost: 120,
+    description: 'She reports to ThriveWell. Keep her full and loyal. No firing. Only feeding.',
   },
   recruit: {
     label: 'Recruit to Staff',
@@ -109,7 +121,11 @@ export function findCharacter(state, id) {
 
 export function getInteractionOptions(state, character) {
   return Object.entries(interactionCatalog)
-    .filter(([, action]) => action.scope.includes(character.type))
+    .filter(([, action]) => {
+      if (!action.scope.includes(character.type)) return false;
+      if (action.moleOnly && !(character.isMole && character.moleRevealed)) return false;
+      return true;
+    })
     .map(([id, action]) => {
       const inventoryMissing = action.inventory && (state.inventory[action.inventory] || 0) <= 0;
       let extraDisabled = false;
@@ -260,6 +276,7 @@ function actionFlavor(character, actionId) {
       : mid
         ? `${name} grips the cup with both hands until it is empty.${quote}`
         : `Thick shake. Sweet. ${name} drains it, heavy-lidded.${quote}`,
+    feedMole: `Tray lands heavy. ${name} eats slow, eyes on the door. Loyalty bought in pastry and cream.${quote}`,
     arcScene: (() => {
       const progress = getArcProgress(character);
       return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}.${quote}`;
@@ -345,6 +362,14 @@ export function performInteraction(state, characterId, actionId) {
       character.trust += 0.3;
       character.indulgence += 3;
       character.weeklyMomentum += 1.35;
+      break;
+    case 'feedMole':
+      character.moleLoyalty = (character.moleLoyalty || 0) + 8;
+      character.indulgence = Math.min(100, character.indulgence + 3);
+      character.weight = Math.round((character.weight + 0.4) * 10) / 10;
+      character.trust += 0.2;
+      state.heat = Math.max(0, (state.heat || 0) - 4);
+      state.coverRating = Math.min(100, (state.coverRating ?? 100) + 3);
       break;
     case 'arcScene':
       return { ok: false, message: 'Use the arc scene modal.' };
@@ -531,6 +556,36 @@ export function endWeek(state) {
   fireWorldImpactEvents(state, rng);
   fireEarlyGainEvents(state, rng);
 
+  ensureSceneState(state);
+  if (!getWeekInterrupt(state)) {
+    const roster = [...state.staff, ...state.patients];
+    for (let i = roster.length - 1; i > 0; i -= 1) {
+      const j = rng.int(0, i);
+      [roster[i], roster[j]] = [roster[j], roster[i]];
+    }
+    for (const character of roster) {
+      const pick = pickWeeklyInteractiveScene(state, character, rng);
+      if (!pick) continue;
+      setWeekInterrupt(state, pick.sceneId, pick.characterId);
+      const sceneDef = SCENE_CATALOG[pick.sceneId];
+      addWeekNote(
+        {
+          type: 'scene',
+          title: `Weekly crisis: ${sceneDef?.title || pick.sceneId}`,
+          text: `${character.name} needs your call before next week runs clean.`,
+        },
+        state,
+      );
+      break;
+    }
+  }
+
+  if ((state.heat || 0) > 0) {
+    state.coverRating = Math.max(0, (state.coverRating ?? 100) - Math.floor(state.heat / 5));
+    state.heat = Math.max(0, state.heat - 8);
+    checkAuditGameOver(state);
+  }
+
   const relationshipBeat = fireRelationshipBeat(state, rng);
 
   const groupPick = pickGroupScene(state, rng);
@@ -657,6 +712,8 @@ export function endWeek(state) {
     ending,
     newAchievements,
     html: resolutionHtml,
+    weekInterrupt: getWeekInterrupt(state),
+    gameOver: state.gameOver || null,
   };
 
   addLog({

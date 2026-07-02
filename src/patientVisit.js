@@ -15,6 +15,14 @@ import {
   getVisitNarrative,
   getMissedVisitPenalty,
 } from './patientVisitDialogue.js';
+import {
+  actionSupportsTone,
+  applyToneEffects,
+  buildToneNarrative,
+} from './visitTones.js';
+import { applySceneChoice, buildSceneContext, resolveScene } from './sceneEngine/index.js';
+import { checkVisitInterrupt } from './sceneEngine/triggers.js';
+import { checkAuditGameOver } from './gameOver.js';
 
 function tierFromAttitude(attitude) {
   if (attitude === 'immobile') return 'immobile';
@@ -25,6 +33,7 @@ function tierFromAttitude(attitude) {
 }
 
 export const VISIT_PHASES = ['greeting', 'intake', 'exam', 'services', 'checkout'];
+export const TONE_ENABLED_ACTIONS = ['say_hi', 'offer_water', 'weigh_patient'];
 
 const CONSULT_FEE = 225;
 
@@ -365,6 +374,7 @@ export function startVisit(state, patientId) {
 export function getVisitActions(state) {
   const visit = getVisit(state);
   if (!visit) return [];
+  if (visit.interrupt?.sceneId) return [];
 
   const patient = getPatientForVisit(state);
   if (!patient) return [];
@@ -397,9 +407,51 @@ export function getVisitActions(state) {
   });
 }
 
-export function performVisitAction(state, actionId) {
+export function getVisitInterruptScene(state) {
+  const visit = getVisit(state);
+  if (!visit?.interrupt?.sceneId) return null;
+  const patient = getPatientForVisit(state);
+  if (!patient) return null;
+  const ctx = buildSceneContext(state, patient, { trigger: visit.interrupt.triggerActionId });
+  return resolveScene(visit.interrupt.sceneId, ctx);
+}
+
+export function hasActiveVisitInterrupt(state) {
+  return Boolean(getVisit(state)?.interrupt?.sceneId);
+}
+
+export function resolveVisitInterrupt(state, choiceId) {
+  const visit = getVisit(state);
+  if (!visit?.interrupt?.sceneId) return { ok: false, message: 'No crisis to resolve.' };
+
+  const patient = getPatientForVisit(state);
+  if (!patient) return { ok: false, message: 'Patient not found.' };
+
+  const result = applySceneChoice(state, visit.interrupt.sceneId, choiceId, patient, {
+    trigger: visit.interrupt.triggerActionId,
+  });
+  if (!result.ok) return result;
+
+  if (state.stats) state.stats.interruptsHandled = (state.stats.interruptsHandled || 0) + 1;
+
+  visit.visitLog.push({
+    label: `Crisis: ${result.scene?.title || 'Scene'}`,
+    narrative: result.text,
+    reply: '',
+  });
+
+  visit.interrupt = null;
+  checkAuditGameOver(state);
+
+  return { ok: true, message: result.message, text: result.text };
+}
+
+export function performVisitAction(state, actionId, toneId = null) {
   const visit = getVisit(state);
   if (!visit) return { ok: false, message: 'No active visit.' };
+  if (visit.interrupt?.sceneId) {
+    return { ok: false, message: 'Resolve the crisis before other actions.' };
+  }
 
   const patient = getPatientForVisit(state);
   if (!patient) return { ok: false, message: 'Patient not found.' };
@@ -418,13 +470,27 @@ export function performVisitAction(state, actionId) {
 
   consumeInventory(state, action);
   applyVisitEffects(state, patient, action);
+
+  if (toneId && actionSupportsTone(actionId)) {
+    applyToneEffects(state, patient, toneId);
+    checkAuditGameOver(state);
+  }
+
   visit.completedActions.push(action.id);
 
   if (action.advancesPhase) {
     visit.phase = nextPhase(visit.phase);
   }
 
-  let { narrative, reply } = visitDialogue(patient, actionId);
+  let narrative;
+  let reply;
+  if (toneId && actionSupportsTone(actionId)) {
+    const tier = tierFromAttitude(getAttitudeKey(patient));
+    ({ narrative, reply } = buildToneNarrative(patient, actionId, tier, toneId));
+  } else {
+    ({ narrative, reply } = visitDialogue(patient, actionId));
+  }
+
   if (!narrative) {
     narrative = `${action.label} with ${patient.name}.`;
   }
@@ -436,10 +502,19 @@ export function performVisitAction(state, actionId) {
   }
 
   if (!visit.visitLog) visit.visitLog = [];
-  visit.visitLog.push({ label: action.label, narrative, reply });
+  visit.visitLog.push({ label: action.label, narrative, reply, tone: toneId || null });
 
   if (action.id === 'bill_consultation') {
     bumpStyle(state, styleFromInteraction('consult'));
+  }
+
+  const interrupt = checkVisitInterrupt(state, patient, actionId);
+  if (interrupt) {
+    visit.interrupt = {
+      sceneId: interrupt.sceneId,
+      triggerActionId: actionId,
+    };
+    message = `${message} A crisis needs your decision before you continue.`;
   }
 
   addWeekNote(
@@ -451,7 +526,12 @@ export function performVisitAction(state, actionId) {
     state,
   );
 
-  return { ok: true, message, phase: visit.phase };
+  return {
+    ok: true,
+    message,
+    phase: visit.phase,
+    interrupt: interrupt?.sceneId || null,
+  };
 }
 
 export function canEndVisit(state) {

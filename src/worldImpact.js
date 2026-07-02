@@ -1,5 +1,6 @@
 import { getStageIndex, isBlobStage, isImmobileStage, STAGE_MAX } from './characters.js';
 import { addWeekNote } from './state.js';
+import { globalFlag, sceneResolved } from './sceneEngine/flags.js';
 
 export const MOBILITY_LABELS = {
   mobile: 'Mobile',
@@ -141,6 +142,12 @@ export function fireWorldImpactEvents(state, rng) {
     if (stage < ev.minStage) return false;
     if (ev.scope === 'patient' && pick.type !== 'patient') return false;
     if (ev.scope === 'staff' && pick.type !== 'staff') return false;
+    if (
+      ev.id === 'doorway_wedge' &&
+      (globalFlag(state, 'global_doorway_widened') || sceneResolved(state, pick, 'world_doorway_wedge'))
+    ) {
+      return false;
+    }
     return true;
   });
   if (!pool.length || !rng.chance(28 + stage * 2)) return fired;

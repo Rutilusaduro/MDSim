@@ -7,8 +7,8 @@ import { defaultRivalClinicState } from './rivalClinic.js';
 import { ensurePatientAppearance } from './patientAppearance.js';
 import { refreshRecruitmentOffers } from './recruitment.js';
 
-export const SAVE_KEY = 'indulgecare-clinic-save-v5';
-export const GAME_VERSION = 5;
+export const SAVE_KEY = 'indulgecare-clinic-save-v6';
+export const GAME_VERSION = 6;
 
 export function createRng(seed = Date.now()) {
   let value = Math.abs(Math.floor(seed)) % 2147483647;
@@ -48,6 +48,8 @@ function defaultStats() {
     rivalOpsActions: 0,
     earlyGainEvents: 0,
     visitCount: 0,
+    scenesResolved: 0,
+    interruptsHandled: 0,
   };
 }
 
@@ -110,6 +112,11 @@ export function createNewGame(options = {}) {
     audioMuted: false,
     rivalClinic: defaultRivalClinicState(),
     recruitment: { openSlotId: null, candidates: [], filledSlots: [] },
+    coverRating: 100,
+    heat: 0,
+    sceneState: { resolved: [], weekInterrupt: null },
+    globalFlags: [],
+    gameOver: null,
   };
 
   refreshRecruitmentOffers(game, rng);
@@ -182,6 +189,8 @@ export function saveGame(state = gameState) {
   localStorage.removeItem('indulgecare-clinic-save-v1');
   localStorage.removeItem('indulgecare-clinic-save-v2');
   localStorage.removeItem('indulgecare-clinic-save-v3');
+  localStorage.removeItem('indulgecare-clinic-save-v4');
+  localStorage.removeItem('indulgecare-clinic-save-v5');
 }
 
 function migrateCharacter(c) {
@@ -242,11 +251,18 @@ function normaliseState(raw) {
   merged.audioMuted = raw.audioMuted ?? false;
   merged.rivalClinic = raw.rivalClinic || defaultRivalClinicState();
   merged.recruitment = raw.recruitment || { openSlotId: null, candidates: [], filledSlots: [] };
+  merged.coverRating = raw.coverRating ?? 100;
+  merged.heat = raw.heat ?? 0;
+  merged.sceneState = raw.sceneState || { resolved: [], weekInterrupt: null };
+  merged.globalFlags = raw.globalFlags || [];
+  merged.gameOver = raw.gameOver || null;
   return merged;
 }
 
 export function loadGame() {
   let saved = localStorage.getItem(SAVE_KEY);
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v5');
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v4');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v3');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v2');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v1');

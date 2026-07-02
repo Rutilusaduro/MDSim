@@ -61,6 +61,20 @@ export function visitDialogueTier(patient, attitudeTier) {
   return attitudeTier;
 }
 
+export function applyFramingErosion(patient, delta) {
+  patient.framingErosion = Math.min(100, (patient.framingErosion || 0) + delta);
+  if (patient.framingErosion >= 25) patient.slimMindset = false;
+}
+
+export function getCoverLabel(state) {
+  const cover = state.coverRating ?? 100;
+  if (cover >= 80) return 'Spotless charting';
+  if (cover >= 60) return 'Plausible PCP';
+  if (cover >= 35) return 'Board might notice';
+  if (cover >= 15) return 'Audit risk';
+  return 'Imminent shutdown';
+}
+
 export function staffPublicFraming() {
   return 'Scrubs and smiles. The lobby looks like any busy primary-care office, if you ignore how tight the uniforms run.';
 }

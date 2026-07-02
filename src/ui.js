@@ -46,12 +46,16 @@ import {
   completeVisit,
   getUnvisitedPatients,
   performVisitAction,
+  resolveVisitInterrupt,
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
 import { rosterMobilitySummary, getMobilityLabel } from './worldImpact.js';
 import { getRecruitmentPanel, hireCandidate } from './recruitment.js';
 import { getClinicTier } from './clinicProgression.js';
-import { PUBLIC_CLINIC_TAGLINE } from './patientFraming.js';
+import { PUBLIC_CLINIC_TAGLINE, getCoverLabel } from './patientFraming.js';
+import { getCharacterRouteLabel, getMindset, MINDSET_LABELS } from './mindset.js';
+import { isGameOver } from './gameOver.js';
+import { getWeekInterrupt, getWeekInterruptScene, resolveWeekInterrupt } from './weekScenes.js';
 import { staffCandidateSummary } from './characters.js';
 
 let activeTab = 'management';
@@ -136,6 +140,10 @@ function characterCard(character, variant = 'standard', state = gameState) {
     isPatient && (!character.seenThisWeek || state.activePatientVisit?.patientId === character.id)
       ? 'open-visit'
       : 'open-character';
+  const routeLabel = getCharacterRouteLabel(character);
+  const routeChip = routeLabel
+    ? `<p class="mt-2 text-xs font-bold text-pink-200">${e(routeLabel)}</p>`
+    : '';
   return `
     <article class="soft-card cursor-pointer rounded-3xl p-4 transition duration-200" data-action="${openAction}" data-id="${e(character.id)}">
       <div class="flex items-start justify-between gap-4">
@@ -144,6 +152,7 @@ function characterCard(character, variant = 'standard', state = gameState) {
           <h3 class="mt-1 text-lg font-semibold text-stone-50">${e(character.name)}</h3>
           <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb${isPatient && character.loyalty ? ` - Loyalty ${character.loyalty}` : ''}</p>
           ${isPatient ? `<p class="mt-1 text-xs text-stone-400">${e(getPatientAppearanceSummary(character))}</p>` : ''}
+          ${routeChip}
           ${isPatient && variant !== 'sidebar' ? patientVisitBadge(state, character) : ''}
         </div>
         <span class="rounded-full bg-pink-500/15 px-3 py-1 text-xs text-pink-100">${e(stage.name)}</span>
@@ -202,9 +211,21 @@ function renderTopNav(state) {
 
 function renderSidebar(state) {
   const effects = computeClinicEffects(state);
+  const cover = state.coverRating ?? 100;
+  const heat = state.heat || 0;
   return `
     <aside class="glass-panel h-fit rounded-[2rem] p-5 lg:sticky lg:top-28">
       <div class="grid grid-cols-2 gap-3">
+        <div class="soft-card rounded-2xl p-4">
+          <p class="text-xs text-stone-400">Cover rating</p>
+          <p class="text-2xl font-black text-sky-100">${cover}</p>
+          <p class="text-xs text-stone-300">${e(getCoverLabel(state))}</p>
+        </div>
+        <div class="soft-card rounded-2xl p-4">
+          <p class="text-xs text-stone-400">Heat</p>
+          <p class="text-2xl font-black text-orange-100">${heat}</p>
+          <p class="text-xs text-stone-300">${heat >= 40 ? 'Viral risk' : heat >= 15 ? 'Lobby whispers' : 'Low profile'}</p>
+        </div>
         <div class="soft-card rounded-2xl p-4">
           <p class="text-xs text-stone-400">Reputation</p>
           <p class="text-2xl font-black text-amber-100">${state.reputation}</p>
@@ -855,6 +876,8 @@ function openCharacterModal(id, tab = null) {
   const stage = getStageInfo(character);
   const stageIdx = getStageIndex(character);
   const options = getInteractionOptions(gameState, character);
+  const routeLabel = getCharacterRouteLabel(character);
+  const mindset = getMindset(character);
   const arc = character.type === 'staff' ? getArcProgress(character) : getLoyaltyArcProgress(character);
   const prefs = character.preferences || { pace: 'gradual', focus: 'comfort', public: 'private' };
   const arcHtml = arc
@@ -867,6 +890,8 @@ function openCharacterModal(id, tab = null) {
 
   const statsBlock = `
     <div class="space-y-3 text-sm text-stone-300">
+      <div class="flex justify-between"><span>Mindset</span><strong>${e(MINDSET_LABELS[mindset] || mindset)}</strong></div>
+      ${routeLabel ? `<div class="flex justify-between"><span>Route</span><strong class="text-pink-200">${e(routeLabel)}</strong></div>` : ''}
       <div class="flex justify-between"><span>Appetite</span><strong>${character.appetite.toFixed(1)}</strong></div>
       <div class="flex justify-between"><span>Trust</span><strong>${character.trust.toFixed(1)}</strong></div>
       <div class="flex justify-between"><span>Openness</span><strong>${Math.round(character.openness)}</strong></div>
@@ -946,6 +971,8 @@ function openCharacterModal(id, tab = null) {
         <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(character.type)} profile</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(character.name)}</h2>
         <p class="mt-1 text-stone-300">${e(character.role)} - ${e(stage.bodyType)} - ${Math.round(character.weight)} lb</p>
+        ${routeLabel ? `<p class="mt-1 text-sm text-pink-200">${e(routeLabel)}</p>` : ''}
+        ${character.isMole && character.moleRevealed ? '<p class="mt-1 text-xs text-red-200">Annex eyes. Feed only, no firing.</p>' : ''}
       </div>
       <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
     </div>
@@ -1013,6 +1040,53 @@ function openEndingModal(ending) {
       <div class="mt-8 flex flex-wrap gap-3">
         <button class="gold-button rounded-2xl px-5 py-3 font-bold" data-action="ng-plus" data-bonus="ap">NG+ (+1 AP)</button>
         <button class="dark-button rounded-2xl px-5 py-3 font-bold" data-action="close-modal">Continue</button>
+      </div>
+    </div>
+  `);
+}
+
+function openWeekSceneModal() {
+  const payload = getWeekInterruptScene(gameState);
+  if (!payload?.scene) return;
+
+  const { character, scene } = payload;
+  openModal(`
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.28em] text-red-200/70">Weekly crisis</p>
+        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(scene.title)}</h2>
+        <p class="mt-1 text-stone-400">${e(character.name)} · ${gameState.actionPoints} AP remaining</p>
+      </div>
+    </div>
+    <div class="mt-6 rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5 text-base leading-8 text-stone-100">
+      ${e(scene.opening)}
+    </div>
+    <div class="mt-5 grid gap-3">
+      ${scene.choices
+        .map(
+          (choice) => `
+        <button class="soft-card rounded-2xl p-4 text-left hover:border-amber-200/40" data-action="week-scene-choice" data-choice="${e(choice.id)}">
+          <strong class="text-stone-50">${e(choice.label)}</strong>
+          ${choice.hint ? `<p class="mt-1 text-xs text-stone-400">${e(choice.hint)}</p>` : ''}
+          ${choice.apCost ? `<p class="mt-1 text-xs text-amber-200">${choice.apCost} AP</p>` : ''}
+        </button>`,
+        )
+        .join('')}
+    </div>
+  `);
+}
+
+function openGameOverModal(gameOver = gameState.gameOver) {
+  if (!gameOver) return;
+  openModal(`
+    <div>
+      <p class="text-xs uppercase tracking-[0.28em] text-red-200/70">Game over</p>
+      <h2 class="mt-2 text-3xl font-black text-stone-50">${e(gameOver.title)}</h2>
+      <p class="mt-4 text-lg leading-8 text-stone-300">${e(gameOver.text)}</p>
+      <p class="mt-4 text-sm text-stone-500">Week ${gameOver.week || gameState.week}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button class="gold-button rounded-2xl px-5 py-3 font-bold" data-action="new-game">Start fresh clinic</button>
+        <button class="dark-button rounded-2xl px-5 py-3 font-bold" data-action="close-modal">Review save</button>
       </div>
     </div>
   `);
@@ -1222,6 +1296,46 @@ function bindEvents() {
       saveGame(gameState);
       render();
       refreshPatientVisitModal();
+      if (gameState.gameOver) openGameOverModal();
+    }
+    if (action === 'visit-tone-action') {
+      const visit = gameState.activePatientVisit;
+      if (!visit) return;
+      const result = performVisitAction(gameState, target.dataset.id, target.dataset.tone);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      saveGame(gameState);
+      render();
+      refreshPatientVisitModal();
+      if (gameState.gameOver) openGameOverModal();
+    }
+    if (action === 'visit-scene-choice') {
+      const result = resolveVisitInterrupt(gameState, target.dataset.choice);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      saveGame(gameState);
+      render();
+      refreshPatientVisitModal();
+      if (gameState.gameOver) openGameOverModal();
+    }
+    if (action === 'week-scene-choice') {
+      const result = resolveWeekInterrupt(gameState, target.dataset.choice);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      saveGame(gameState);
+      closeModal();
+      render();
+      if (gameState.gameOver) {
+        openGameOverModal();
+      } else {
+        showToast('Crisis resolved.', 'success');
+      }
     }
     if (action === 'visit-complete') {
       const result = completeVisit(gameState);
@@ -1254,6 +1368,11 @@ function bindEvents() {
       handleArcChoice(target.dataset.id, target.dataset.choice);
     }
     if (action === 'end-week') {
+      if (getWeekInterrupt(gameState)) {
+        openWeekSceneModal();
+        showToast('Resolve the weekly crisis before ending the week.', 'error');
+        return;
+      }
       const unvisited = getUnvisitedPatients(gameState);
       const warnings = [];
       if (unvisited.length) {
@@ -1276,6 +1395,11 @@ function bindEvents() {
       }
       if (resolution.ending) {
         setTimeout(() => openEndingModal(resolution.ending), 800);
+      }
+      if (resolution.gameOver) {
+        setTimeout(() => openGameOverModal(resolution.gameOver), 500);
+      } else if (resolution.weekInterrupt) {
+        setTimeout(() => openWeekSceneModal(), 600);
       }
     }
     if (action === 'pick-challenge') {
@@ -1446,5 +1570,10 @@ export function initUI() {
   if (needsChallengePick(gameState)) {
     activeTab = 'campaign';
     render();
+  }
+  if (isGameOver(gameState)) {
+    setTimeout(() => openGameOverModal(), 100);
+  } else if (getWeekInterrupt(gameState)) {
+    setTimeout(() => openWeekSceneModal(), 200);
   }
 }

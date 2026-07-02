@@ -14,6 +14,8 @@ export const ACHIEVEMENTS = [
   { id: 'compound_user', name: 'Pharmacy Open', desc: 'Use 10 compounds total.', check: (s) => s.stats?.compoundsUsed >= 10 },
   { id: 'rich_clinic', name: 'In the Black', desc: 'Hold $8,000+ after week end.', check: (s) => s.money >= 8000 },
   { id: 'wardrobe_crisis', name: 'Button Pop', desc: 'Trigger a wardrobe strain event.', check: (s) => s.stats?.wardrobeEvents >= 1 },
+  { id: 'first_interrupt', name: 'Crisis Manager', desc: 'Resolve a visit interrupt.', check: (s) => (s.stats?.interruptsHandled || 0) >= 1 },
+  { id: 'doorframe_hero', name: 'Doorframe Hero', desc: 'Widen the clinic doorway.', check: (s) => (s.globalFlags || []).includes('global_doorway_widened') },
   { id: 'relationship_spark', name: 'Office Tension', desc: 'Witness a staff relationship beat.', check: (s) => s.stats?.relationshipBeats >= 1 },
   { id: 'perfect_ap', name: 'Clean Week', desc: 'Spend every AP in a week.', check: (s, ctx) => ctx.perfectApWeek },
   { id: 'chapter_one', name: 'Soft Opening', desc: 'Complete Chapter 1.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_1') },

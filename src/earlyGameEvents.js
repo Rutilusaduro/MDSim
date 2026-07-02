@@ -1,4 +1,5 @@
 import { addWeekNote } from './state.js';
+import { sceneResolved } from './sceneEngine/flags.js';
 
 const EARLY_GAIN_EVENTS = [
   {
@@ -82,6 +83,7 @@ export function fireEarlyGainEvents(state, rng) {
 
     const pool = EARLY_GAIN_EVENTS.filter((ev) => {
       if (character.earlyEventsFired.includes(ev.id)) return false;
+      if (ev.id === 'jeans_tight' && sceneResolved(state, character, 'early_jeans_tight')) return false;
       return gain >= ev.minGain && gain <= ev.maxGain;
     });
     if (!pool.length || !rng.chance(18 + gain / 8)) continue;
