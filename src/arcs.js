@@ -331,7 +331,7 @@ export function advanceArc(character, state, choiceId) {
     addWeekNote(
       {
         type: 'arc',
-        title: `Arc: ${character.name} — ${check.beat.title}`,
+        title: `Arc: ${character.name}: ${check.beat.title}`,
         text: noteText,
       },
       state,

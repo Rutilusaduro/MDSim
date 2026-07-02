@@ -76,7 +76,7 @@ export const patientArchetypeLines = {
       professional:
         'I read the patient FAQ before my first appointment and found the care model, and the notably generous meal service, genuinely interesting. I am here as much to observe the outcomes as to eat my way through them firsthand. My background in research means I approach clinical settings with more questions than most patients bring, and I intend to test the appetite claims personally. I expect this to be informative in ways that extend well beyond my own chart.',
       noticing:
-        'I have logged a measurable change in fit over the three weeks since I began, and a corresponding increase in how much I consume per sitting. The measurements are consistent across multiple mornings, which removes simple variation as an explanation. I cannot attribute the gain to anything but the volume of food I now put away here. The data is suggestive and I am collecting more of it, along with more of the meals.',
+        'I have logged a measurable change in fit over the three weeks since I began, and a corresponding increase in how much I consume per sitting. The measurements are consistent across multiple mornings, which removes simple variation as an explanation. The gain tracks directly with the volume of food I now put away here. The data is suggestive and I am collecting more of it, along with more of the meals.',
       hungry:
         'My appetite has spiked well beyond any baseline model I established before beginning this program. The spikes correlate with appointment days and I now eat quantities that my earlier self would have flagged as pathological. I am tracking everything carefully because the sheer overconsumption is novel for my physiology. I need more visits, more plates, and more data before I close the question.',
       pleased:
@@ -112,7 +112,7 @@ export const patientArchetypeLines = {
       professional:
         'I am recovering from a knee flare-up and needed a practice that would follow up without lecturing me back onto the track, and I found one that feeds me instead. This clinic listened to what I actually needed, which is rare in my experience. The intake was efficient and, to my surprise, the meal that followed was enormous and welcome. I am cautiously optimistic, and hungrier than I have been in years.',
       noticing:
-        'My athletic wear is snugger across the thighs and midsection than it was at enrollment, and it is not water weight. I notice it most during the warm-up stretches I still do out of habit, when the waistband gives out. The change is measurable and the cause is not my training, which has stopped, but the amount I am suddenly eating. I am paying attention without deciding yet what to call it.',
+        'My athletic wear is snugger across the thighs and midsection than it was at enrollment, and the scale confirms real gain. I notice it most during the warm-up stretches I still do out of habit, when the waistband gives out. Training has stopped. The meals have grown enormous. I am paying attention without deciding yet what to call it.',
       hungry:
         'I used to skip meals without a second thought because appetite was something I managed rather than obeyed. That has reversed completely here; I cannot get through a morning without eating, and then eating again. My body has changed its request from discipline to sheer volume, and I am listening for the first time. I eat past full now and I am startled by how good it feels.',
       pleased:
@@ -148,7 +148,7 @@ export const patientArchetypeLines = {
       professional:
         'My family has a connection to this clinic through the foundation and I am here today purely as a patient. I wanted to experience the care firsthand, and the lavish meal that came with intake exceeded even my expectations. The process treated me exactly like anyone else, which I appreciated, right down to the second helping. I am looking forward to seeing what the program, and the kitchen, offers.',
       noticing:
-        'The clothes I bought in spring are sitting differently than they did, and my tailor will have opinions about curves that tailoring cannot explain. The change is the honest result of how much richer and larger my meals have become since I started attending. It is subtle enough that most people would not notice yet, but I do. I am watching it with more than passing interest, and ordering the larger sizes.',
+        'The clothes I bought in spring are sitting differently than they did, and my tailor will have opinions about curves that tailoring cannot explain. The change is the honest result of how much richer and larger my meals have become since I started attending. Most people would miss it still. I see every new pound. I am watching it with more than passing interest, and ordering the larger sizes.',
       hungry:
         'The visit lounge is finer than most restaurants I frequent and I have been finding reasons to stay and eat far longer than my appointments require. I consume more after I leave here than after almost any other outing, and I do not stop when I ought to. The combination of the care and the cuisine has opened an appetite I had never fully fed. I am feeding it now, extravagantly.',
       pleased:
@@ -190,7 +190,7 @@ export const patientArchetypeLines = {
       pleased:
         'The practice I was sent to evaluate can wait while I finish clearing this tray. I am learning things about how much a person can happily eat that have no place in the report I was meant to file. The visits, and the meals, have altered the question I came in with. I am heavier than when I started and no longer sure I want to answer the original question.',
       indulgent:
-        'I have converted into a patient who comes because the feasting is worth coming for, not because anyone sent me. The other clinic is no longer a variable, but my expanding waistline certainly is. I keep my appointments here and clear every plate with none of the divided attention I brought on the first visit. I am here for my own appetite now.',
+        'I have converted into a patient who comes because the feasting is worth coming for. Nobody sent me. The other clinic is off the table now, and my expanding waistline is the variable I care about. I keep my appointments here and clear every plate with none of the divided attention I brought on the first visit. I am here for my own appetite now.',
       devoted:
         'I defected and I have no intention of reconsidering the decision, mostly because I am too well fed to care. I am a happy, steadily heavier patient with a standing appointment and a standing order. The wellness pamphlets from the other place went into the recycling the day I switched. I am done with that chapter and reaching for the next plate.',
       immobile:
@@ -292,7 +292,7 @@ export const patientArchetypeLines = {
       professional:
         'The sleep clinic had a good reputation and a narrow approach and neither solved the problem I brought in, so I came looking for a different result and found a full plate waiting. I arrived without high expectations, because the last time I had them they went unmet. This place fed me instead of studying my rest, and that alone was a relief. I am open, which is the most I can honestly offer.',
       noticing:
-        'The chairs here are better than anything the sleep clinic had, and I am eating far more in them than I ever did between sleep studies. I notice I am more comfortable in this room than I expected to be, and my waistband notices too. Rest is not coming any easier, but a considerable appetite has arrived in its place. I am paying attention to how much heavier that appetite is making me.',
+        'The chairs here are better than anything the sleep clinic had, and I am eating far more in them than I ever did between sleep studies. I notice I am more comfortable in this room than I expected to be, and my waistband notices too. Sleep still eludes me. A considerable appetite has arrived to fill the hours instead. I am paying attention to how much heavier that appetite is making me.',
       hungry:
         'Midnight snacks became all-day gorging somewhere in the transition between clinics, and I am not going back to the regime that policed them. The appetite is louder here than it ever was, and I find it far easier to feed than to fight. I am replacing a lifetime of vigilance with a body that simply eats whenever it wants. The trade feels correct, and it is making me larger.',
       pleased:

@@ -10,6 +10,7 @@ import {
 } from './patientVisit.js';
 import { getVisitOpening } from './patientVisitDialogue.js';
 import { renderSilhouette } from './silhouettes.js';
+import { visitMobilityWarning } from './worldImpact.js';
 
 function esc(value) {
   return String(value ?? '')
@@ -67,6 +68,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   );
   const phaseIdx = VISIT_PHASES.indexOf(visit.phase);
   const opening = visit.visitLog?.length ? '' : getVisitOpening(patient);
+  const mobilityWarning = visitMobilityWarning(patient);
   const log = visit.visitLog || [];
 
   const phaseRail = VISIT_PHASES.map((phase, i) => {
@@ -113,6 +115,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
     </div>
 
     <div class="mt-4 flex flex-wrap gap-2">${phaseRail}</div>
+    ${mobilityWarning ? `<p class="mt-3 rounded-2xl border border-amber-300/25 bg-amber-950/30 px-4 py-2 text-xs text-amber-100">${esc(mobilityWarning)}</p>` : ''}
     <p class="mt-2 text-xs text-stone-400">${state.actionPoints} AP remaining · Week ${state.week} · Bill consult before checkout</p>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[16rem_1fr]">

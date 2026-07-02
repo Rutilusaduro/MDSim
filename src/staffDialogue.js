@@ -60,9 +60,9 @@ export const staffArchetypeLines = {
       noticing:
         'These scrubs did not pull across my hips like this when I started, and I know exactly why, because I have been eating like it is my job. I noticed it without going looking for it, which means the change is real. I am filing no complaint. I am noting a variable, and it is how much I gorge on shift.',
       hungry:
-        'I am hungry all the time in a way that is new and slightly maddening, and I feed it constantly. I do not fully know what is causing it and I do not like not knowing, but I keep eating anyway. I have started keeping snacks in my locker, which I never did before, because the break room cannot resupply me fast enough. I gorge through every shift now.',
+        'I am hungry all the time in a way that is new and slightly maddening, and I feed it constantly. I do not fully know what is causing it and the mystery irritates me. I keep eating anyway. I have started keeping snacks in my locker, which I never did before, because the break room cannot resupply me fast enough. I gorge through every shift now.',
       pleased:
-        'Fine. The extra weight feels better than I expected it to and I am saying that once. The shift is easier when I am stuffed and heavier, and that is all I am willing to offer on the topic. You do not get to say you were right, but yes, I am eating more and I like it.',
+        'Fine. The extra weight feels better than I expected it to and I am saying that once. The shift is easier when I am stuffed and heavier, and that is all I am willing to offer on the topic. You were right. I am eating more and I like it. Do not make me repeat it.',
       indulgent:
         'I am fat now, I do not want to stop being fat, and I am eating to make sure I keep gaining. The snacks in my locker are permanent and the scrubs are a size bigger. I am not explaining it to anyone. Keep the work schedule the same and keep the break room full.',
       devoted:

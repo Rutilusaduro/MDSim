@@ -45,7 +45,7 @@ const VISIT_NARRATIVE = {
       'They roll her in on the bed frame, sheets smoothed, tray locked. She blinks slow at the ceiling, then finds your face.',
       'Her mass fills the custom bay before you speak. A hand emerges from the folds to wave. "Hungry," she mouths.',
       'The room rearranges around her arrival. She sighs contentedly, already heavy on the mattress, already waiting.',
-      'She cannot turn her head far, but her eyes track the feeding cart. "You brought enough?" she asks, hopeful.',
+      'She cannot turn her head far. Her eyes track the feeding cart anyway. "You brought enough?" she asks, hopeful.',
     ],
   },
   review_chart: {
@@ -146,7 +146,7 @@ const VISIT_NARRATIVE = {
     ],
     blob: [
       'Weight is inference now: pressure sensors in the frame, staff consensus, the way the mattress dips. You log a number that still surprises her.',
-      'You announce the estimate from the foot of the bed. She cannot see the tablet, but she smiles when she hears it climb.',
+      'You announce the estimate from the foot of the bed. She cannot see the tablet. She smiles when she hears it climb.',
       'The team compares notes. Everyone agrees she is heavier. She laughs, a low sound through the sheets, and says "good."',
       'Estimate logged. She asks you to read it again slower. She wants to memorize the pound total like a prayer.',
     ],
@@ -227,7 +227,7 @@ const VISIT_NARRATIVE = {
     ],
     blob: [
       'Tonic administered drop by drop. Heat blooms somewhere deep inside her mass. She whimpers, hungry, grateful.',
-      'The dose takes. Her breathing quickens. She cannot shift, but her mouth opens, waiting for whatever comes next.',
+      'The dose takes. Her breathing quickens. She cannot shift. Her mouth opens anyway, waiting for whatever comes next.',
       'You count her swallow around the burn. Then she says, voice small against the sheets, "Feed me until I swell."',
       'Tonic done. Hunger enormous. She cannot pursue food. Food must come to her. She looks at you, certain you will.',
     ],
@@ -260,7 +260,7 @@ const VISIT_NARRATIVE = {
     blob: [
       'Shake through the angled straw, slow and thick. She sucks until the cup rattles dry, then waits for the next.',
       'Chocolate rings her mouth. You wipe it. She tries to follow the napkin with her lips, still hungry.',
-      'The shake goes down in measured pulls. Her bulk does not shift much, but something deep in her sighs with fullness.',
+      'The shake goes down in measured pulls. Her bulk stays nearly still. Something deep in her sighs with fullness.',
       'Empty cup lifted away. She makes a small sound of loss and asks when the next calorie load arrives.',
     ],
   },
@@ -380,13 +380,13 @@ const VISIT_NARRATIVE = {
       'She refuses to give the blanket back when vitals end. You let her keep it through checkout. She looks victorious.',
     ],
     immobile: [
-      'You tuck the heated wrap across her lap on the couch. She cannot shift much, but her whole body seems to soften.',
+      'You tuck the heated wrap across her lap on the couch. She cannot shift much. Her whole body seems to soften anyway.',
       'Warmth seeps into bulk that rarely moves. She sighs, long and grateful, and asks you to bring the tray closer.',
       'The blanket barely spans her middle now. You layer a second. She purrs and says heat makes her hungrier.',
       'Heated fabric over hips that spill the cushions. She closes her eyes and tells you she could eat for hours like this.',
     ],
     blob: [
-      'Staff spread warmed cloths along the parts of her that show. She cannot feel all of it, but she sighs where heat reaches.',
+      'Staff spread warmed cloths along the parts of her that show. She cannot feel all of it. She sighs where heat reaches.',
       'The blanket is cosmetic now, a kindness over immensity. She still thanks you, voice muffled, already waiting to eat.',
       'Heat at the edges of her mass. She makes a small sound of pleasure and asks for food to match the warmth.',
       'Wrapped as well as anyone can wrap her. She blinks slow and says the room feels like a womb. She wants to be fed in it.',
@@ -482,7 +482,7 @@ const VISIT_NARRATIVE = {
       'Receipt printed. Staff tuck it into her bag. She says the visit was worth every charged minute of eating.',
     ],
     blob: [
-      'Consult fee posted. You announce the total. She cannot see the paper, but she says "approved" anyway.',
+      'Consult fee posted. You announce the total. She cannot see the paper. She says "approved" anyway.',
       'Billing is a formality between feedings. She listens to the numbers, whispers "worth it," and closes her eyes.',
       'The ledger updates. Her account carries the gluttony consult without complaint. She smiles, vast and satisfied.',
       'Receipt filed for family. She asks you to read the snack charges aloud one more time. You do. She hums happy.',
