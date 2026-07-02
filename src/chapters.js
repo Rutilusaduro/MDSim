@@ -1,14 +1,15 @@
 export const CHAPTERS = [
   {
     id: 1,
-    name: 'Soft Opening',
-    tagline: 'Prove the clinic can indulge without chaos.',
+    name: 'Strip-Mall Opening',
+    tagline: 'Look like a normal PCP office while the first pounds land.',
     goals: [
-      { id: 'week', label: 'Reach week 8', check: (s) => s.week >= 8 },
-      { id: 'rep', label: 'Reputation 32+ (Trusted Neighborhood)', check: (s) => s.reputation >= 32 },
-      { id: 'arc', label: 'Complete 1 staff arc beat', check: (s) => (s.stats?.arcBeatsCompleted || 0) >= 1 },
+      { id: 'week', label: 'Reach week 6', check: (s) => s.week >= 6 },
+      { id: 'hire', label: 'Hire a head nurse', check: (s) => s.staff.some((m) => m.arcSlot === 'maya') },
+      { id: 'patient', label: 'Complete 3 patient visits', check: (s) => (s.stats?.visitCount || countVisits(s)) >= 3 },
+      { id: 'rep', label: 'Reputation 16+', check: (s) => s.reputation >= 16 },
     ],
-    reward: { money: 500, reputation: 2 },
+    reward: { money: 400, reputation: 2 },
   },
   {
     id: 2,
@@ -35,6 +36,10 @@ export const CHAPTERS = [
     reward: { money: 2000, reputation: 6 },
   },
 ];
+
+function countVisits(state) {
+  return state.patients.reduce((sum, p) => sum + (p.visits || 0), 0);
+}
 
 export function ensureChapter(state) {
   if (state.chapter == null) state.chapter = 1;

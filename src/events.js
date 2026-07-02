@@ -26,6 +26,10 @@ import {
   fireWardrobeEvents,
   pickWeeklyEvent,
 } from './weeklyContent.js';
+import { fireWorldImpactEvents } from './worldImpact.js';
+import { fireEarlyGainEvents } from './earlyGameEvents.js';
+import { weeklyNewPatientCount, getPatientCap } from './clinicProgression.js';
+import { refreshRecruitmentOffers } from './recruitment.js';
 import { tickRival, rivalBlocksRecruitment } from './rival.js';
 import { checkChapterAdvance } from './chapters.js';
 import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchetypeBias } from './clinicStyle.js';
@@ -36,6 +40,11 @@ import { startNewWeekChallenge } from './challenges.js';
 import { advanceLoyaltyArc, loyaltyRecruitVisitShortcut } from './loyaltyArcs.js';
 import { consultReputationBonus } from './clinicStyle.js';
 import { visitWeekPenalty, getUnvisitedPatients } from './patientVisit.js';
+import { pickWeeklyInteractiveScene } from './sceneEngine/triggers.js';
+import { ensureSceneState } from './sceneEngine/flags.js';
+import { setWeekInterrupt, getWeekInterrupt } from './weekScenes.js';
+import { SCENE_CATALOG } from './scenes/catalog.js';
+import { checkAuditGameOver } from './gameOver.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -46,7 +55,7 @@ const RECRUIT_ROLES = [
 
 export const interactionCatalog = {
   consult: {
-    label: 'Standard Comfort Consultation',
+    label: 'Routine Office Visit',
     scope: [],
     money: 225,
     description: 'Legacy consult. Patients use the visit desk instead.',
@@ -60,16 +69,16 @@ export const interactionCatalog = {
     label: 'Catered Break Tray',
     scope: ['staff'],
     cost: 180,
-    description: 'Staff-only tray. Rich food. Generous portions.',
+    description: 'Staff-only tray, heaped high with rich food and portions built for gorging.',
   },
   comfortPlan: {
-    label: 'Holistic Comfort Plan',
+    label: 'Holistic Feeding Plan',
     scope: ['staff'],
     cost: 90,
-    description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
+    description: 'A written plan for growing: slower evenings, fuller plates, and second helpings taken without a shred of guilt.',
   },
   comfortBlend: {
-    label: 'Use Comfort Blend',
+    label: 'Use Gorging Blend',
     scope: ['staff'],
     inventory: 'comfortBlend',
     description: 'Vanilla powder. Calms nerves. Opens appetite.',
@@ -86,16 +95,23 @@ export const interactionCatalog = {
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
-    arcScene: {
+  arcScene: {
     label: 'Advance Personal Arc',
     scope: ['staff'],
     description: 'Branching scene with multiple paths. Prior choices shape later beats. Costs 1 AP when you commit.',
+  },
+  feedMole: {
+    label: 'Annex Quiet Tray',
+    scope: ['staff'],
+    moleOnly: true,
+    cost: 120,
+    description: 'She reports to ThriveWell. Keep her full and loyal. No firing. Only feeding.',
   },
   recruit: {
     label: 'Recruit to Staff',
     scope: ['patient'],
     cost: 750,
-    description: 'Offer a job. Trust high. Body ready. She stays for good.',
+    description: 'Offer a job. Trust high, appetite higher, body already spreading. She stays to keep growing for good.',
   },
 };
 
@@ -105,7 +121,11 @@ export function findCharacter(state, id) {
 
 export function getInteractionOptions(state, character) {
   return Object.entries(interactionCatalog)
-    .filter(([, action]) => action.scope.includes(character.type))
+    .filter(([, action]) => {
+      if (!action.scope.includes(character.type)) return false;
+      if (action.moleOnly && !(character.isMole && character.moleRevealed)) return false;
+      return true;
+    })
     .map(([id, action]) => {
       const inventoryMissing = action.inventory && (state.inventory[action.inventory] || 0) <= 0;
       let extraDisabled = false;
@@ -126,9 +146,9 @@ export function getInteractionOptions(state, character) {
         if (character.trust < 8) {
           extraDisabled = true;
           extraReason = 'Need trust 8+';
-        } else if (getStageIndex(character) < 2) {
+        } else if (getStageIndex(character) < 4) {
           extraDisabled = true;
-          extraReason = 'Need stage 3+';
+          extraReason = 'Need stage 5+';
         } else if ((character.visits || 0) < 3 - loyaltyRecruitVisitShortcut(character) && (character.loyalty || 0) < 5) {
           extraDisabled = true;
           extraReason = 'Need 3+ visits or loyalty 5+';
@@ -172,6 +192,7 @@ function actionFlavor(character, actionId) {
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
   const mid = attitude === 'hungry' || attitude === 'pleased';
+  const immobile = attitude === 'immobile' || attitude === 'blob';
   const isPatient = character.type === 'patient';
   const quote = banter ? ` ${banter}` : '';
 
@@ -181,17 +202,23 @@ function actionFlavor(character, actionId) {
         ? `${name} checks out after the visit. Follow-up on the calendar.${quote}`
         : mid
           ? `${name} lingers in the lobby after checkout, hand at her middle.${quote}`
-          : `${name} fills the exam chair, cheeks flushed.${quote}`,
+          : immobile
+            ? `${name} finishes the visit from the widened lounge couch, tray balanced on her belly.${quote}`
+            : `${name} fills the exam chair, cheeks flushed.${quote}`,
       comfortPlan: early
-        ? `${name} takes the pamphlet home, reassured.${quote}`
+        ? `${name} takes the feeding plan home, reassured.${quote}`
         : mid
           ? `${name} reads the plan in the car, engine running.${quote}`
-          : `${name} hugs the plan to her chest before she stands.${quote}`,
+          : immobile
+            ? `${name} keeps the plan within reach on the couch, already planning seconds.${quote}`
+            : `${name} hugs the plan to her chest before she stands.${quote}`,
       comfortBlend: early
         ? `${name} drinks the blend in the exam room, unhurried.${quote}`
         : mid
           ? `${name} finishes the cup and blinks at the empty bottom.${quote}`
-          : `${name} savors the last swallow, eyes half closed.${quote}`,
+          : immobile
+            ? `${name} drains the blend without sitting up, cup handed back empty.${quote}`
+            : `${name} savors the last swallow, eyes half closed.${quote}`,
       appetiteTonic: early
         ? `${name} takes the dose at the sink, clinical and brief.${quote}`
         : mid
@@ -202,7 +229,7 @@ function actionFlavor(character, actionId) {
         : mid
           ? `${name} grips the cup until the ice rattles empty.${quote}`
           : `${name} leans back, belly rising with the last swallow.${quote}`,
-      recruit: `${name} accepts the offer on the spot.${quote}`,
+      recruit: `${name} accepts the offer on the spot, already picturing the break room trays she will never have to leave.${quote}`,
     };
     return patientCopy[actionId];
   }
@@ -212,7 +239,9 @@ function actionFlavor(character, actionId) {
       ? `${name} leaves on time. Visit went fine.${quote}`
       : mid
         ? `${name} lingers at the door, distracted.${quote}`
-        : `${name} fills the chair, talk turning to ${preference}.${quote}`,
+        : immobile
+          ? `${name} stays put on the reinforced couch, visit notes taken between bites.${quote}`
+          : `${name} fills the chair, talk turning to ${preference}.${quote}`,
     personalTalk: early
       ? `${name} checks in easy after a long shift.${quote}`
       : mid
@@ -224,15 +253,19 @@ function actionFlavor(character, actionId) {
         ? `${name} clears the tray faster than she planned.${quote}`
         : `Tray lands heavy. ${name} sinks into cushions over ${preference}.${quote}`,
     comfortPlan: early
-      ? `${name} nods through the advice and files it.${quote}`
+      ? `${name} nods through the feeding advice and files it.${quote}`
       : mid
         ? `${name} reads the plan twice, quiet.${quote}`
-        : `${name} takes the plan like permission.${quote}`,
+        : immobile
+          ? `${name} pins the plan to the tray table and keeps eating.${quote}`
+          : `${name} takes the plan like permission.${quote}`,
     comfortBlend: early
       ? `${name} drinks it down between tasks.${quote}`
       : mid
         ? `Blend goes down smooth. ${name} blinks, hungry again.${quote}`
-        : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
+        : immobile
+          ? `Vanilla and cream. ${name} drinks from the straw without shifting her weight.${quote}`
+          : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
     appetiteTonic: early
       ? `${name} swallows the dose between rooms.${quote}`
       : mid
@@ -243,11 +276,12 @@ function actionFlavor(character, actionId) {
       : mid
         ? `${name} grips the cup with both hands until it is empty.${quote}`
         : `Thick shake. Sweet. ${name} drains it, heavy-lidded.${quote}`,
+    feedMole: `Tray lands heavy. ${name} eats slow, eyes on the door. Loyalty bought in pastry and cream.${quote}`,
     arcScene: (() => {
       const progress = getArcProgress(character);
       return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}.${quote}`;
     })(),
-    recruit: `${name} accepts the offer. Paperwork waits.${quote}`,
+    recruit: `${name} accepts the offer, hungry for a place that will only feed her fuller. Paperwork waits.${quote}`,
   };
 
   return copy[actionId];
@@ -328,6 +362,14 @@ export function performInteraction(state, characterId, actionId) {
       character.trust += 0.3;
       character.indulgence += 3;
       character.weeklyMomentum += 1.35;
+      break;
+    case 'feedMole':
+      character.moleLoyalty = (character.moleLoyalty || 0) + 8;
+      character.indulgence = Math.min(100, character.indulgence + 3);
+      character.weight = Math.round((character.weight + 0.4) * 10) / 10;
+      character.trust += 0.2;
+      state.heat = Math.max(0, (state.heat || 0) - 4);
+      state.coverRating = Math.min(100, (state.coverRating ?? 100) + 3);
       break;
     case 'arcScene':
       return { ok: false, message: 'Use the arc scene modal.' };
@@ -478,7 +520,11 @@ export function endWeek(state) {
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
 
-  const rivalEvent = tickRival(state, rng);
+  const rivalEvent = state.week >= 4 ? tickRival(state, rng) : null;
+  if (state.week >= 4 && state.rivalState && !state.rivalState.active) {
+    state.rivalState.active = true;
+    state.rivalState.reputation = Math.max(state.rivalState.reputation, state.reputation + 6);
+  }
 
   [...state.staff, ...state.patients].forEach((character) => {
     const oldStage = getStageIndex(character);
@@ -506,6 +552,39 @@ export function endWeek(state) {
   if (!state.firedEvents) state.firedEvents = [];
   const wardrobeFired = fireWardrobeEvents(state, rng);
   wardrobeFired.forEach((w) => state.firedEvents.push(w.key));
+
+  fireWorldImpactEvents(state, rng);
+  fireEarlyGainEvents(state, rng);
+
+  ensureSceneState(state);
+  if (!getWeekInterrupt(state)) {
+    const roster = [...state.staff, ...state.patients];
+    for (let i = roster.length - 1; i > 0; i -= 1) {
+      const j = rng.int(0, i);
+      [roster[i], roster[j]] = [roster[j], roster[i]];
+    }
+    for (const character of roster) {
+      const pick = pickWeeklyInteractiveScene(state, character, rng);
+      if (!pick) continue;
+      setWeekInterrupt(state, pick.sceneId, pick.characterId);
+      const sceneDef = SCENE_CATALOG[pick.sceneId];
+      addWeekNote(
+        {
+          type: 'scene',
+          title: `Weekly crisis: ${sceneDef?.title || pick.sceneId}`,
+          text: `${character.name} needs your call before next week runs clean.`,
+        },
+        state,
+      );
+      break;
+    }
+  }
+
+  if ((state.heat || 0) > 0) {
+    state.coverRating = Math.max(0, (state.coverRating ?? 100) - Math.floor(state.heat / 5));
+    state.heat = Math.max(0, state.heat - 8);
+    checkAuditGameOver(state);
+  }
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
 
@@ -555,16 +634,31 @@ export function endWeek(state) {
   });
   state.archivedPatients.push(...leaving);
 
-  const newPatientCount = Math.min(5, 2 + Math.floor(state.reputation / 28) + (effects.newPatients || 0) + rng.int(0, 1));
+  const newPatientCount = weeklyNewPatientCount(state, rng, effects);
   const styleBias = stylePatientArchetypeBias(state);
   const newPatients = Array.from({ length: newPatientCount }, () => {
-    const patient = createPatient(rng, { styleBias });
+    const patient = createPatient(rng, { styleBias, week: state.week, clinicalStart: state.week < 12 });
     patient.weeklyMomentum += effects.patientMomentum || 0;
     return patient;
   });
   state.patients.push(...newPatients);
-  while (state.patients.length > 10) {
+  while (state.patients.length > getPatientCap(state)) {
     state.archivedPatients.push(state.patients.shift());
+  }
+
+  refreshRecruitmentOffers(state, rng);
+
+  const mole = state.staff.find((s) => s.isMole && !s.moleRevealed);
+  if (mole && state.week >= 6 && rng.chance(14)) {
+    mole.moleRevealed = true;
+    addWeekNote(
+      {
+        type: 'mole',
+        title: 'Annex eyes',
+        text: `${mole.name} stepped into the supply closet on a long call. ThriveWell Annex knows your suite number. Feed her well or watch what she reports.`,
+      },
+      state,
+    );
   }
 
   const resolutionHtml = buildResolutionHtml({
@@ -618,6 +712,8 @@ export function endWeek(state) {
     ending,
     newAchievements,
     html: resolutionHtml,
+    weekInterrupt: getWeekInterrupt(state),
+    gameOver: state.gameOver || null,
   };
 
   addLog({

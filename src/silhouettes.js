@@ -12,6 +12,14 @@ const BODY_PROFILES = {
   compact: { bust: 1.04, waist: 1.0, belly: 1.1, seat: 1.16, thigh: 1.14 },
 };
 
+const WEIGHT_SCALE_MIN = 350;
+const WEIGHT_SCALE_MAX = 2400;
+
+function weightSpan(weight, floor = WEIGHT_SCALE_MIN, ceiling = WEIGHT_SCALE_MAX) {
+  return Math.max(0, Math.min(1, (weight - floor) / (ceiling - floor)));
+}
+
+/** Scale factor for 12 stages (0–11); weight interpolation from 350 lb upward. */
 function stageScale(stageIndex, weight = 0) {
   if (stageIndex <= 1) return 0.86 + stageIndex * 0.05;
   if (stageIndex <= 3) return 0.96 + (stageIndex - 1) * 0.06;
@@ -20,7 +28,7 @@ function stageScale(stageIndex, weight = 0) {
     const span = Math.max(0, Math.min(1, (weight - 350) / (2000 - 350)));
     return 1.3 + span * 0.95;
   }
-  return 1.2;
+  return base;
 }
 
 function profileMetrics(bodyType, stageIndex, weight) {

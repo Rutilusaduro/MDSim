@@ -10,21 +10,28 @@ import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
 export { getPatientAppearanceSummary };
 
-export const STAGE_MAX = 6;
-export const STAGE_COUNT = 7;
+export const STAGE_MAX = 11;
+export const STAGE_COUNT = 12;
+export const IMMOBILE_STAGE = 10;
+export const BLOB_STAGE = 11;
 
-/** Minimum absolute weight (lb) to reach each stage index. Stage 6 (1-indexed) tops near 350; max stage reaches ~1 ton. */
-export const STAGE_WEIGHT_FLOORS = [0, 168, 200, 235, 272, 310, 350];
-export const STAGE_WEIGHT_CEILING = 2000;
+/** Weight floors for 12 stages. Stage 11 (index 10) immobile; stage 12 (index 11) bedbound blob. */
+export const STAGE_WEIGHT_FLOORS = [0, 165, 195, 230, 270, 310, 350, 430, 540, 700, 920, 1250];
+export const STAGE_WEIGHT_CEILING = 2400;
 
 export const weightStageNames = [
-  'Bright Beginning',
-  'Comfortably Rounded',
-  'Noticeable Bloom',
-  'Lush Presence',
-  'Room-Filling Warmth',
-  'Magnificent Softness',
-  'Titanic Abundance',
+  'Still Hungry',
+  'First Bites',
+  'Growing Appetite',
+  'Heavy Habit',
+  'Shameless Glutton',
+  'Swollen & Soft',
+  'Outgrowing Everything',
+  'Gorge Queen',
+  'Massive & Spreading',
+  'Too Wide to Walk',
+  'Immobile Blob',
+  'Titanic Mass',
 ];
 
 export const bodyTypes = {
@@ -391,6 +398,21 @@ export const archetypes = {
   },
 };
 
+const staffEthnicities = [
+  'Nigerian-American',
+  'Mexican-American',
+  'Indian-British',
+  'Ukrainian',
+  'Black American',
+  'French-Caribbean',
+  'Korean-American',
+  'Italian-American',
+  'Filipino-American',
+  'Irish-American',
+  'Persian-American',
+  'Puerto Rican',
+];
+
 const staffTemplates = [
   ['Maya Okafor', 'Head Nurse', 34, 'Nigerian-American'],
   ['Elena Ruiz', 'Front Desk Coordinator', 29, 'Mexican-American'],
@@ -517,26 +539,86 @@ export function createStartingStaff(rng) {
       preference: rng.pick(preferences),
       preferences: defaultPreferences(),
       arc: { completedBeats: [] },
-      consent: 'Enrolled in IndulgeCare staff comfort and nourishment research, 21+.',
+      consent: 'Enrolled in IndulgeCare staff gluttony research program, 21+. Consent covers feeding, weighing, and public display of gain.',
       lastStage: 0,
     };
   });
 }
 
+/** Procedural hire candidate or starting receptionist. */
+export function generateStaffCandidate(rng, roleSlot) {
+  const bodyType = rng.pick(bodyTypeKeys);
+  const profile = bodyTypes[bodyType];
+  const thinCeiling = profile.baseRange[0] + Math.round((profile.baseRange[1] - profile.baseRange[0]) * 0.35);
+  const baselineWeight = rng.int(profile.baseRange[0], thinCeiling);
+  const startingGain = rng.int(0, 3);
+  const archetype = rng.pick(archetypeKeys);
+  const name = `${rng.pick(patientFirstNames)} ${rng.pick(patientLastNames)}`;
+
+  return {
+    id: makeId('cand', rng),
+    candidateId: true,
+    type: 'staff',
+    name,
+    role: roleSlot.role,
+    arcSlot: roleSlot.arcSlot,
+    age: rng.int(24, 44),
+    ethnicity: rng.pick(staffEthnicities),
+    bodyType,
+    archetype,
+    baselineWeight,
+    weight: baselineWeight + startingGain,
+    appetite: Math.round((4 + rng.int(0, 2) + archetypes[archetype].appetiteMod) * 10) / 10,
+    trust: Math.round((4 + rng.int(0, 2) + archetypes[archetype].trustMod) * 10) / 10,
+    indulgence: rng.int(0, 2),
+    openness: rng.int(8, 18),
+    weeklyMomentum: 0,
+    preference: rng.pick(preferences),
+    preferences: defaultPreferences(),
+    slimMindset: true,
+    consent: 'Standard clinic employment, 21+. HR file lists primary-care duties only.',
+    lastStage: 0,
+  };
+}
+
+export function staffCandidateSummary(candidate) {
+  return `${Math.round(candidate.weight)} lb ${bodyTypes[candidate.bodyType]?.label || candidate.bodyType}, ${candidate.ethnicity}, age ${candidate.age}`;
+}
+
+/** Week-one strip-mall clinic: receptionist only. */
+export function createTinyClinicStaff(rng) {
+  const receptionistSlot = {
+    role: 'Front Desk Coordinator',
+    arcSlot: 'elena',
+  };
+  const receptionist = generateStaffCandidate(rng, receptionistSlot);
+  receptionist.id = makeId('staff', rng);
+  delete receptionist.candidateId;
+  receptionist.arc = { completedBeats: [], choices: {}, flags: [] };
+  receptionist.trust = Math.round((5 + rng.int(0, 2)) * 10) / 10;
+  return [receptionist];
+}
+
 export function createPatient(rng, options = {}) {
   const bodyType = options.bodyType || rng.pick(bodyTypeKeys);
   let archetype = options.archetype || rng.pick(archetypeKeys);
-  if (!options.archetype && options.styleBias?.length && rng.next() < 0.35) {
+  const clinicalStart = options.clinicalStart !== false && (options.week == null || options.week < 6);
+  if (!options.archetype && clinicalStart) {
+    archetype = rng.pick(['professional', 'perfectionist', 'nurturer', 'scholar', 'athlete'].filter((k) => archetypes[k]));
+  } else if (!options.archetype && options.styleBias?.length && rng.next() < 0.35) {
     archetype = rng.pick(options.styleBias);
-  } else if (!options.archetype && rng.next() < 0.18) {
+  } else if (!options.archetype && !clinicalStart && rng.next() < 0.18) {
     archetype = rng.pick(['patron', 'vip']);
-  } else if (!options.archetype && rng.next() < 0.08) {
-    archetype = rng.pick(['rivalSpy', 'foodBlogger', 'gymDefector']);
-  } else if (!options.archetype && rng.next() < 0.06) {
+  } else if (!options.archetype && !clinicalStart && rng.next() < 0.08) {
+    archetype = rng.pick(['foodBlogger', 'gymDefector']);
+  } else if (!options.archetype && !clinicalStart && rng.next() < 0.06) {
     archetype = rng.pick(['housewifeDonor', 'rivalDoctor', 'foodTruckOwner', 'sleepClinicDefector']);
   }
   const profile = bodyTypes[bodyType];
-  const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
+  const thinCeiling = profile.baseRange[0] + Math.round((profile.baseRange[1] - profile.baseRange[0]) * 0.4);
+  const baselineWeight = clinicalStart
+    ? rng.int(profile.baseRange[0], thinCeiling)
+    : rng.int(profile.baseRange[0], profile.baseRange[1]);
 
   return {
     id: makeId('patient', rng),
@@ -557,11 +639,11 @@ export function createPatient(rng, options = {}) {
     bodyType,
     archetype,
     baselineWeight,
-    weight: baselineWeight + rng.int(0, 6),
-    appetite: Math.round((4 + rng.int(0, 4) + archetypes[archetype].appetiteMod) * 10) / 10,
-    trust: Math.round((3 + rng.int(0, 4) + archetypes[archetype].trustMod) * 10) / 10,
-    indulgence: rng.int(0, 3),
-    openness: rng.int(6, 20),
+    weight: baselineWeight + rng.int(0, clinicalStart ? 3 : 6),
+    appetite: Math.round((3 + rng.int(0, 3) + archetypes[archetype].appetiteMod) * 10) / 10,
+    trust: Math.round((2 + rng.int(0, 3) + archetypes[archetype].trustMod) * 10) / 10,
+    indulgence: rng.int(0, clinicalStart ? 2 : 3),
+    openness: rng.int(4, clinicalStart ? 14 : 20),
     weeklyMomentum: 0,
     preference: rng.pick(preferences),
     preferences: defaultPreferences(),
@@ -570,8 +652,10 @@ export function createPatient(rng, options = {}) {
     loyalty: 0,
     loyaltyArc: { completedBeats: [] },
     appearance: generatePatientAppearance(rng),
-    consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
+    slimMindset: clinicalStart,
+    consent: 'Adult patient, 21+. Intake forms list routine primary-care services.',
     lastStage: 0,
+    publicReason: null,
   };
 }
 
@@ -591,11 +675,28 @@ export function createPatientRoster(rng, count = 4) {
   return Array.from({ length: count }, () => createPatient(rng));
 }
 
+export function isImmobileStage(stageIndex) {
+  return stageIndex >= IMMOBILE_STAGE;
+}
+
+export function isBlobStage(stageIndex) {
+  return stageIndex >= BLOB_STAGE;
+}
+
+export function isCharacterImmobile(character) {
+  return isImmobileStage(getStageIndex(character));
+}
+
+export function isCharacterBlob(character) {
+  return isBlobStage(getStageIndex(character));
+}
+
 export function weightForStageIndex(character, stageIndex) {
   const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(stageIndex)));
   if (stage === 0) return character.baselineWeight;
-  if (stage === STAGE_MAX) return STAGE_WEIGHT_CEILING;
-  if (stage === STAGE_MAX - 1) return 345;
+  if (stage === BLOB_STAGE) return STAGE_WEIGHT_CEILING;
+  if (stage === IMMOBILE_STAGE) return 1100;
+  if (stage === 6) return 380;
   const low = STAGE_WEIGHT_FLOORS[stage];
   const high = STAGE_WEIGHT_FLOORS[stage + 1];
   return Math.round((low + high) / 2);
@@ -645,11 +746,13 @@ export function getStageInfo(character) {
 
 export function getAttitudeKey(character) {
   const stage = getStageIndex(character);
+  if (stage >= BLOB_STAGE) return 'blob';
+  if (stage >= IMMOBILE_STAGE) return 'immobile';
   if (stage <= 0) return 'professional';
-  if (stage <= 1) return 'noticing';
-  if (stage <= 2) return 'hungry';
-  if (stage <= 3) return 'pleased';
-  if (stage <= 4) return 'indulgent';
+  if (stage <= 2) return 'noticing';
+  if (stage <= 4) return 'hungry';
+  if (stage <= 6) return 'pleased';
+  if (stage <= 8) return 'indulgent';
   return 'devoted';
 }
 

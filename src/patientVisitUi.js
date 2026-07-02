@@ -2,14 +2,18 @@ import { getStageIndex, getStageInfo, getPatientAppearanceSummary } from './char
 import { formatMoney } from './state.js';
 import {
   VISIT_PHASES,
+  TONE_ENABLED_ACTIONS,
   canEndVisit,
   completeVisit,
   getVisitActions,
+  getVisitInterruptScene,
   performVisitAction,
   startVisit,
 } from './patientVisit.js';
 import { getVisitOpening } from './patientVisitDialogue.js';
+import { VISIT_TONES } from './scenes/catalog.js';
 import { renderSilhouette } from './silhouettes.js';
+import { visitMobilityWarning } from './worldImpact.js';
 
 function esc(value) {
   return String(value ?? '')
@@ -55,6 +59,81 @@ export function openPatientVisitFlow(state, patientId, hooks) {
   openModal(renderPatientVisitModal(state, patientId));
 }
 
+function renderActionTags(option) {
+  const tags = [];
+  if (option.effects?.money) tags.push(`+${formatMoney(option.effects.money)}`);
+  if (option.effects?.weightRoll) tags.push('weight↑');
+  if (option.effects?.weight) tags.push('scale↑');
+  if (option.effects?.trust) tags.push('trust↑');
+  if (option.effects?.loyalty) tags.push('loyalty↑');
+  if (option.requires?.inventory) tags.push('uses stock');
+  return tags;
+}
+
+function renderVisitActionButton(option) {
+  const tags = renderActionTags(option);
+  return `
+    <button class="rounded-2xl p-3 text-left transition ${option.disabled ? 'dark-button opacity-50' : 'soft-card hover:border-amber-200/40'}" data-action="visit-action" data-id="${esc(option.id)}" ${option.disabled ? 'disabled' : ''}>
+      <div class="flex items-start justify-between gap-2">
+        <strong class="text-sm text-stone-50">${esc(option.label)}</strong>
+        <span class="text-xs text-amber-100">${option.apCost ? `${option.apCost} AP` : 'free'}</span>
+      </div>
+      <p class="mt-1 text-xs leading-5 text-stone-400">${esc(option.description)}</p>
+      ${tags.length ? `<p class="mt-2 text-xs text-emerald-200">${tags.join(' · ')}</p>` : ''}
+      ${option.reason && option.disabled ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>` : ''}
+    </button>`;
+}
+
+function renderToneActionGroup(option) {
+  const tags = renderActionTags(option);
+  return `
+    <div class="rounded-2xl p-3 ${option.disabled ? 'dark-button opacity-50' : 'soft-card'}">
+      <div class="flex items-start justify-between gap-2">
+        <strong class="text-sm text-stone-50">${esc(option.label)}</strong>
+        <span class="text-xs text-amber-100">${option.apCost ? `${option.apCost} AP` : 'free'}</span>
+      </div>
+      <p class="mt-1 text-xs leading-5 text-stone-400">${esc(option.description)}</p>
+      ${tags.length ? `<p class="mt-2 text-xs text-emerald-200">${tags.join(' · ')}</p>` : ''}
+      ${
+        option.disabled
+          ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>`
+          : `
+      <p class="mt-2 text-xs font-bold uppercase tracking-wide text-amber-200/80">Choose tone</p>
+      <div class="mt-2 grid gap-1.5">
+        ${VISIT_TONES.map(
+          (tone) => `
+          <button class="rounded-xl border border-amber-100/10 bg-stone-950/50 px-3 py-2 text-left text-xs transition hover:border-amber-200/40" data-action="visit-tone-action" data-id="${esc(option.id)}" data-tone="${esc(tone.id)}">
+            <span class="font-bold text-stone-100">${esc(tone.label)}</span>
+            <span class="ml-2 text-stone-500">${esc(tone.hint)}</span>
+          </button>`,
+        ).join('')}
+      </div>`
+      }
+    </div>`;
+}
+
+function renderInterruptPanel(state, interruptScene) {
+  if (!interruptScene) return '';
+  return `
+    <div class="rounded-3xl border border-red-300/30 bg-red-950/25 p-5">
+      <p class="text-xs font-bold uppercase tracking-wide text-red-200">Crisis: resolve before continuing</p>
+      <h3 class="mt-2 text-xl font-bold text-stone-50">${esc(interruptScene.title)}</h3>
+      <p class="mt-3 text-sm leading-7 text-stone-200">${esc(interruptScene.opening)}</p>
+      <div class="mt-4 grid gap-2">
+        ${interruptScene.choices
+          .map(
+            (choice) => `
+          <button class="rounded-2xl border border-amber-100/10 bg-stone-950/50 p-3 text-left transition hover:border-amber-200/40" data-action="visit-scene-choice" data-choice="${esc(choice.id)}">
+            <strong class="text-sm text-stone-50">${esc(choice.label)}</strong>
+            ${choice.hint ? `<p class="mt-1 text-xs text-stone-400">${esc(choice.hint)}</p>` : ''}
+            ${choice.apCost ? `<p class="mt-1 text-xs text-amber-200">${choice.apCost} AP</p>` : ''}
+          </button>`,
+          )
+          .join('')}
+      </div>
+    </div>`;
+}
+
 export function renderPatientVisitModal(state, patientId, hooks = {}) {
   const visit = state.activePatientVisit;
   const patient = state.patients.find((p) => p.id === patientId);
@@ -67,7 +146,9 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   );
   const phaseIdx = VISIT_PHASES.indexOf(visit.phase);
   const opening = visit.visitLog?.length ? '' : getVisitOpening(patient);
+  const mobilityWarning = visitMobilityWarning(patient);
   const log = visit.visitLog || [];
+  const interruptScene = getVisitInterruptScene(state);
 
   const phaseRail = VISIT_PHASES.map((phase, i) => {
     const done = i < phaseIdx;
@@ -98,6 +179,22 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   const endVisitDone = visit.completedActions.includes('end_visit');
   const canComplete = canEndVisit(state);
 
+  const actionsHtml = interruptScene
+    ? renderInterruptPanel(state, interruptScene)
+    : `
+        <div>
+          <h3 class="text-lg font-bold text-amber-100">${PHASE_LABELS[visit.phase]} actions</h3>
+          <div class="mt-3 grid gap-2 sm:grid-cols-2">
+            ${actions
+              .map((option) =>
+                TONE_ENABLED_ACTIONS.includes(option.id)
+                  ? renderToneActionGroup(option)
+                  : renderVisitActionButton(option),
+              )
+              .join('')}
+          </div>
+        </div>`;
+
   return `
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -113,6 +210,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
     </div>
 
     <div class="mt-4 flex flex-wrap gap-2">${phaseRail}</div>
+    ${mobilityWarning ? `<p class="mt-3 rounded-2xl border border-amber-300/25 bg-amber-950/30 px-4 py-2 text-xs text-amber-100">${esc(mobilityWarning)}</p>` : ''}
     <p class="mt-2 text-xs text-stone-400">${state.actionPoints} AP remaining · Week ${state.week} · Bill consult before checkout</p>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[16rem_1fr]">
@@ -129,35 +227,10 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
       <div class="min-w-0 space-y-5">
         <div class="max-h-[14rem] space-y-3 overflow-auto pr-1">${logHtml}</div>
 
-        <div>
-          <h3 class="text-lg font-bold text-amber-100">${PHASE_LABELS[visit.phase]} actions</h3>
-          <div class="mt-3 grid gap-2 sm:grid-cols-2">
-            ${actions
-              .map((option) => {
-                const tags = [];
-                if (option.effects?.money) tags.push(`+${formatMoney(option.effects.money)}`);
-                if (option.effects?.weightRoll) tags.push('weight↑');
-                if (option.effects?.weight) tags.push('scale↑');
-                if (option.effects?.trust) tags.push('trust↑');
-                if (option.effects?.loyalty) tags.push('loyalty↑');
-                if (option.requires?.inventory) tags.push('uses stock');
-                return `
-              <button class="rounded-2xl p-3 text-left transition ${option.disabled ? 'dark-button opacity-50' : 'soft-card hover:border-amber-200/40'}" data-action="visit-action" data-id="${esc(option.id)}" ${option.disabled ? 'disabled' : ''}>
-                <div class="flex items-start justify-between gap-2">
-                  <strong class="text-sm text-stone-50">${esc(option.label)}</strong>
-                  <span class="text-xs text-amber-100">${option.apCost ? `${option.apCost} AP` : 'free'}</span>
-                </div>
-                <p class="mt-1 text-xs leading-5 text-stone-400">${esc(option.description)}</p>
-                ${tags.length ? `<p class="mt-2 text-xs text-emerald-200">${tags.join(' · ')}</p>` : ''}
-                ${option.reason && option.disabled ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>` : ''}
-              </button>`;
-              })
-              .join('')}
-          </div>
-        </div>
+        ${actionsHtml}
 
         ${
-          visit.phase === 'checkout' && !endVisitDone
+          visit.phase === 'checkout' && !endVisitDone && !interruptScene
             ? `<p class="text-sm text-amber-100">Checkout: bill consult, schedule follow-up if you want, then end visit.</p>`
             : ''
         }

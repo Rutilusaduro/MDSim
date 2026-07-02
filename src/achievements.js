@@ -2,7 +2,7 @@ import { getStageIndex } from './characters.js';
 
 export const ACHIEVEMENTS = [
   { id: 'first_week', name: 'Doors Open', desc: 'Complete your first week.', check: (s) => s.week >= 2 },
-  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 4+.', check: (s, ctx) => ctx.maxStage >= 2 },
+  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 5+.', check: (s, ctx) => ctx.maxStage >= 4 },
   { id: 'first_arc', name: 'Private Story', desc: 'Complete an arc beat.', check: (s) => s.stats?.arcBeatsCompleted >= 1 },
   { id: 'recruit_one', name: 'New Hire', desc: 'Recruit a patient to staff.', check: (s) => s.stats?.patientsRecruited >= 1 },
   { id: 'staff_six', name: 'Full Bench', desc: 'Employ 6 or more staff.', check: (s) => s.staff.length >= 6 },
@@ -14,6 +14,8 @@ export const ACHIEVEMENTS = [
   { id: 'compound_user', name: 'Pharmacy Open', desc: 'Use 10 compounds total.', check: (s) => s.stats?.compoundsUsed >= 10 },
   { id: 'rich_clinic', name: 'In the Black', desc: 'Hold $8,000+ after week end.', check: (s) => s.money >= 8000 },
   { id: 'wardrobe_crisis', name: 'Button Pop', desc: 'Trigger a wardrobe strain event.', check: (s) => s.stats?.wardrobeEvents >= 1 },
+  { id: 'first_interrupt', name: 'Crisis Manager', desc: 'Resolve a visit interrupt.', check: (s) => (s.stats?.interruptsHandled || 0) >= 1 },
+  { id: 'doorframe_hero', name: 'Doorframe Hero', desc: 'Widen the clinic doorway.', check: (s) => (s.globalFlags || []).includes('global_doorway_widened') },
   { id: 'relationship_spark', name: 'Office Tension', desc: 'Witness a staff relationship beat.', check: (s) => s.stats?.relationshipBeats >= 1 },
   { id: 'perfect_ap', name: 'Clean Week', desc: 'Spend every AP in a week.', check: (s, ctx) => ctx.perfectApWeek },
   { id: 'chapter_one', name: 'Soft Opening', desc: 'Complete Chapter 1.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_1') },

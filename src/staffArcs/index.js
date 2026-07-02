@@ -7,19 +7,31 @@ import { PROCEDURAL_ARC } from './procedural.js';
 import { getArcContext, resolveScene, formatArcSceneNote, applyChoiceFlags, getRouteLabel } from './engine.js';
 
 export const STAFF_ARC_SCENES = {
-  'Maya Okafor': MAYA_ARC,
-  'Elena Ruiz': ELENA_ARC,
-  'Priya Shah': PRIYA_ARC,
-  'Nadia Volkov': NADIA_ARC,
-  'Jasmine Brooks': JASMINE_ARC,
+  maya: MAYA_ARC,
+  elena: ELENA_ARC,
+  priya: PRIYA_ARC,
+  nadia: NADIA_ARC,
+  jasmine: JASMINE_ARC,
 };
 
 export function getStaffArcScene(character, beat) {
   const ctx = getArcContext(character, beat.id);
-  const named = STAFF_ARC_SCENES[character.name]?.[beat.id];
+  const key = character.arcSlot || legacyArcKeyForName(character.name);
+  const named = STAFF_ARC_SCENES[key]?.[beat.id];
   if (named) return resolveScene(named, ctx);
   const procedural = PROCEDURAL_ARC[beat.id];
   return resolveScene(procedural, ctx);
+}
+
+function legacyArcKeyForName(name) {
+  const map = {
+    'Maya Okafor': 'maya',
+    'Elena Ruiz': 'elena',
+    'Priya Shah': 'priya',
+    'Nadia Volkov': 'nadia',
+    'Jasmine Brooks': 'jasmine',
+  };
+  return map[name] || null;
 }
 
 export { formatArcSceneNote, applyChoiceFlags, getRouteLabel };

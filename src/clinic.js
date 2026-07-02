@@ -11,8 +11,8 @@ export const shopItems = [
     cost: 900,
     install: true,
     maintenance: 35,
-    tagline: 'Wide caramel leather. Low arms. Patients stay seated longer.',
-    description: 'Cushions hold heat. Waistbands loosen. Nobody rushes the wait.',
+    tagline: 'Wide caramel leather. Low arms. Built for bodies that keep spreading.',
+    description: 'Cushions hold heat and swallow soft weight. Waistbands loosen. Nobody rushes back to their feet.',
     effects: { patientGain: 0.07, reputation: 1, trust: 0.25 },
   },
   {
@@ -55,8 +55,8 @@ export const shopItems = [
     cost: 1550,
     install: true,
     maintenance: 50,
-    tagline: 'Reinforced tables. Generous padding. Rose-gold rails.',
-    description: 'Large bodies fit without apology. Exams stay dignified.',
+    tagline: 'Reinforced tables. Generous padding. Rose-gold rails rated for real weight.',
+    description: 'The widest bodies settle in without apology, spilling past the edges while exams stay dignified.',
     effects: { patientGain: 0.06, reputation: 3, trust: 0.45 },
   },
   {
@@ -66,8 +66,8 @@ export const shopItems = [
     cost: 1850,
     install: true,
     maintenance: 70,
-    tagline: 'Curtained nook. Recliner. Warmed snack cabinet.',
-    description: 'Consults run long. Voices drop. Cabinets empty by dusk.',
+    tagline: 'Curtained nook. Wide recliner. A rolling feeding cart kept warm and full.',
+    description: 'Consults run long and the feeding cart runs longer. Voices drop. Cabinets empty by dusk.',
     effects: { staffGain: 0.08, patientGain: 0.1, actionPointsMax: 1 },
   },
   {
@@ -262,7 +262,7 @@ export function computeClinicEffects(state) {
 }
 
 export function getClinicRating(state) {
-  if (state.reputation >= 70) return 'Renowned comfort practice';
+  if (state.reputation >= 70) return 'Renowned gorging practice';
   if (state.reputation >= 48) return 'Beloved local clinic';
   if (state.reputation >= 32) return 'Trusted neighborhood care';
   if (state.reputation >= 18) return 'Promising new practice';

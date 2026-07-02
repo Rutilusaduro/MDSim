@@ -1,13 +1,14 @@
-import { createPatientRoster, createStartingStaff, defaultPreferences } from './characters.js';
+import { createTinyClinicStaff, defaultPreferences } from './characters.js';
 import { shopItems } from './clinic.js';
 import { defaultRoomLayout } from './rooms.js';
 import { defaultRivalState } from './rival.js';
 import { defaultClinicStyle } from './clinicStyle.js';
 import { defaultRivalClinicState } from './rivalClinic.js';
 import { ensurePatientAppearance } from './patientAppearance.js';
+import { refreshRecruitmentOffers } from './recruitment.js';
 
-export const SAVE_KEY = 'indulgecare-clinic-save-v4';
-export const GAME_VERSION = 4;
+export const SAVE_KEY = 'indulgecare-clinic-save-v6';
+export const GAME_VERSION = 6;
 
 export function createRng(seed = Date.now()) {
   let value = Math.abs(Math.floor(seed)) % 2147483647;
@@ -45,26 +46,30 @@ function defaultStats() {
     chaptersCompleted: 0,
     loyaltyArcBeats: 0,
     rivalOpsActions: 0,
+    earlyGainEvents: 0,
+    visitCount: 0,
+    scenesResolved: 0,
+    interruptsHandled: 0,
   };
 }
 
 export function createNewGame(options = {}) {
   const rng = createRng(options.seed ?? Date.now());
-  const staff = createStartingStaff(rng);
-  const patients = createPatientRoster(rng, 5);
+  const staff = createTinyClinicStaff(rng);
+  const patients = [];
 
-  return {
+  const game = {
     version: GAME_VERSION,
-    clinicName: options.clinicName || 'IndulgeCare Clinic',
+    clinicName: options.clinicName || 'Vale Family Medicine',
     doctorName: options.doctorName || 'Dr. Vale',
     week: 1,
-    money: 4200,
-    reputation: 22,
-    actionPointsMax: 9,
-    actionPoints: 9,
-    rent: 725,
-    salaries: 1420,
-    supplyCost: 340,
+    money: 2400,
+    reputation: 8,
+    actionPointsMax: 7,
+    actionPoints: 7,
+    rent: 420,
+    salaries: 280,
+    supplyCost: 95,
     ownedUpgrades: [],
     pendingInstallations: [],
     inventory: {
@@ -85,8 +90,8 @@ export function createNewGame(options = {}) {
         id: 'welcome',
         week: 1,
         type: 'system',
-        title: 'Grand opening',
-        text: 'Doors open. Floors shine. Staff on shift. Week one.',
+        title: 'Lease signed',
+        text: 'Strip-mall suite. One reception desk. Fluorescents hum. Your sign says primary care. Week one.',
       },
     ],
     thisWeek: [],
@@ -94,7 +99,7 @@ export function createNewGame(options = {}) {
     pendingStageHighlights: [],
     rngSeed: rng.seed,
     rooms: defaultRoomLayout(),
-    rivalState: defaultRivalState(),
+    rivalState: { ...defaultRivalState(), reputation: 14, active: false },
     chapter: 1,
     chapterGoalsMet: [],
     clinicStyle: defaultClinicStyle(),
@@ -106,7 +111,16 @@ export function createNewGame(options = {}) {
     challengeWeek: null,
     audioMuted: false,
     rivalClinic: defaultRivalClinicState(),
+    recruitment: { openSlotId: null, candidates: [], filledSlots: [] },
+    coverRating: 100,
+    heat: 0,
+    sceneState: { resolved: [], weekInterrupt: null },
+    globalFlags: [],
+    gameOver: null,
   };
+
+  refreshRecruitmentOffers(game, rng);
+  return game;
 }
 
 export let gameState = createNewGame();
@@ -175,12 +189,24 @@ export function saveGame(state = gameState) {
   localStorage.removeItem('indulgecare-clinic-save-v1');
   localStorage.removeItem('indulgecare-clinic-save-v2');
   localStorage.removeItem('indulgecare-clinic-save-v3');
+  localStorage.removeItem('indulgecare-clinic-save-v4');
+  localStorage.removeItem('indulgecare-clinic-save-v5');
 }
 
 function migrateCharacter(c) {
   if (!c.preferences) c.preferences = defaultPreferences();
   if (!c.arc) c.arc = { completedBeats: [] };
   if (c.type === 'staff' && !c.arc.completedBeats) c.arc = { completedBeats: [] };
+  if (c.type === 'staff' && !c.arcSlot) {
+    const legacy = {
+      'Maya Okafor': 'maya',
+      'Elena Ruiz': 'elena',
+      'Priya Shah': 'priya',
+      'Nadia Volkov': 'nadia',
+      'Jasmine Brooks': 'jasmine',
+    };
+    c.arcSlot = legacy[c.name] || null;
+  }
   if (c.type === 'patient' && c.loyalty == null) c.loyalty = Math.min(3, c.visits || 0);
   if (c.type === 'patient' && !c.loyaltyArc) c.loyaltyArc = { completedBeats: [] };
   if (c.type === 'patient') ensurePatientAppearance(c);
@@ -224,11 +250,19 @@ function normaliseState(raw) {
   merged.challengeWeek = raw.challengeWeek || null;
   merged.audioMuted = raw.audioMuted ?? false;
   merged.rivalClinic = raw.rivalClinic || defaultRivalClinicState();
+  merged.recruitment = raw.recruitment || { openSlotId: null, candidates: [], filledSlots: [] };
+  merged.coverRating = raw.coverRating ?? 100;
+  merged.heat = raw.heat ?? 0;
+  merged.sceneState = raw.sceneState || { resolved: [], weekInterrupt: null };
+  merged.globalFlags = raw.globalFlags || [];
+  merged.gameOver = raw.gameOver || null;
   return merged;
 }
 
 export function loadGame() {
   let saved = localStorage.getItem(SAVE_KEY);
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v5');
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v4');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v3');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v2');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v1');

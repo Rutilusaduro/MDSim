@@ -1,6 +1,6 @@
 import { getStageIndex, STAGE_MAX, weightForStageIndex } from './characters.js';
 
-/** Snap weight to a representative value for a target stage index (0–6). */
+/** Snap weight to a representative value for a target stage index (0–11). */
 export function applyDebugStage(character, targetStage) {
   const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(targetStage)));
   character.weight = Math.round(weightForStageIndex(character, stage) * 10) / 10;
