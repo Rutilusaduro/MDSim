@@ -8,7 +8,7 @@ export const HEIGHT_RANGE_IN = [58, 74];
 
 import { STAGE_MAX } from './characters.js';
 
-/** Seven wardrobe bands cover stages 0–6 (stage 6 / ~350 lb; stage 7 / ton scale). */
+/** Twelve wardrobe bands cover stages 0–11 (350 lb outgrowing through 2400 lb blob). */
 export const STAGE_BANDS = [
   { id: 'slim', label: 'slim', stages: [0] },
   { id: 'softening', label: 'softening', stages: [1] },
@@ -16,7 +16,12 @@ export const STAGE_BANDS = [
   { id: 'plush', label: 'plush', stages: [3] },
   { id: 'heavy', label: 'heavy', stages: [4] },
   { id: 'abundant', label: 'abundant', stages: [5] },
-  { id: 'titanic', label: 'titanic', stages: [6] },
+  { id: 'outgrowing', label: 'outgrowing', stages: [6] },
+  { id: 'gorging', label: 'gorging', stages: [7] },
+  { id: 'massive', label: 'massive', stages: [8] },
+  { id: 'waddling', label: 'waddling', stages: [9] },
+  { id: 'immobile', label: 'immobile', stages: [10] },
+  { id: 'blob', label: 'blob', stages: [11] },
 ];
 
 export function getStageBand(stageIndex) {
@@ -62,7 +67,12 @@ export const HAIR_BAND_MOD = {
   plush: ' and looks thicker against a softer jaw',
   heavy: ' with new weight in her face',
   abundant: ', heavy and glossy, unmistakable',
-  titanic: ', plastered to a face that fills the mirror',
+  outgrowing: ', plastered to a face that fills the mirror',
+  gorging: ', sweat-damp at the temples after every meal',
+  massive: ', buried under soft cheeks and a double chin',
+  waddling: ', matted against a neck lost to folds',
+  immobile: ', fanned across pillows like spilled silk',
+  blob: ', a thin ribbon of color lost in the vast round of her face',
 };
 
 // --- Height (tier + band posture, composed) ---
@@ -87,7 +97,12 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'takes vertical space without apology',
     heavy: 'rises into rooms before her voice',
     abundant: 'a tall, warm presence that blocks light',
-    titanic: 'a wall of height and heat; doorframes are suggestions',
+    outgrowing: 'a wall of height and heat; doorframes are suggestions',
+    gorging: 'tall frame bowed forward over a gut that never empties',
+    massive: 'height bent under belly weight; ceilings feel lower',
+    waddling: 'each step a negotiation between height and hip',
+    immobile: 'height folded into a chair; legs barely clear the seat',
+    blob: 'tall only in memory; mass sprawls flat across the bed',
   },
   petite: {
     slim: 'compact and quick on her feet',
@@ -96,7 +111,12 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'dense and curvy for her height',
     heavy: 'short and wide; chairs feel smaller',
     abundant: 'petite only in memory; plush in fact',
-    titanic: 'short only on paper; mass fills every cubic inch',
+    outgrowing: 'short only on paper; mass fills every cubic inch',
+    gorging: 'petite frame swallowed by appetite; width arrived first',
+    massive: 'short and impossibly wide; doorways are theory',
+    waddling: 'tiny feet under a belly that leads every waddle',
+    immobile: 'petite frame pinned under acres of soft flesh',
+    blob: 'small frame lost inside a mattress-filling mound',
   },
   average: {
     slim: 'average height; easy to overlook',
@@ -105,7 +125,12 @@ export const HEIGHT_BAND_POSTURE = {
     plush: 'grounded, thickened, hard to miss',
     heavy: 'weight arrived without adding inches',
     abundant: 'solid height; massive softness',
-    titanic: 'tonnage without added inches; floors remember her',
+    outgrowing: 'tonnage without added inches; floors remember her',
+    gorging: 'average height; gut expanded past every meal',
+    massive: 'height unchanged; girth doubled and still climbing',
+    waddling: 'average height lost under swaying hip and belly',
+    immobile: 'seated mass; standing is a story she tells',
+    blob: 'height irrelevant; spread is measured in mattress rails',
   },
 };
 
@@ -121,6 +146,12 @@ export const TOPS = {
       plush: 'a stretched crop top',
       heavy: 'a crop top mostly suggestion',
       abundant: 'a crop top that lost the war',
+      outgrowing: 'a crop top that lost weeks ago',
+      gorging: 'a crop top riding above a post-meal swell',
+      massive: 'a crop top more memory than fabric',
+      waddling: 'a crop top lost under overhanging belly',
+      immobile: 'a crop top draped across seated cleavage',
+      blob: 'fabric scrap laid over an immobile chest',
     },
   },
   fitted_tee: {
@@ -132,6 +163,12 @@ export const TOPS = {
       plush: 'a tee skimming soft belly',
       heavy: 'a tee strained at the bust',
       abundant: 'a tee surviving on stretch',
+      outgrowing: 'a tee with seams that gave up',
+      gorging: 'a tee stretched translucent over a full gut',
+      massive: 'a tee rolled above a belly that blocks her view',
+      waddling: 'a tee riding up with every waddle',
+      immobile: 'a tee bunched under seated belly folds',
+      blob: 'a tee lost somewhere under layered fat',
     },
   },
   blouse: {
@@ -143,6 +180,12 @@ export const TOPS = {
       plush: 'a blouse worn open over softness',
       heavy: 'a blouse with a safety pin',
       abundant: 'a blouse surrendered to comfort',
+      outgrowing: 'a blouse gaping from bust to belly',
+      gorging: 'a blouse left open after the third helping',
+      massive: 'a blouse that will not meet at the buttons',
+      waddling: 'a blouse pinned where belly allows',
+      immobile: 'a blouse spread across seated lap',
+      blob: 'a blouse draped like a napkin over immobile flesh',
     },
   },
   sweater: {
@@ -154,6 +197,12 @@ export const TOPS = {
       plush: 'a cozy sweater stretched thin',
       heavy: 'an oversized sweater',
       abundant: 'a sweater like a tent',
+      outgrowing: 'a sweater stretched to its limit',
+      gorging: 'a sweater riding up after every gorge',
+      massive: 'a sweater that cannot cover her middle',
+      waddling: 'a sweater hem lost under belly overhang',
+      immobile: 'a sweater pooled in seated lap folds',
+      blob: 'a sweater sheet across an unmoving mound',
     },
   },
   wrap_top: {
@@ -165,6 +214,12 @@ export const TOPS = {
       plush: 'a wrap with a migrating knot',
       heavy: 'a wrap that gaps when she leans',
       abundant: 'a wrap top holding on by pins',
+      outgrowing: 'a wrap that will not close over her gut',
+      gorging: 'a wrap tie buried under post-feast swell',
+      massive: 'a wrap top defeated by chest and belly',
+      waddling: 'a wrap flapping open with every step',
+      immobile: 'a wrap top spread across seated width',
+      blob: 'a wrap lost under folds that never shift',
     },
   },
   hoodie: {
@@ -176,6 +231,12 @@ export const TOPS = {
       plush: 'a zip hoodie worn open',
       heavy: 'a hoodie that will not zip',
       abundant: 'a hoodie stretched across her back',
+      outgrowing: 'a hoodie that will not zip past her chest',
+      gorging: 'a hoodie worn open over a stuffed belly',
+      massive: 'a hoodie sleeves straining at the upper arm',
+      waddling: 'a hoodie riding up as her gut leads',
+      immobile: 'a hoodie bunched behind a seated back roll',
+      blob: 'a hoodie flattened under immobile shoulder fat',
     },
   },
   tank: {
@@ -187,6 +248,12 @@ export const TOPS = {
       plush: 'a tank with belly peeking below',
       heavy: 'a tank riding high',
       abundant: 'a tank and nothing else pretending to work',
+      outgrowing: 'a tank that barely clears her navel',
+      gorging: 'a tank dark with sweat at the underboob',
+      massive: 'a tank swallowed by belly and bust',
+      waddling: 'a tank riding high above waddling thighs',
+      immobile: 'a tank strap digging into seated shoulder fat',
+      blob: 'a tank strap lost in soft immobile shoulder',
     },
   },
   bodycon: {
@@ -198,6 +265,12 @@ export const TOPS = {
       plush: 'bodycon with ruching that failed',
       heavy: 'bodycon painted on',
       abundant: 'bodycon as second skin',
+      outgrowing: 'bodycon painted on every new pound',
+      gorging: 'bodycon sheer where the gut pushes hardest',
+      massive: 'bodycon as honest confession of every meal',
+      waddling: 'bodycon stretched between hip and belly',
+      immobile: 'bodycon rolled up under seated belly shelf',
+      blob: 'bodycon a fiction; skin and fat tell the truth',
     },
   },
 };
@@ -212,6 +285,12 @@ export const BOTTOMS = {
       plush: 'stretch jeans',
       heavy: 'jeans with a hidden safety pin',
       abundant: 'elastic-waist "jeans"',
+      outgrowing: 'jeans abandoned for anything with stretch',
+      gorging: 'maternity jeans worn ironically',
+      massive: 'jeans a rumor under belly overhang',
+      waddling: 'jeans unbuttoned under gut lead',
+      immobile: 'jeans cut away at the thigh seam',
+      blob: 'no jeans; fabric cannot span that width',
     },
   },
   leggings: {
@@ -223,6 +302,12 @@ export const BOTTOMS = {
       plush: 'leggings under a long tee',
       heavy: 'leggings with a tunic cover-up',
       abundant: 'leggings under everything',
+      outgrowing: 'leggings gone sheer at the thigh',
+      gorging: 'leggings with waistband rolled under gut',
+      massive: 'leggings with thigh rub holes',
+      waddling: 'leggings stretched to thread at the crotch',
+      immobile: 'leggings cut at the knee; seated spread wins',
+      blob: 'leggings surrendered; skin meets sheets',
     },
   },
   mini_skirt: {
@@ -234,6 +319,12 @@ export const BOTTOMS = {
       plush: 'a mini fighting thick thighs',
       heavy: 'a mini mostly for photos now',
       abundant: 'a mini kept for courage',
+      outgrowing: 'a mini that cannot clear her thighs',
+      gorging: 'a mini riding up with every stuffed step',
+      massive: 'a mini lost under belly drape',
+      waddling: 'a mini more wish than garment',
+      immobile: 'a mini folded in a drawer somewhere',
+      blob: 'a mini from another life',
     },
   },
   skirt: {
@@ -245,6 +336,12 @@ export const BOTTOMS = {
       plush: 'a skirt with elastic backup',
       heavy: 'a skirt that sways with belly',
       abundant: 'a skirt pooling when she sits',
+      outgrowing: 'a skirt hem lost under hip shelf',
+      gorging: 'a skirt printing every gorge in fabric',
+      massive: 'a skirt that cannot close at the waist',
+      waddling: 'a skirt swaying with belly and hip',
+      immobile: 'a skirt spread across seated lap',
+      blob: 'a skirt draped over immobile hip mound',
     },
   },
   shorts: {
@@ -256,6 +353,12 @@ export const BOTTOMS = {
       plush: 'stretch shorts',
       heavy: 'shorts rare but stubborn',
       abundant: 'shorts as a memory',
+      outgrowing: 'shorts that dig trenches at the thigh',
+      gorging: 'shorts abandoned after lunch',
+      massive: 'shorts lost under belly overlap',
+      waddling: 'shorts rare; thighs won the war',
+      immobile: 'shorts cut free at the seams',
+      blob: 'shorts from a drawer she cannot reach',
     },
   },
   maxi: {
@@ -267,6 +370,12 @@ export const BOTTOMS = {
       plush: 'a maxi with a high slit',
       heavy: 'a maxi draped like weather',
       abundant: 'a maxi that follows every curve',
+      outgrowing: 'a maxi clinging honest to new width',
+      gorging: 'a maxi printing belly shape in wet fabric',
+      massive: 'a maxi draped like a tent over gut',
+      waddling: 'a maxi snagged on swaying hips',
+      immobile: 'a maxi pooled around seated ankles',
+      blob: 'a maxi sheet over a bedbound spread',
     },
   },
   joggers: {
@@ -278,6 +387,12 @@ export const BOTTOMS = {
       plush: 'baggy joggers',
       heavy: 'joggers only, dress code lost',
       abundant: 'joggers as uniform',
+      outgrowing: 'joggers with drawstring at full extension',
+      gorging: 'joggers dark with thigh rub',
+      massive: 'joggers only; zippers are history',
+      waddling: 'joggers stretched sheer at the seat',
+      immobile: 'joggers cut at the calf for seated spread',
+      blob: 'soft pants draped over immobile legs',
     },
   },
   dress: {
@@ -289,6 +404,12 @@ export const BOTTOMS = {
       plush: 'a dress with side ruching',
       heavy: 'a dress that clings honest',
       abundant: 'a dress like a banner',
+      outgrowing: 'a dress straining at every seam',
+      gorging: 'a dress wet at the underboob after meals',
+      massive: 'a dress that clings like a second skin of shame',
+      waddling: 'a dress swaying with belly and hip lead',
+      immobile: 'a dress spread across seated lap and thighs',
+      blob: 'a dress draped like bedding over immobile mass',
     },
   },
 };
@@ -301,7 +422,12 @@ export const HEM_LENGTH = {
   plush: 'midi',
   heavy: 'long',
   abundant: 'floor-length',
-  titanic: 'floor-length',
+  outgrowing: 'floor-length',
+  gorging: 'floor-length',
+  massive: 'floor-length',
+  waddling: 'floor-length',
+  immobile: 'floor-length',
+  blob: 'floor-length',
 };
 
 /** Universal fit / strain clauses (any outfit). */
@@ -312,7 +438,12 @@ export const STRAIN = {
   plush: 'Stretch fabric earns its name.',
   heavy: 'Buttons negotiate peace terms.',
   abundant: 'Clothes surrendered with grace.',
-  titanic: 'Fabric gave up weeks ago. Skin and stretch win.',
+  outgrowing: 'Fabric gave up weeks ago. Skin and stretch win.',
+  gorging: 'Every meal leaves new strain lines. She keeps eating anyway.',
+  massive: 'Stitches pop like applause. She orders seconds.',
+  waddling: 'Clothes ride up with every waddle. She does not fix them.',
+  immobile: 'Seated spread tore the last seams. Comfort won.',
+  blob: 'Fabric is decoration on a body that outgrew dressing.',
 };
 
 /** Drawable fit detail per band (hem, waist, skin, seams). */
@@ -329,8 +460,18 @@ export const FIT_VISUAL = {
     'Top button strains with a horizontal wrinkle. Zipper bowed at the fly. Soft belly overlaps the waistband in a pale crescent when she exhales.',
   abundant:
     'Fabric thin at the seat and thighs. Belly rests on the waistband like a shelf. Short sleeves end high on thick upper arms. Hem cannot cover both hips at once.',
-  titanic:
+  outgrowing:
     'Seams split hours ago. Belly drapes in layered folds to her lap and beyond. Arms rest on her own sides like bolsters. Every hem rides high on acres of skin.',
+  gorging:
+    'Waistband buried under post-feast swell. Fabric dark with sweat at the creases. Thighs rub bare through worn seams. She is still hungry.',
+  massive:
+    'Belly domes past the hem in a smooth shelf. Sleeves end mid-upper-arm on flesh that overflows. Side seams part when she breathes deep.',
+  waddling:
+    'Clothes ride up with every waddle. Belly leads; fabric follows late. Thigh rub has worn holes at the inner seam.',
+  immobile:
+    'Seated belly spills over both thighs in layered folds. Arms rest on hip shelves. Fabric bunches under back rolls and cannot be smoothed.',
+  blob:
+    'No fit left to describe. Flesh settles in immobile folds from chest to knee. Fabric lies wherever attendants draped it last.',
 };
 
 export const MIDRIFF_VISUAL = {
@@ -340,7 +481,12 @@ export const MIDRIFF_VISUAL = {
   plush: 'Several inches of bare midriff. Navel centered. Skin warm and lightly flushed.',
   heavy: 'Heavy belly spills over low jeans. Crop top barely covers the underside of her chest.',
   abundant: 'Wide bare middle between short top and stretched waistband. Belly domes forward, skin smooth and exposed.',
-  titanic: 'Crop and waistband lost the fight. Belly spills in waves from chest to thigh, bare and shining under clinic lights.',
+  outgrowing: 'Crop and waistband lost the fight. Belly spills in waves from chest to thigh, bare and shining under clinic lights.',
+  gorging: 'Post-meal gut pushes the crop hem to her ribs. Bare belly shines, still rounding from the last tray.',
+  massive: 'Midriff vanished under a belly that blocks her own feet. Skin warm and flushed from constant grazing.',
+  waddling: 'Belly overhang hides the waistband entirely. Bare strip of skin visible only when she lifts her arms to waddle.',
+  immobile: 'Seated belly drapes bare across both thighs. Crop top lost under chest and gut shelf.',
+  blob: 'Belly mound bare and vast from chest to lap. No waist left to define; only soft immobile expanse.',
 };
 
 export const GARMENT_COLORS = [
@@ -364,7 +510,12 @@ export const SKIRT_HEM_EXTRA = {
   plush: 'hides less than she hoped.',
   heavy: 'sways with her belly.',
   abundant: 'pools at her ankles when she stops.',
-  titanic: 'fabric vanishes under hip and belly; hem is decorative fiction',
+  outgrowing: 'fabric vanishes under hip and belly; hem is decorative fiction',
+  gorging: 'hem rides up after every gorge; she does not tug it down',
+  massive: 'skirt fabric thin where gut and hip rub constant',
+  waddling: 'snags on swaying thighs with every step',
+  immobile: 'pooled around seated ankles and spilled belly',
+  blob: 'draped like a sheet; hem is irrelevant on bedbound mass',
 };
 
 /** Wardrobe behaviors modify how bottom/top combine. */
@@ -446,9 +597,17 @@ function resolveWardrobe(appearance) {
   return { top, bottom, behavior: preset.behavior, presetKey, presetLabel: preset.label };
 }
 
+const BAND_FALLBACK_ORDER = [
+  'blob', 'immobile', 'waddling', 'massive', 'gorging', 'outgrowing', 'abundant', 'heavy',
+];
+
 function pieceBandLine(piece, bandId) {
   if (!piece?.bands) return '';
-  return piece.bands[bandId] || (bandId === 'titanic' ? piece.bands.abundant : '') || '';
+  if (piece.bands[bandId]) return piece.bands[bandId];
+  for (const fb of BAND_FALLBACK_ORDER) {
+    if (piece.bands[fb]) return piece.bands[fb];
+  }
+  return piece.bands.slim || '';
 }
 
 function composeBottom(bottomId, behaviorId, bandId) {
@@ -505,7 +664,7 @@ export function composeHairLine(hairColorId, hairStyleId, bandId) {
   if (!color || !style) return '';
   const mod = HAIR_BAND_MOD[bandId] || '';
   const lengthNote =
-    bandId === 'heavy' || bandId === 'abundant' || bandId === 'titanic'
+    ['heavy', 'abundant', 'outgrowing', 'gorging', 'massive', 'waddling', 'immobile', 'blob'].includes(bandId)
       ? 'Ends rest on her shoulders and upper back.'
       : 'Falls to shoulder length.';
   return `${style.snippet}${mod}. ${color.label} hair, ${lengthNote}`;
