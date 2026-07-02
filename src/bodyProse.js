@@ -7,8 +7,11 @@
  * staffBodyDescriptions:   clinic staff; scrubs and uniform context permitted.
  * patientBodyDescriptions: elective patients; civilian street clothes only.
  *
- * Each object is keyed by body type. Each value is an array of 7 strings,
- * index 0 (slim / neutral) through index 6 (very heavy / abundant).
+ * Each object is keyed by body type. Each value is an array of 12 strings,
+ * index 0 (slim / neutral) through index 11 (bedbound / titanic mass).
+ * Stage tone: 0 slim, 1-2 first gains, 3-4 habitual glutton,
+ * 5-6 outgrowing uniforms, 7-8 massive spreading, 9 can barely walk,
+ * 10 immobile blob, 11 bedbound titanic mass.
  * Each string is a self-contained paragraph of 4 to 5 complete sentences.
  */
 
@@ -27,6 +30,16 @@ export const staffBodyDescriptions = {
     'Her arms are thick and soft, belly deep and heavy against the front panel of her scrubs. She takes up space with the unconscious ease of someone who stopped calculating whether she should. Walking the full clinic length requires a breath and a pause at the midpoint; she takes both. The chair beneath her holds without complaint, and she fills it completely.',
 
     'Each step sends weight through her frame in a rolling wave, hip to belly to thigh and back again. Fabric gives at every seam and holds by stretch and repetition. She fills chairs the way rooms fill with sound: completely, from every corner, leaving no gap. The corridor narrows behind her passage, and every surface she touches keeps her warmth a moment after she moves on.',
+
+    'Her hips have spread past the width of any chair the clinic owns, flesh mounding over both arms when she manages to wedge herself down. The scrub top splits its stitching at the side seam, and someone brought her the largest size the supplier stocks, which strains all the same. Bust and belly and hip carry more each week, soft heavy weight that spreads sideways when she leans on a counter. She moves along the wall now, one hand tracking the surface for balance.',
+
+    'Two of the largest scrubs, cut and sewn together, barely close over a body that widens by the month. Her belly hangs forward in a deep soft shelf that rests against the counter before she does. Her hips fill the corridor from wall to cart, and staff flatten themselves to let her pass. She breathes hard between rooms and rests a palm flat on her chest while the breath comes back.',
+
+    'Walking the clinic hall has become a slow negotiation of weight, each step a shift of enormous soft mass from one leg to the other. Her thighs press so wide that they force her stance into a roll, and she covers ten feet and stops to rest against the wall. The scrubs stretch to translucence over a belly that swings low and heavy with the motion. She takes the wheeled stool everywhere now and lowers herself onto it whenever the distance allows.',
+
+    'She cannot stand for more than a moment before her knees complain under the load, so she works from a reinforced chair that holds her spreading bulk. Her belly pools into her lap and over her thighs in a warm heavy flood, and her hips overrun the seat on both sides. The scrubs are draped rather than worn, the largest panels the supplier makes, tenting over a mass that no longer fits any standard cut. Staff bring the work to her, and she receives it without rising.',
+
+    'She fills a bed now, a titanic soft mass of belly and hip and arm that has outgrown standing entirely. Her body spreads across the mattress from rail to rail, flesh settling in deep warm folds wherever gravity pulls it. The scrubs have become a draped sheet of fabric laid over the vast rise of her middle. She breathes in slow deep swells, and the whole immense shape of her lifts and settles with each one.',
   ],
 
   pear: [
@@ -43,6 +56,16 @@ export const staffBodyDescriptions = {
     'Her steps come slower and heavier, roll of her hips visible under even the loosest fabric she wears. Thighs rub from mid-inner down to the knee, a friction she manages with her stride rather than fighting. She sits spread and settled, hips wide, belly soft and folded over her lap, knees slightly parted to give the thigh room. The lower body has become the whole story; it precedes her into rooms and lingers when she moves on.',
 
     'Her hips define the doorway when she passes through it, width of her lower body measuring the space with precision. Weight lives in every stride: visible rolling motion at hip and thigh, floor registering each footfall. Her thighs are dense and warm from hip to knee. Her belly is deep and round above the lap. She moves through the clinic like something large and rooted, impossible to overlook from any angle or distance.',
+
+    'Her hips have spread wider than the doorway allows, and she angles through every threshold sideways now, one heavy haunch clearing before the other. The scrub pants blew out at the inner seam weeks ago, and the replacement pair, the largest cut, stretches to a shine across her rear. Her thighs press together from hip to knee in a solid heavy column that reshapes her walk. She rests against the wall at the midpoint of every hall.',
+
+    'Her lower body has swelled to a mass that dwarfs her narrow shoulders past all proportion, hips and rear and thigh spreading in every direction below the belt. The scrub bottoms are two sizes stitched into one and they still strain smooth over the vast curve of her seat. She lowers herself onto the reinforced stool with both hands braced, and the flesh of her hips flows over its edges. Each step is slow, and there are fewer of them.',
+
+    'She can barely walk the corridor now, thighs so thick and heavy that they force her legs apart and slow every stride to a labored roll. Her rear swings wide behind her, a great soft weight that sets the rhythm she cannot rush. She covers a short distance and grips the cart for rest, breath loud. The scrub pants have surrendered to the shape and merely cover it.',
+
+    'She works from a wide reinforced chair because her legs will no longer carry the mass of her lower body for long. Her hips pour over both arms of the seat, thighs spreading into a broad soft shelf that fills her lap and beyond. Standing takes two staff and a count, and she prefers to stay seated and let the work arrive. The scrubs drape loose over a body that has stopped fitting any of them.',
+
+    'She lies across the bed now, her lower body a titanic spread of hip and thigh and rear that has outgrown every chair and every doorway. The mass of her flows over both sides of the mattress, warm and soft and immense, settling deeper into the frame with each hour. The scrub fabric lies draped across the great slope of her hip. She shifts, and the whole vast lower half of her resettles slow as a tide.',
   ],
 
   apple: [
@@ -58,7 +81,17 @@ export const staffBodyDescriptions = {
 
     'Hall work leaves her breathing loud by the midpoint of any long corridor. Her chest heaves in long slow lifts over a middle that sways when she stops, still moving after the feet have settled. She stands with one hand braced on a counter after a fast stretch and takes a full moment before she continues. The belly is heavy and she carries it with practiced steadiness.',
 
-    'A rounded torso from collarbone to hip, full and warm and forward, belly carrying the weight of months of careful indulgence. Her arms are soft and heavy. Her face is wide and warm. She moves through the clinic with deliberate ease, every pound carried openly. She fills each room from the center outward, present and steady and warm to the core.',
+    'A rounded torso from collarbone to hip, full and warm and forward, belly carrying the weight of months of steady gorging. Her arms are soft and heavy. Her face is wide and warm. She moves through the clinic with deliberate ease, every pound carried openly. She fills each room from the center outward, present and steady and warm to the core.',
+
+    'Her belly has swelled into a broad forward mass that enters the room a full stride ahead of her and rests on the counter before her hands reach it. The scrub top, largest the supplier makes, strains at every button and rides up over the lower curve no matter how she tugs it. Her chest and arms have thickened with soft heavy weight that spreads when she leans. She walks slowly, one hand cradling the underside of the belly for the ballast of it.',
+
+    'The belly hangs in a deep heavy shelf that reaches the top of her thighs, and she rests it against furniture whenever she stops. Two scrub tops stitched together stretch across the vast forward mass and still gap at the sides. Her breathing is loud by the end of any hall, chest heaving over the great round middle. She braces both palms on a counter and lets the belly hang and takes her time.',
+
+    'She can barely cross the clinic now, the forward mass of her belly throwing her weight ahead of her feet with every step. She walks in short slow pushes, one hand under the belly, the other on the wall, and rests often. The scrub fabric stretches translucent over the enormous round swell of her middle. Ten feet and she stops, breath dragging, the whole heavy front of her rising and falling.',
+
+    'Standing tips her weight too far forward to sustain, so she works from a reinforced chair with the belly filling her lap in a warm heavy flood. The great round mass rests on her thighs and spreads to the chair arms, and she folds her soft heavy arms atop it. The scrubs drape over the swell like a sheet laid over a hill. Staff bring the work to her, and she receives it seated, breath slow.',
+
+    'She fills a bed now, her belly a titanic soft mountain that rises above the rest of her and has outgrown standing entirely. The mass of her middle spreads to both rails, warm and vast, settling into deep folds along its lower slope. The scrub fabric lies draped over the great rise of it. She breathes in long swells, and the whole immense round of her belly lifts toward the ceiling and eases back down.',
   ],
 
   athletic: [
@@ -74,7 +107,17 @@ export const staffBodyDescriptions = {
 
     'Each step sends a visible ripple through a body that once ran miles without checking in with it. The weight lives in her thighs and her belly and her arms and the soft shelf under her jaw. She works through the long halls with steadiness that is unmistakably physical, a full and occupied body in deliberate motion. Heavy, confident, thoroughly present.',
 
-    'Plush and powerful: a body that spent years in discipline and then two full years in comfort, keeping everything from both periods. Every footfall lands with mass that makes the floor register her passage. Her arms are heavy and soft. Her belly is deep and round. She moves through the clinic with slow grounded authority of something very large that knows exactly how large it is.',
+    'Plush and powerful: a body that spent years in discipline and then two full years of steady gorging, keeping everything from both periods. Every footfall lands with mass that makes the floor register her passage. Her arms are heavy and soft. Her belly is deep and round. She moves through the clinic with slow grounded authority of something very large that knows exactly how large it is.',
+
+    'The athlete is gone entirely beneath a spreading mass of soft heavy flesh that has claimed her belly and thighs and arms. The scrub top, largest cut, strains over a middle that has swelled well past anything training left behind. She still reaches with the old confident extension, and the vast soft body follows the reach a beat late. She walks the hall slower each week and rests against the wall without embarrassment.',
+
+    'Whatever muscle remains lies buried fathoms deep under a body that has spread massive and soft in every direction. The scrubs are two sizes joined and they strain across belly and hip and the thick soft column of her thighs. Her old power surfaces only in the steadiness of her stance, planted wide to hold the enormous weight. She breathes hard down the long halls and stops to let it settle.',
+
+    'She can barely walk the clinic now, the mass of her belly and thighs slowing the trained body to a heavy labored roll. Her thighs press wide and force the old efficient stride into a slow lurch from wall to cart. The scrubs stretch tight over a frame that has swelled far past the athlete it once was. She grips the counter and breathes, the whole soft weight of her heaving with it.',
+
+    'Standing wearies her fast now, so she works from a reinforced chair that holds the vast soft body the athlete became. Her belly floods her lap and her thighs spread to the edges of the seat, and the old strength shows only in how squarely she settles the mass. The scrubs drape loose over a shape no standard cut will hold. She takes the work seated and lets her thick soft arms rest atop the belly.',
+
+    'She fills a bed now, the trained body swelled into a titanic soft mass that has outgrown every chair and every stride she once ran. The weight spreads across the mattress rail to rail, warm and vast, deep folds settling where the muscle used to be. The scrub fabric lies draped over the enormous rise of her middle. She breathes in slow deep swells, and the whole immense shape of her lifts and eases with each one.',
   ],
 
   willowy: [
@@ -91,6 +134,16 @@ export const staffBodyDescriptions = {
     'Steps drag with mass she could not have imagined on her old body. She is still tall, still long-limbed, still occupying the full vertical dimension of any room she enters. The horizontal has caught up substantially with the vertical. She carries more body than she thought she could hold, and she holds all of it, clinic hall no longer wider than she needs by any margin.',
 
     'A tall column of warmth and mass from jaw to thigh, full length of her frame packed dense and soft at every point. She owns whatever hallway she walks through, filling it from shoulder to shoulder with presence that is warm and total. Her stride has shortened and her hips have widened and her belly is heavy and forward. Tall and warm and undeniably, thoroughly abundant at every distance.',
+
+    'The long frame has packed massive now, tall bones buried under a spreading soft weight that fills every inch they once left empty. The scrub top strains at the shoulder, and the largest cut still gaps over belly and hip. Her thighs press together from hip to knee and force a slow wide roll into the old easy stride. She rests against the wall halfway down the hall, tall and enormous and breathing hard.',
+
+    'She is a tall column of soft heavy mass now, the length of her frame swelled wide from shoulder to thigh. Two scrubs stitched together stretch over a belly that has grown deep and forward and a rear that has spread to match. She fills the whole corridor top to bottom and side to side and moves through it slowly. Her breath comes loud by the end of it, and she stops to let it ease.',
+
+    'She can barely walk the clinic now, the enormous soft mass on her long bones slowing every stride to a labored roll. Her thighs press wide and her belly swings low, and she covers a short stretch before gripping the cart for rest. The scrubs stretch tight over a frame that has filled far past what its height once promised. She breathes hard, tall and vast, and gathers herself for the next few steps.',
+
+    'Standing taxes the long legs too fast now under all this weight, so she works from a reinforced chair built to hold the tall vast body she became. Her belly floods her lap and her hips overrun the seat, the length of her folded and settled deep into it. The scrubs drape loose over a shape that dwarfs every standard cut. She takes the work seated and rises for nothing she can avoid.',
+
+    'She fills a bed now, the tall frame swelled into a titanic soft mass from jaw to thigh that has outgrown standing entirely. The length of her spreads across the mattress rail to rail, warm and vast, settling into deep folds along the whole long slope of her. The scrub fabric lies draped over the great rise of her middle. She breathes in slow swells, and the immense long shape of her lifts and eases with each one.',
   ],
 
   compact: [
@@ -107,6 +160,16 @@ export const staffBodyDescriptions = {
     'A compact body in full movement: belly and arms and thighs all carrying their weight in a visible jiggle that announces her before she rounds the corner. Small rooms feel smaller with her in them. She fills the break room chair past its edges and settles there with authority of someone who has decided this is simply how much space she takes. She is still quick when she needs to be. The weight is considerable and the quickness works around it.',
 
     'A short body carrying a grand weight, every seam of her scrubs reading the full story of her appetite and the months it has been running. Her belly is thick and deep, her arms soft from shoulder to wrist, her face full and warm. She moves through the clinic with slow authority of someone who has given this small frame everything it wanted and watched it fill every available inch. Dense, warm, thoroughly satisfied.',
+
+    'The short frame has packed enormous now, every added pound stacking dense and wide on a body with no height to spread into. The scrub top, largest cut, strains over a belly that has swelled broad and forward and low. Her thighs force her stance wide and her hips fill the corridor. She walks in slow short steps and rests against the wall more often than not.',
+
+    'She has grown massive on a small frame, belly and hip and thigh spreading in every direction the height cannot. Two scrubs joined at the seam stretch smooth over a body that widens by the month. She lowers herself onto the reinforced stool with both hands, and the soft weight of her floods over its edges. Each step is slow and heavy, and there are fewer of them.',
+
+    'She can barely cross the clinic now, the dense enormous weight on her short legs slowing every step to a labored roll. Her thighs press wide and her belly swings low, and she covers a few feet before she grips the cart to rest. The scrubs stretch tight over a small frame carrying a vast load. She breathes hard, low and wide and heavy, and pushes off for the next short stretch.',
+
+    'Standing tires the short legs fast now under all this dense weight, so she works from a reinforced chair that holds the enormous soft body the small frame became. Her belly floods her lap and her hips pour over both arms of the seat. Standing takes a count and a brace, and she prefers to stay put and let the work come. The scrubs drape loose over a shape no cut will hold.',
+
+    'She fills a bed now, the small frame swelled into a titanic soft mass that has outgrown every chair and doorway in the clinic. The dense enormous weight of her spreads across the mattress rail to rail, warm and vast, settling into deep folds wherever it pools. The scrub fabric lies draped over the great round rise of her belly. She breathes in slow swells, and the whole immense low shape of her lifts and eases with each one.',
   ],
 };
 
@@ -125,6 +188,16 @@ export const patientBodyDescriptions = {
     'The elevator over the stairs. A slow rolling walk from the lobby to the exam room, weight of her hips and belly setting the pace. She settles into the offered chair with gravity of someone who has accepted what this body is now. Her belly moves when she stops. Her arms are soft and her chest is heavy and she rests both hands in her lap and breathes.',
 
     'Her presence fills the lobby before she has spoken a word. She walks with slow and total roll of hip and belly, weight moving in long warm waves with each step. Her clothing covers without hiding: curves at chest and belly and hip are enormous and real and visible from across the waiting room. She arrives at the front desk and rests both forearms on it and breathes. She is very much here.',
+
+    'Her hips have spread past the width of any lobby chair, and she settles for the bench along the wall where the mass of her can flow unhindered. The wrap dress, bought in the largest size the shop carried, strains at every point where curve meets seam. Bust and belly and hip carry more each visit, soft heavy weight that spreads sideways when she leans back. She walks the lobby slowly, one hand grazing the wall for balance.',
+
+    'Her curves have swelled to a vast soft mass that fills the doorway edge to edge, and she turns slightly to bring the widest of herself through. The dress is a tent of stretched fabric over belly and hip, gapping wherever the width outpaces the cloth. She lowers herself onto the bench with both hands braced, and the flesh of her spreads to fill it. She breathes hard from the walk in and rests a palm on her chest.',
+
+    'She can barely cross the lobby now, the enormous soft weight of her hips and belly slowing each step to a labored roll. Her thighs press wide and force a slow wide stance, and she covers a short stretch before she stops to rest. The dress stretches tight over curves that have outgrown every fitting room she once shopped. She grips the front desk edge and breathes, the whole warm mass of her settling.',
+
+    'Standing wears her out fast now, so she takes the widest bench and lets the vast soft body settle where it will. Her belly floods her lap and her hips overrun the seat on both sides, curves spreading warm and heavy in every direction. Rising takes a brace and a count, and she stays down as long as she can. The dress drapes over her like a sheet laid over a swell.',
+
+    'She arrives on a transport bed now, her body a titanic soft mass of belly and hip and bust that has outgrown standing entirely. The great warm spread of her fills the mattress rail to rail, settling into deep folds wherever gravity pulls. A loose dress lies draped over the vast rise of her middle. She breathes in slow swells, and the whole immense shape of her lifts and eases with each one.',
   ],
 
   pear: [
@@ -141,6 +214,16 @@ export const patientBodyDescriptions = {
     'Her steps are slow and deliberate, roll at her hips visible under any fabric she wears. She navigates the clinic with practiced awareness of someone who has learned her own width through repetition. Her thighs press together from hip to knee when she stands. Her rear is heavy and round and full. The chair holds her, barely, and she fills every part of it that can be filled.',
 
     'Her hips define the space around her as she moves through it, wide and warm and requiring real room in every doorway. She turns slightly sideways at the narrowest points of the clinic and has learned which routes have enough width. Her thighs are dense and warm all the way down. Her belly hangs low and heavy. She settles into the waiting room chair with slow total weight of someone very large and entirely settled in that fact.',
+
+    'Her hips have spread wider than the lobby doorway, and she angles through sideways, one heavy haunch clearing before the other. The stretch leggings, largest the shop stocked, shine tight across a rear that has swelled past all proportion to her narrow shoulders. Her thighs press together hip to knee in a solid heavy column. She rests against the wall halfway to the desk.',
+
+    'Her lower body has swelled to a vast soft mass that dwarfs everything above the belt, hips and rear and thigh spreading in every direction. The leggings strain smooth and translucent over the enormous curve of her seat. She lowers onto the bench with both hands braced, and her hips flow over its edges. Each step is slow, and there are fewer between the rests.',
+
+    'She can barely cross the lobby now, thighs so thick and heavy they force her legs apart and slow her walk to a labored roll. Her rear swings wide behind her, a great soft weight setting a pace she cannot rush. She covers a short stretch and grips the desk edge to rest, breath loud. The fabric of her leggings has surrendered to the shape and merely covers it.',
+
+    'Standing tires her fast now, so she takes the widest bench and lets the vast lower body settle over its edges. Her hips pour past both sides of the seat, and her thighs spread into a broad soft shelf across her lap. Rising takes a brace and a count, and she stays down as long as she can. The leggings drape tight over a shape that outgrew every fitting room long ago.',
+
+    'She arrives on a transport bed now, her lower body a titanic spread of hip and thigh and rear that has outgrown every chair and doorway. The mass of her flows over both sides of the mattress, warm and soft and immense, settling deeper with each hour. Loose fabric lies draped across the great slope of her hip. She shifts, and the whole vast lower half of her resettles slow as a tide.',
   ],
 
   apple: [
@@ -156,7 +239,17 @@ export const patientBodyDescriptions = {
 
     'She walks from the lobby to the exam room with chin up and breathing measured, belly moving in a long slow sway with each step. She is winded by the time she reaches the door and stands a moment with one hand pressed to her midsection before she enters. Her chest lifts and settles slowly over a middle that is large and warm and heavy. She is carrying real weight and she carries it openly.',
 
-    'A rounded torso from collarbone to hip, full and warm and forward, belly carrying the weight of a long and patient indulgence. Her arms are soft and heavy. Her face is wide and warm. She moves through the clinic lobby with unhurried ease, for whom moving quickly is no longer the organizing principle. She carries her weight high and forward and openly, and the room adjusts around her without comment.',
+    'A rounded torso from collarbone to hip, full and warm and forward, belly carrying the weight of a long and patient gluttony. Her arms are soft and heavy. Her face is wide and warm. She moves through the clinic lobby with unhurried ease, for whom moving quickly is no longer the organizing principle. She carries her weight high and forward and openly, and the room adjusts around her without comment.',
+
+    'Her belly has swelled into a broad forward mass that enters the lobby a stride ahead of her and rests on the desk before her hands reach it. The blouse, largest the shop carried, strains at every seam and rides up over the lower curve no matter how she tugs it. Her chest and arms have thickened with soft heavy weight. She walks slowly, one hand cradling the underside of the belly for the ballast of it.',
+
+    'The belly hangs in a deep heavy shelf that reaches the top of her thighs, and she rests it against the desk when she stops. Two tops layered and stretched cover the vast forward mass and gap at the sides regardless. Her breathing is loud by the time she reaches a chair. She braces both palms on the counter, lets the belly hang, and takes her time.',
+
+    'She can barely cross the lobby now, the forward mass of her belly throwing her weight ahead of her feet at every step. She walks in short slow pushes, one hand under the belly and the other reaching for the wall, and rests often. Her top stretches translucent over the enormous round swell of her middle. A short stretch and she stops, breath dragging, the whole heavy front of her rising and falling.',
+
+    'Standing tips her too far forward to hold now, so she takes the reinforced bench with the belly filling her lap in a warm heavy flood. The great round mass rests on her thighs and spreads toward the edges of the seat, and she folds her soft arms atop it. Her top drapes over the swell like cloth over a hill. Rising takes a brace and a count, and she stays down as long as she can.',
+
+    'She arrives on a transport bed now, her belly a titanic soft mountain that rises above the rest of her and has outgrown standing entirely. The mass of her middle spreads to both rails, warm and vast, settling into deep folds along its lower slope. Loose fabric lies draped over the great rise of it. She breathes in long swells, and the whole immense round of her belly lifts toward the ceiling and eases back.',
   ],
 
   athletic: [
@@ -172,7 +265,17 @@ export const patientBodyDescriptions = {
 
     'Each step sends a visible ripple through her body, from thigh to belly to arm, a wave that takes a moment to settle after she stops moving. The posture is still that of an athlete: the confidence, the way she occupies space without checking whether she has permission. The body is much larger now, softer at every surface, heavier with every footfall. She knows both things and keeps walking.',
 
-    'Plush and powerful: a body that trained for years and then spent two years in comfort and kept everything from both periods. Her footfalls land with real weight, belly deep and round, arms soft and heavy at her sides. She fills the waiting room chair completely, thighs pressing against the arms, middle settled and full in her lap. Very large and entirely at ease with it.',
+    'Plush and powerful: a body that trained for years and then spent two years gorging and kept everything from both periods. Her footfalls land with real weight, belly deep and round, arms soft and heavy at her sides. She fills the waiting room chair completely, thighs pressing against the arms, middle settled and full in her lap. Very large and entirely at ease with it.',
+
+    'The athlete is gone beneath a spreading mass of soft heavy flesh that has claimed her belly and thighs and arms. The muscle tee, stretched to its limit, rides up over a middle swelled well past anything training left behind. She still moves with the old squared confidence, and the vast soft body follows a beat late. She walks the lobby slower each visit and rests against the wall without shame.',
+
+    'Whatever muscle remains lies buried deep under a body spread massive and soft in every direction. The leggings strain across belly and hip and the thick soft column of her thighs. Her old power shows only in the steadiness of her stance, planted wide to hold the enormous weight. She breathes hard from the walk in and stops to let it settle.',
+
+    'She can barely cross the lobby now, the mass of her belly and thighs slowing the trained body to a heavy labored roll. Her thighs press wide and force the old efficient stride into a slow lurch. The tee stretches tight over a frame swelled far past the athlete it was. She grips the desk edge and breathes, the whole soft weight of her heaving with it.',
+
+    'Standing wearies her fast now, so she takes the reinforced bench that holds the vast soft body the athlete became. Her belly floods her lap and her thighs spread to the edges of the seat, the old strength showing only in how squarely she settles the mass. Her clothes drape loose over a shape no fitting room stocks. Rising takes a brace and a count, and she stays down.',
+
+    'She arrives on a transport bed now, the trained body swelled into a titanic soft mass that has outgrown every stride she once ran. The weight spreads across the mattress rail to rail, warm and vast, deep folds settling where the muscle used to be. Loose fabric lies draped over the enormous rise of her middle. She breathes in slow deep swells, and the whole immense shape of her lifts and eases with each one.',
   ],
 
   willowy: [
@@ -189,6 +292,16 @@ export const patientBodyDescriptions = {
     'She fills the lobby doorway, long stride shortened and pace slowed, belly heavy and hips wide, arms soft and warm at her sides. She takes the waiting room chair and her thighs spread against the seat, pressing apart, heavy and full. The lobby air feels close around her. More body than she thought a long slim frame could hold, and she holds all of it without apology.',
 
     'A tall column of warmth and mass from jaw to ankle, full length of the frame packed dense and soft at every point. She walks through the lobby with total presence of something very large and very deliberate, belly heavy and hips wide, arms full and warm at her sides. Patients look up from their phones when she passes. She arrives at the front desk and the room shifts its attention to her without a word spoken.',
+
+    'The long frame has packed massive now, tall bones buried under spreading soft weight that fills every inch they once left empty. The linen dress, largest the shop carried, strains at the bust and gaps over belly and hip. Her thighs press together hip to knee and force a slow wide roll into the old easy stride. She rests against the lobby wall halfway to the desk, tall and enormous and breathing hard.',
+
+    'She is a tall column of soft heavy mass now, the length of her frame swelled wide from shoulder to thigh. A tented dress stretches over a belly grown deep and forward and a rear spread to match. She fills the doorway top to bottom and side to side and moves through it slowly. Her breath comes loud by the time she reaches a seat.',
+
+    'She can barely cross the lobby now, the enormous soft mass on her long bones slowing every stride to a labored roll. Her thighs press wide and her belly swings low, and she covers a short stretch before gripping the desk for rest. The dress stretches tight over a frame filled far past what its height once promised. She breathes hard, tall and vast, and gathers herself for the next few steps.',
+
+    'Standing taxes the long legs too fast now under all this weight, so she takes the reinforced bench built for the tall vast body she became. Her belly floods her lap and her hips overrun the seat, the length of her folded and settled deep into it. Her dress drapes loose over a shape that dwarfs every fitting room. Rising takes a brace and a count, and she stays down as long as she can.',
+
+    'She arrives on a transport bed now, the tall frame swelled into a titanic soft mass from jaw to thigh that has outgrown standing entirely. The length of her spreads across the mattress rail to rail, warm and vast, settling into deep folds along the whole long slope of her. Loose fabric lies draped over the great rise of her middle. She breathes in slow swells, and the immense long shape of her lifts and eases with each one.',
   ],
 
   compact: [
@@ -205,5 +318,15 @@ export const patientBodyDescriptions = {
     'She moves through the lobby with compact jiggle, flesh at her belly and arms and thighs carrying their weight in a way that announces her before she rounds any corner. Small rooms feel smaller. She fills the waiting room chair past its edges, hips overrunning the seat, and settles there with calm authority of someone who knows exactly how much space she takes. She is still quick when she needs to be. The weight is considerable.',
 
     'A very small frame carrying a very large amount of herself, every seam of every garment negotiated with her appetite over a long period of time. She settles into the clinic chair with slow full weight, compact frame filled to every edge. Her belly is deep and round in her lap, cheeks full and warm. She has given this small body everything it wanted and watched it answer with thorough, hungry satisfaction.',
+
+    'The short frame has packed enormous now, every pound stacking dense and wide on a body with no height to spread into. The fitted top, largest the shop carried, strains over a belly swelled broad and forward and low. Her thighs force her stance wide and her hips fill the doorway. She walks the lobby in slow short steps and rests against the wall more often than not.',
+
+    'She has grown massive on a small frame, belly and hip and thigh spreading in every direction the height cannot. Her clothes are stretched to their limit over a body that widens by the visit. She lowers onto the bench with both hands, and the soft weight of her floods over its edges. Each step is slow and heavy, and there are fewer between rests.',
+
+    'She can barely cross the lobby now, the dense enormous weight on her short legs slowing every step to a labored roll. Her thighs press wide and her belly swings low, and she covers a few feet before she grips the desk to rest. Her clothes stretch tight over a small frame carrying a vast load. She breathes hard, low and wide and heavy, and pushes off for the next short stretch.',
+
+    'Standing tires the short legs fast now under all this dense weight, so she takes the reinforced bench that holds the enormous soft body the small frame became. Her belly floods her lap and her hips pour over both sides of the seat. Rising takes a count and a brace, and she stays put as long as she can. Her clothes drape loose over a shape no fitting room stocks.',
+
+    'She arrives on a transport bed now, the small frame swelled into a titanic soft mass that has outgrown every chair and doorway. The dense enormous weight of her spreads across the mattress rail to rail, warm and vast, settling into deep folds wherever it pools. Loose fabric lies draped over the great round rise of her belly. She breathes in slow swells, and the whole immense low shape of her lifts and eases with each one.',
   ],
 };
