@@ -500,6 +500,8 @@ export function completeVisit(state) {
     state,
   );
 
+  if (state.stats) state.stats.visitCount = (state.stats.visitCount || 0) + 1;
+
   state.activePatientVisit = null;
   return { ok: true, message: `${summary} Visit ${patient.visits} on the books.` };
 }

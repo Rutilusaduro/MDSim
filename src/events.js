@@ -27,6 +27,9 @@ import {
   pickWeeklyEvent,
 } from './weeklyContent.js';
 import { fireWorldImpactEvents } from './worldImpact.js';
+import { fireEarlyGainEvents } from './earlyGameEvents.js';
+import { weeklyNewPatientCount, getPatientCap } from './clinicProgression.js';
+import { refreshRecruitmentOffers } from './recruitment.js';
 import { tickRival, rivalBlocksRecruitment } from './rival.js';
 import { checkChapterAdvance } from './chapters.js';
 import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchetypeBias } from './clinicStyle.js';
@@ -47,7 +50,7 @@ const RECRUIT_ROLES = [
 
 export const interactionCatalog = {
   consult: {
-    label: 'Standard Gluttony Consultation',
+    label: 'Routine Office Visit',
     scope: [],
     money: 225,
     description: 'Legacy consult. Patients use the visit desk instead.',
@@ -492,7 +495,11 @@ export function endWeek(state) {
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
 
-  const rivalEvent = tickRival(state, rng);
+  const rivalEvent = state.week >= 4 ? tickRival(state, rng) : null;
+  if (state.week >= 4 && state.rivalState && !state.rivalState.active) {
+    state.rivalState.active = true;
+    state.rivalState.reputation = Math.max(state.rivalState.reputation, state.reputation + 6);
+  }
 
   [...state.staff, ...state.patients].forEach((character) => {
     const oldStage = getStageIndex(character);
@@ -522,6 +529,7 @@ export function endWeek(state) {
   wardrobeFired.forEach((w) => state.firedEvents.push(w.key));
 
   fireWorldImpactEvents(state, rng);
+  fireEarlyGainEvents(state, rng);
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
 
@@ -571,16 +579,31 @@ export function endWeek(state) {
   });
   state.archivedPatients.push(...leaving);
 
-  const newPatientCount = Math.min(5, 2 + Math.floor(state.reputation / 28) + (effects.newPatients || 0) + rng.int(0, 1));
+  const newPatientCount = weeklyNewPatientCount(state, rng, effects);
   const styleBias = stylePatientArchetypeBias(state);
   const newPatients = Array.from({ length: newPatientCount }, () => {
-    const patient = createPatient(rng, { styleBias });
+    const patient = createPatient(rng, { styleBias, week: state.week, clinicalStart: state.week < 12 });
     patient.weeklyMomentum += effects.patientMomentum || 0;
     return patient;
   });
   state.patients.push(...newPatients);
-  while (state.patients.length > 10) {
+  while (state.patients.length > getPatientCap(state)) {
     state.archivedPatients.push(state.patients.shift());
+  }
+
+  refreshRecruitmentOffers(state, rng);
+
+  const mole = state.staff.find((s) => s.isMole && !s.moleRevealed);
+  if (mole && state.week >= 6 && rng.chance(14)) {
+    mole.moleRevealed = true;
+    addWeekNote(
+      {
+        type: 'mole',
+        title: 'Annex eyes',
+        text: `${mole.name} stepped into the supply closet on a long call. ThriveWell Annex knows your suite number. Feed her well or watch what she reports.`,
+      },
+      state,
+    );
   }
 
   const resolutionHtml = buildResolutionHtml({

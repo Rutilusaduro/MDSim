@@ -191,9 +191,9 @@ export const RELATIONSHIP_BEATS = [
   {
     id: 'maya_elena_admire',
     title: 'Desk and Nurse',
-    pair: ['Maya Okafor', 'Elena Ruiz'],
+    pairArcSlots: ['maya', 'elena'],
     minWeek: 4,
-    text: 'Elena tells Maya her hips look "expensive." Maya blushes. They split a pastry after. Both gain that night.',
+    text: 'The receptionist tells the nurse her hips look expensive. The nurse blushes. They split a pastry after. Both gain that night.',
     effect: (state, chars) => {
       chars.forEach((c) => {
         c.weight += 0.5;
@@ -204,9 +204,9 @@ export const RELATIONSHIP_BEATS = [
   {
     id: 'priya_nadia_rival',
     title: 'Spreadsheet vs Scale',
-    pair: ['Priya Shah', 'Nadia Volkov'],
+    pairArcSlots: ['priya', 'nadia'],
     minWeek: 6,
-    text: 'Nadia brags about her lunch log. Priya beats the number by dessert. Quiet competition. Loud results.',
+    text: 'The manager brags about her lunch log. The PA beats the number by dessert. Quiet competition. Loud results.',
     effect: (state, chars) => {
       chars.forEach((c) => {
         c.weight += 0.8;
@@ -217,11 +217,11 @@ export const RELATIONSHIP_BEATS = [
   {
     id: 'jasmine_maya_jealous',
     title: 'Break Room Split',
-    pair: ['Jasmine Brooks', 'Maya Okafor'],
+    pairArcSlots: ['jasmine', 'maya'],
     minWeek: 5,
-    text: 'Jasmine watches Maya take the last tray slot. "Fine," she says. "I will take two plates instead." She does.',
+    text: 'The phlebotomist watches the nurse take the last tray slot. "Fine," she says. "I will take two plates instead." She does.',
     effect: (state, chars) => {
-      const j = chars.find((c) => c.name.includes('Jasmine'));
+      const j = chars.find((c) => c.arcSlot === 'jasmine');
       if (j) j.weight += 1.0;
       chars.forEach((c) => (c.weeklyMomentum += 0.3));
     },
@@ -229,7 +229,7 @@ export const RELATIONSHIP_BEATS = [
   {
     id: 'staff_group',
     title: 'After-Shift Order',
-    pair: ['Elena Ruiz', 'Nadia Volkov', 'Jasmine Brooks'],
+    pairArcSlots: ['elena', 'nadia', 'jasmine'],
     minWeek: 8,
     text: 'Three staff order delivery to the break room. One app. Six entrees. They eat until the couch groans.',
     effect: (state, chars) => {
@@ -297,13 +297,23 @@ export function fireRelationshipBeat(state, rng) {
     if (state.firedEvents.includes(beat.id)) continue;
     if (state.week < beat.minWeek) continue;
     if (rng.next() > 0.35) continue;
-    const chars = beat.pair
-      .map((name) => state.staff.find((s) => s.name === name))
-      .filter(Boolean);
-    if (chars.length < beat.pair.length) continue;
+    let chars;
+    if (beat.pairArcSlots?.length) {
+      chars = beat.pairArcSlots
+        .map((slot) => state.staff.find((s) => s.arcSlot === slot))
+        .filter(Boolean);
+      if (chars.length < beat.pairArcSlots.length) continue;
+    } else if (beat.pair?.length) {
+      chars = beat.pair
+        .map((name) => state.staff.find((s) => s.name === name))
+        .filter(Boolean);
+      if (chars.length < beat.pair.length) continue;
+    } else {
+      continue;
+    }
     beat.effect(state, chars);
     state.firedEvents.push(beat.id);
-    recordRelationshipBeat(state, beat);
+    recordRelationshipBeat(state, { ...beat, pair: chars.map((c) => c.name) });
     if (state.stats) state.stats.relationshipBeats = (state.stats.relationshipBeats || 0) + 1;
     return { beat, chars };
   }

@@ -1,10 +1,10 @@
 export const STAFF_RELATION_EDGES = [
-  { from: 'Elena Ruiz', to: 'Maya Okafor', type: 'admires', note: 'Elena watches Maya eat without guilt.' },
-  { from: 'Maya Okafor', to: 'Elena Ruiz', type: 'admires', note: 'Maya likes how Elena owns the lobby.' },
-  { from: 'Priya Shah', to: 'Nadia Volkov', type: 'envies', note: 'Priya tracks Nadia\'s lunch log.' },
-  { from: 'Nadia Volkov', to: 'Priya Shah', type: 'admires', note: 'Nadia respects Priya\'s clinical honesty.' },
-  { from: 'Jasmine Brooks', to: 'Maya Okafor', type: 'envies', note: 'Jasmine wants Maya\'s break room stamina.' },
-  { from: 'Maya Okafor', to: 'Jasmine Brooks', type: 'admires', note: 'Maya thinks Jasmine is fearless with pastry.' },
+  { fromArcSlot: 'elena', toArcSlot: 'maya', type: 'admires', note: 'The receptionist watches the nurse eat without guilt.' },
+  { fromArcSlot: 'maya', toArcSlot: 'elena', type: 'admires', note: 'The nurse likes how the receptionist owns the lobby.' },
+  { fromArcSlot: 'priya', toArcSlot: 'nadia', type: 'envies', note: 'The PA tracks the manager\'s lunch log.' },
+  { fromArcSlot: 'nadia', toArcSlot: 'priya', type: 'admires', note: 'The manager respects the PA\'s clinical honesty.' },
+  { fromArcSlot: 'jasmine', toArcSlot: 'maya', type: 'envies', note: 'The phlebotomist wants the nurse\'s break room stamina.' },
+  { fromArcSlot: 'maya', toArcSlot: 'jasmine', type: 'admires', note: 'The nurse thinks the phlebotomist is fearless with pastry.' },
 ];
 
 export function ensureRelationships(state) {
@@ -13,13 +13,18 @@ export function ensureRelationships(state) {
 
 export function getRelationshipWeb(state) {
   ensureRelationships(state);
-  const staffByName = Object.fromEntries(state.staff.map((s) => [s.name, s]));
+  const staffBySlot = Object.fromEntries(state.staff.filter((s) => s.arcSlot).map((s) => [s.arcSlot, s]));
 
-  const edges = STAFF_RELATION_EDGES.filter((e) => staffByName[e.from] && staffByName[e.to]).map((e) => ({
-    ...e,
-    fromChar: staffByName[e.from],
-    toChar: staffByName[e.to],
-    history: state.relationshipHistory.filter((h) => h.edgeKey === `${e.from}_${e.to}`),
+  const edges = STAFF_RELATION_EDGES.filter((e) => staffBySlot[e.fromArcSlot] && staffBySlot[e.toArcSlot]).map((e) => ({
+    from: staffBySlot[e.fromArcSlot].name,
+    to: staffBySlot[e.toArcSlot].name,
+    type: e.type,
+    note: e.note,
+    fromChar: staffBySlot[e.fromArcSlot],
+    toChar: staffBySlot[e.toArcSlot],
+    history: state.relationshipHistory.filter(
+      (h) => h.edgeKey === `${staffBySlot[e.fromArcSlot].name}_${staffBySlot[e.toArcSlot].name}`,
+    ),
   }));
 
   const procedural = [];

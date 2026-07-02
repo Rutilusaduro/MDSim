@@ -49,6 +49,10 @@ import {
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
 import { rosterMobilitySummary, getMobilityLabel } from './worldImpact.js';
+import { getRecruitmentPanel, hireCandidate } from './recruitment.js';
+import { getClinicTier } from './clinicProgression.js';
+import { PUBLIC_CLINIC_TAGLINE } from './patientFraming.js';
+import { staffCandidateSummary } from './characters.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -161,10 +165,10 @@ function renderTopNav(state) {
       <div class="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div>
           <button class="text-left" data-action="rename-clinic">
-            <p class="text-xs uppercase tracking-[0.32em] text-amber-200/70">Adult gluttony and feeding sim</p>
+            <p class="text-xs uppercase tracking-[0.32em] text-amber-200/70">Primary care on the surface</p>
             <h1 class="text-2xl font-black tracking-tight text-stone-50 md:text-3xl">${e(state.clinicName)}</h1>
           </button>
-          <p class="text-sm text-stone-300">Owned by <button class="text-amber-200 underline decoration-amber-200/30" data-action="rename-doctor">${e(state.doctorName)}</button></p>
+          <p class="text-sm text-stone-300">Owned by <button class="text-amber-200 underline decoration-amber-200/30" data-action="rename-doctor">${e(state.doctorName)}</button> · ${e(getClinicTier(state).label)}</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <div class="nav-pill rounded-2xl px-4 py-3">
@@ -280,10 +284,59 @@ function renderTabs() {
   `;
 }
 
+function renderRecruitmentSection(state) {
+  const { slot, candidates, upcoming, moleSlot } = getRecruitmentPanel(state);
+  if (!slot && !upcoming.some((u) => !u.unlocked)) return '';
+
+  const candidateHtml = slot
+    ? `
+      <p class="mt-2 text-sm text-stone-300">Open role: <strong>${e(slot.label)}</strong>. Same story arc every run; face and figure change. Pick who you want at the desk.</p>
+      ${moleSlot ? '<p class="mt-2 text-xs text-red-200">This position draws outside attention. Hire carefully.</p>' : ''}
+      <div class="mt-4 grid gap-4 md:grid-cols-3">
+        ${candidates
+          .map((candidate) => {
+            const stageIdx = getStageIndex(candidate);
+            return `
+          <article class="soft-card flex flex-col rounded-3xl p-4">
+            <div class="text-pink-300">${renderSilhouette(candidate, stageIdx)}</div>
+            <h4 class="mt-2 text-lg font-bold text-stone-50">${e(candidate.name)}</h4>
+            <p class="text-sm text-stone-300">${e(staffCandidateSummary(candidate))}</p>
+            <p class="mt-1 text-xs text-stone-400">${e(bodyTypesLabel(candidate))} · ${e(candidate.archetype)}</p>
+            <button class="gold-button mt-4 rounded-2xl px-4 py-2 text-sm font-bold" data-action="hire-candidate" data-id="${e(candidate.id)}">
+              Hire · 1 AP · ${formatMoney(slot.hireCost || 0)}
+            </button>
+          </article>`;
+          })
+          .join('')}
+      </div>`
+    : '';
+
+  const pipeline = upcoming.length
+    ? `<p class="mt-4 text-xs text-stone-400">Coming roles: ${upcoming
+        .map((u) => `${u.label}${u.unlocked ? '' : ` (wk ${u.unlock?.week || '?'}+)`}`)
+        .join(' · ')}</p>`
+    : '';
+
+  return `
+    <section class="mb-8 rounded-[2rem] border border-emerald-300/15 bg-emerald-950/15 p-6">
+      <p class="text-sm uppercase tracking-[0.28em] text-emerald-200/70">Staff recruitment</p>
+      <h3 class="mt-1 text-2xl font-black text-stone-50">Build the roster</h3>
+      <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Your private goal is simpler: grow them. Patients should only hear medicine until they are hooked.</p>
+      ${candidateHtml || '<p class="mt-3 text-sm text-stone-400">No open roles this week. Grow reputation and advance the calendar to unlock hiring.</p>'}
+      ${pipeline}
+    </section>
+  `;
+}
+
+function bodyTypesLabel(character) {
+  return character.bodyType?.replace(/^\w/, (c) => c.toUpperCase()) || 'Figure';
+}
+
 function renderManagement(state) {
   const categories = [...new Set(shopItems.map((item) => item.category))];
   return `
     <section>
+      ${renderRecruitmentSection(state)}
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Management phase</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Buy before the week turns</h2>
@@ -356,10 +409,10 @@ function renderInteract(state) {
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Feeding rounds</p>
-        <h2 class="mt-2 text-3xl font-black text-stone-50">Work the feeding room</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">Click each patient to open her visit. Greet, weigh, bill, and upsell the next indulgence. Every action spends AP and trades money for pounds, appetite, and trust. Feed every patient each week or reputation drops as the hunger goes unmet.</p>
-        <p class="mt-2 text-sm text-stone-400">Minimum path: greet, chart, weigh, bill consult, end visit (around 4 AP). Staff still open on the profile panel to the left.</p>
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient rounds</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Run the office</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">To them this is a normal primary-care visit: vitals, labs, follow-ups. Your charting stays clinical while you steer each woman toward appetite. Public face: family medicine. Private work: pounds.</p>
+        <p class="mt-2 text-sm text-stone-400">Minimum path: greet, chart, weigh, bill consult, end visit (around 4 AP). Staff hiring is on the Management tab.</p>
         ${mobilityBanner}
         ${
           unvisited.length
@@ -1227,6 +1280,15 @@ function bindEvents() {
     }
     if (action === 'pick-challenge') {
       const result = pickChallengeWeek(gameState, target.dataset.challenge);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok) {
+        playUiClick();
+        saveGame(gameState);
+        render();
+      }
+    }
+    if (action === 'hire-candidate') {
+      const result = hireCandidate(gameState, target.dataset.id);
       showToast(result.message, result.ok ? 'success' : 'error');
       if (result.ok) {
         playUiClick();

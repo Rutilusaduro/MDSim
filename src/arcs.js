@@ -5,7 +5,7 @@ import { formatArcSceneNote, getStaffArcScene, applyChoiceFlags, getRouteLabel }
 export { getRouteLabel };
 
 export const STAFF_ARC_TRACKS = {
-  'Maya Okafor': {
+  maya: {
     title: 'The Nurse Who Stayed Late',
     beats: [
       {
@@ -45,7 +45,7 @@ export const STAFF_ARC_TRACKS = {
       },
     ],
   },
-  'Elena Ruiz': {
+  elena: {
     title: 'Front Desk Appetite',
     beats: [
       {
@@ -85,7 +85,7 @@ export const STAFF_ARC_TRACKS = {
       },
     ],
   },
-  'Priya Shah': {
+  priya: {
     title: 'Clinical Curves',
     beats: [
       {
@@ -125,7 +125,7 @@ export const STAFF_ARC_TRACKS = {
       },
     ],
   },
-  'Nadia Volkov': {
+  nadia: {
     title: 'Manager on a Meal Plan',
     beats: [
       {
@@ -165,7 +165,7 @@ export const STAFF_ARC_TRACKS = {
       },
     ],
   },
-  'Jasmine Brooks': {
+  jasmine: {
     title: 'Needle and Dough',
     beats: [
       {
@@ -261,7 +261,19 @@ export function buildProceduralArc(character) {
 
 export function getArcTrack(character) {
   if (character.type !== 'staff') return null;
-  return STAFF_ARC_TRACKS[character.name] || buildProceduralArc(character);
+  const key = character.arcSlot || legacyArcKeyForName(character.name);
+  return STAFF_ARC_TRACKS[key] || buildProceduralArc(character);
+}
+
+function legacyArcKeyForName(name) {
+  const map = {
+    'Maya Okafor': 'maya',
+    'Elena Ruiz': 'elena',
+    'Priya Shah': 'priya',
+    'Nadia Volkov': 'nadia',
+    'Jasmine Brooks': 'jasmine',
+  };
+  return map[name] || null;
 }
 
 export function getArcProgress(character) {

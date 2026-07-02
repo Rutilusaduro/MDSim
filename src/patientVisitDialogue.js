@@ -1,5 +1,6 @@
 /** Patient visit mini-game dialogue. Narrative + short replies only; no game logic. */
 import { getAttitudeKey } from './characters.js';
+import { visitDialogueTier, getPatientPublicReason, getPatientFramingNote } from './patientFraming.js';
 
 function tierFromAttitude(attitude) {
   if (attitude === 'immobile') return 'immobile';
@@ -17,6 +18,12 @@ function pickLine(character, pool) {
 
 const VISIT_NARRATIVE = {
   say_hi: {
+    clinical: [
+      'She checks in at the desk with her insurance card ready and asks whether labs from her last physical posted yet.',
+      'She arrives on time for a routine follow-up, coat still buttoned, expecting vitals and a quick checkout.',
+      'She offers her name, date of birth, and pharmacy on file without prompting. Normal Tuesday patient energy.',
+      'She reads the wall poster about flu shots and asks if she is due. She has not noticed the snack tray yet.',
+    ],
     early: [
       'She steps off the elevator with her purse squared on her shoulder and offers her name before you ask.',
       'The lobby scent reaches her first. She pauses at the desk, reading the snack menu with quiet attention.',
@@ -576,6 +583,12 @@ const VISIT_REPLIES = {
 };
 
 const VISIT_OPENING = {
+  clinical: [
+    'She signs the HIPAA sheet and asks whether her copay posted correctly.',
+    'She arrived for a scheduled primary-care visit and expects a normal exam room.',
+    'She flips through a magazine in the waiting area, unaware the break room pastries are warming.',
+    'She checks her blood pressure cuff fit on her wrist while the receptionist calls her name.',
+  ],
   early: [
     'She arrives on time with questions folded in her purse and appetite tucked beneath her patience.',
     'The lobby still feels new to her. She reads the snack signage, then your face, then nods hello.',
@@ -652,13 +665,15 @@ export const MISSED_VISIT_WEEK_LINES = [
 export function getVisitNarrative(actionId, patient, tier) {
   const actionPool = VISIT_NARRATIVE[actionId];
   if (!actionPool) return { narrative: '', reply: '' };
-  const resolvedTier = tier || tierFromAttitude(getAttitudeKey(patient));
+  const attitudeTier = tier || tierFromAttitude(getAttitudeKey(patient));
+  const resolvedTier = visitDialogueTier(patient, attitudeTier);
   const pool =
     actionPool[resolvedTier] ||
+    actionPool[attitudeTier] ||
     actionPool.late ||
     actionPool.mid ||
     actionPool.early ||
-    [];
+  [];
   return {
     narrative: pickLine(patient, pool),
     reply: VISIT_REPLIES[actionId] || '',
@@ -666,7 +681,13 @@ export function getVisitNarrative(actionId, patient, tier) {
 }
 
 export function getVisitOpening(patient) {
-  const tier = tierFromAttitude(getAttitudeKey(patient));
+  const attitudeTier = tierFromAttitude(getAttitudeKey(patient));
+  const tier = visitDialogueTier(patient, attitudeTier);
+  const reason = getPatientPublicReason(patient);
+  const clinicalLine = pickLine(patient, VISIT_OPENING.clinical || VISIT_OPENING.early);
+  if (tier === 'clinical') {
+    return `${clinicalLine} Chart reason: ${reason}. ${getPatientFramingNote(patient)}`;
+  }
   return pickLine(patient, VISIT_OPENING[tier] || VISIT_OPENING.early);
 }
 
