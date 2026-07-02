@@ -1,10 +1,15 @@
 import { addWeekNote, formatMoney, rngForState, spendActionPoint } from './state.js';
 import { findCharacter } from './events.js';
-import { bumpLoyalty, getGainTemperament } from './characters.js';
+import {
+  bumpLoyalty,
+  getGainTemperament,
+  getAttitudeKey,
+  isCharacterImmobile,
+  isCharacterBlob,
+} from './characters.js';
 import { advanceLoyaltyArc } from './loyaltyArcs.js';
 import { bumpStyle, consultReputationBonus, styleFromInteraction } from './clinicStyle.js';
 import { computeClinicEffects } from './clinic.js';
-import { getAttitudeKey } from './characters.js';
 import {
   getVisitClosing,
   getVisitNarrative,
@@ -12,6 +17,8 @@ import {
 } from './patientVisitDialogue.js';
 
 function tierFromAttitude(attitude) {
+  if (attitude === 'immobile') return 'immobile';
+  if (attitude === 'blob') return 'blob';
   if (attitude === 'professional' || attitude === 'noticing') return 'early';
   if (attitude === 'hungry' || attitude === 'pleased') return 'mid';
   return 'late';
@@ -25,7 +32,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'say_hi',
     label: 'Warm Greeting',
-    description: 'Meet her at the door. Eye contact. Her name on your lips.',
+    description: 'Meet her at the door. Her name on your lips. Appetite in the room before the chart opens.',
     apCost: 1,
     phase: 'greeting',
     effects: { trust: 0.2, openness: 1.5, loyalty: 0 },
@@ -35,7 +42,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'review_chart',
     label: 'Review Chart',
-    description: 'Read prior notes aloud. She hears you remember.',
+    description: 'Read gain lines aloud. She hears you celebrate every logged pound.',
     apCost: 1,
     phase: 'intake',
     effects: { trust: 0.15, openness: 1 },
@@ -45,7 +52,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'offer_water',
     label: 'Offer Water and Snack Menu',
-    description: 'Chilled water. Printed menu. Appetite stirs before the exam.',
+    description: 'Chilled water, printed menu. Hunger stirs before the first weigh-in.',
     apCost: 1,
     phase: 'intake',
     effects: { appetite: 0.08, indulgence: 1.5, openness: 0.5 },
@@ -54,7 +61,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'personal_talk',
     label: 'Personal Check-In',
-    description: 'No charting. Ask how she has been. Listen until she fills the silence.',
+    description: 'No charting. Ask how her appetite has been. Listen until she fills the silence with cravings.',
     apCost: 1,
     phase: 'intake',
     effects: { trust: 0.35, openness: 3, indulgence: 1.5, weeklyMomentum: 0.4 },
@@ -62,8 +69,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'note_symptoms',
-    label: 'Note Comfort Symptoms',
-    description: 'Tight waistbands. Afternoon hunger. Record without alarm.',
+    label: 'Note Gluttony Symptoms',
+    description: 'Straining seams. Constant hunger. Record each sign of growing heavy without alarm.',
     apCost: 1,
     phase: 'intake',
     effects: { trust: 0.1, openness: 2, indulgence: 0.5 },
@@ -72,7 +79,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'weigh_patient',
     label: 'Weigh Patient',
-    description: 'Scale under bare feet. Numbers logged. She watches your face.',
+    description: 'Scale under bare feet. Numbers climb. She watches your face for approval.',
     apCost: 1,
     phase: 'exam',
     effects: { trust: 0.2, openness: 1, weight: 0.15 },
@@ -80,9 +87,28 @@ export const VISIT_ACTIONS = [
     advancesPhase: true,
   },
   {
+    id: 'estimate_weight',
+    label: 'Estimate Weight',
+    description: 'Couch scale, tape measure, trained eye. Log the gain without asking her to stand.',
+    apCost: 1,
+    phase: 'exam',
+    effects: { trust: 0.2, openness: 1, weight: 0.12 },
+    once: true,
+    advancesPhase: true,
+  },
+  {
+    id: 'feed_in_place',
+    label: 'Feed In Place',
+    description: 'Tray to the couch. Spoon in hand. Seconds arrive before she asks.',
+    apCost: 1,
+    phase: 'exam',
+    effects: { trust: 0.3, indulgence: 6, appetite: 0.25, weightRoll: 0.75 },
+    once: true,
+  },
+  {
     id: 'warm_blanket',
-    label: 'Warm Blanket',
-    description: 'Heated throw across her lap. Shoulders drop. Breath slows.',
+    label: 'Heated Lap Wrap',
+    description: 'Heated throw across her middle. Warmth loosens her into eating. Shoulders drop. Jaw unclenches.',
     apCost: 1,
     phase: 'exam',
     effects: { trust: 0.25, indulgence: 2, openness: 1 },
@@ -90,8 +116,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'comfort_blend',
-    label: 'Serve Comfort Blend',
-    description: 'Vanilla powder in warm water. Calm gut. Heavy lids.',
+    label: 'Serve Gorging Blend',
+    description: 'Vanilla powder in warm milk. Heavy gut. Heavier lids. Room for more.',
     apCost: 1,
     phase: 'exam',
     effects: { trust: 0.2, openness: 2, indulgence: 4, weightRoll: 0.45 },
@@ -101,7 +127,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'appetite_tonic',
     label: 'Dose Appetite Tonic',
-    description: 'Amber vial. Hunger arrives fast and stays.',
+    description: 'Amber vial. Hunger arrives fast, stays loud, demands feeding.',
     apCost: 1,
     phase: 'exam',
     effects: { appetite: 0.35, openness: 2, indulgence: 5, weightRoll: 0.55 },
@@ -111,7 +137,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'lounge_snack',
     label: 'Lounge Snack Tray',
-    description: 'Pastry plate in the waiting chairs. She finishes what you bring.',
+    description: 'Pastry plate within arm\'s reach. She finishes what you bring and asks what follows.',
     apCost: 1,
     phase: 'services',
     effects: { indulgence: 3.5, appetite: 0.2, weightRoll: 0.65 },
@@ -119,8 +145,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'comfort_plan',
-    label: 'Holistic Comfort Plan',
-    description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
+    label: 'Gorging Meal Plan',
+    description: 'Written plan: larger portions, slower chewing, growing heavy without apology.',
     apCost: 1,
     phase: 'services',
     effects: { trust: 0.25, openness: 2.5, indulgence: 3, weeklyMomentum: 0.5 },
@@ -129,7 +155,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'recovery_shake',
     label: 'Recovery Shake',
-    description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
+    description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach for the next course.',
     apCost: 1,
     phase: 'services',
     effects: { trust: 0.15, indulgence: 2.5, weightRoll: 0.5 },
@@ -138,8 +164,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'upsell_wellness_kit',
-    label: 'Bill Wellness Kit',
-    description: 'Take-home bars and cream cups. Upsell code on the invoice.',
+    label: 'Bill Gorging Kit',
+    description: 'Take-home bars and cream cups. Upsell code on the invoice. More eating at home.',
     apCost: 1,
     phase: 'services',
     effects: { money: 85, indulgence: 1, trust: 0.1 },
@@ -147,8 +173,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'bill_consultation',
-    label: 'Bill Consultation',
-    description: 'Standard comfort consult code. Visit fee posts to the ledger.',
+    label: 'Bill Gluttony Consult',
+    description: 'Standard gorging consult code. Visit fee posts to the ledger.',
     apCost: 1,
     phase: 'services',
     effects: { money: CONSULT_FEE, trust: 0.15, reputation: 1 },
@@ -159,7 +185,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'schedule_followup',
     label: 'Schedule Follow-Up',
-    description: 'Next slot on the calendar before she reaches the lobby doors.',
+    description: 'Next feeding slot on the calendar before she reaches the lobby doors.',
     apCost: 0,
     phase: 'checkout',
     effects: { trust: 0.15, loyalty: 1, openness: 1 },
@@ -168,7 +194,7 @@ export const VISIT_ACTIONS = [
   {
     id: 'end_visit',
     label: 'End Visit',
-    description: 'Walk her out. Receipt in hand. Follow-up on the calendar.',
+    description: 'Walk her out, or roll the cart back. Receipt in hand. Follow-up on the calendar.',
     apCost: 0,
     phase: 'checkout',
     effects: {},
@@ -210,9 +236,23 @@ function meetsActionRequirements(state, visit, action) {
   if (!requires) return { ok: true };
 
   if (requires.actions?.length) {
-    const missing = requires.actions.filter((id) => !hasCompletedAction(visit, id));
-    if (missing.length) {
-      return { ok: false, reason: `Complete ${missing.map((id) => actionById(id)?.label || id).join(', ')} first.` };
+    if (action.id === 'bill_consultation') {
+      const hasWeight =
+        hasCompletedAction(visit, 'weigh_patient') || hasCompletedAction(visit, 'estimate_weight');
+      if (!hasWeight) {
+        return {
+          ok: false,
+          reason: 'Complete Weigh Patient or Estimate Weight first.',
+        };
+      }
+    } else {
+      const missing = requires.actions.filter((id) => !hasCompletedAction(visit, id));
+      if (missing.length) {
+        return {
+          ok: false,
+          reason: `Complete ${missing.map((id) => actionById(id)?.label || id).join(', ')} first.`,
+        };
+      }
     }
   }
 
@@ -329,7 +369,13 @@ export function getVisitActions(state) {
   const patient = getPatientForVisit(state);
   if (!patient) return [];
 
-  return VISIT_ACTIONS.map((action) => {
+  const mobilityRestricted = isCharacterImmobile(patient) || isCharacterBlob(patient);
+
+  return VISIT_ACTIONS.filter((action) => {
+    if (action.id === 'weigh_patient' && mobilityRestricted) return false;
+    if (action.id === 'estimate_weight' && !mobilityRestricted) return false;
+    return true;
+  }).map((action) => {
     const wrongPhase = VISIT_PHASES.indexOf(action.phase) > VISIT_PHASES.indexOf(visit.phase);
     const alreadyDone = action.once && hasCompletedAction(visit, action.id);
     const requirement = meetsActionRequirements(state, visit, action);
