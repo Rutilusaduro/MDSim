@@ -60,13 +60,13 @@ export const interactionCatalog = {
     label: 'Catered Break Tray',
     scope: ['staff'],
     cost: 180,
-    description: 'Staff-only tray. Rich food. Generous portions.',
+    description: 'Staff-only tray, heaped high with rich food and portions built for gorging.',
   },
   comfortPlan: {
-    label: 'Holistic Comfort Plan',
+    label: 'Holistic Feeding Plan',
     scope: ['staff'],
     cost: 90,
-    description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
+    description: 'A written plan for growing: slower evenings, fuller plates, and second helpings taken without a shred of guilt.',
   },
   comfortBlend: {
     label: 'Use Comfort Blend',
@@ -95,7 +95,7 @@ export const interactionCatalog = {
     label: 'Recruit to Staff',
     scope: ['patient'],
     cost: 750,
-    description: 'Offer a job. Trust high. Body ready. She stays for good.',
+    description: 'Offer a job. Trust high, appetite higher, body already spreading. She stays to keep growing for good.',
   },
 };
 
@@ -202,7 +202,7 @@ function actionFlavor(character, actionId) {
         : mid
           ? `${name} grips the cup until the ice rattles empty.${quote}`
           : `${name} leans back, belly rising with the last swallow.${quote}`,
-      recruit: `${name} accepts the offer on the spot.${quote}`,
+      recruit: `${name} accepts the offer on the spot, already picturing the break room trays she will never have to leave.${quote}`,
     };
     return patientCopy[actionId];
   }
@@ -247,7 +247,7 @@ function actionFlavor(character, actionId) {
       const progress = getArcProgress(character);
       return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}.${quote}`;
     })(),
-    recruit: `${name} accepts the offer. Paperwork waits.${quote}`,
+    recruit: `${name} accepts the offer, hungry for a place that will only feed her fuller. Paperwork waits.${quote}`,
   };
 
   return copy[actionId];

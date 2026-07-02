@@ -137,33 +137,53 @@ export const ALL_WEEKLY_EVENTS = [...WEEKLY_EVENTS, ...V3_WEEKLY_EVENTS];
 export const WARDROBE_EVENTS = [
   {
     id: 'button_strain',
-    stageMin: 2,
-    text: 'A button holds on by thread during rounds. She fixes it with a safety pin. Laughs. Eats lunch anyway.',
+    stageMin: 3,
+    text: 'A button holds on by a single thread during rounds, then surrenders with a soft pop against her swelling middle. She pins it shut, laughs it off, and orders lunch anyway.',
   },
   {
     id: 'seam_split',
-    stageMin: 2,
-    text: 'A side seam whispers apart when she sits. She covers it with a cardigan. The cardigan gaps too.',
+    stageMin: 4,
+    text: 'A side seam whispers apart when she lowers herself into the chair, the fabric no longer able to hold what she has been growing. She drapes a cardigan over it. The cardigan gaps too.',
   },
   {
     id: 'new_scrubs',
-    stageMin: 3,
-    text: 'She orders scrubs one size up. They fit. For now. She already eyes the next size on the catalog.',
+    stageMin: 5,
+    text: 'She sizes up her scrubs again, two notches this time. They fit for now, straining over the fresh softness, and she is already circling the next size on the catalog with a grin.',
   },
   {
     id: 'zip_fail',
-    stageMin: 3,
-    text: 'A skirt zip stops halfway. She stays in the break room until someone brings a stretch waist option.',
+    stageMin: 6,
+    text: 'A skirt zip climbs halfway and stalls against the spread of her hips. She waits in the break room, unhurried, until someone fetches a stretch waistband built to keep pace with her.',
   },
   {
     id: 'uniform_upgrade',
-    stageMin: 4,
-    text: 'Clinic uniform upgrade arrives. Reinforced seams. She fills it by end of shift. Worth every dollar.',
+    stageMin: 7,
+    text: 'A reinforced uniform arrives, cut wide with panels made for a body that keeps outgrowing everything. She fills it out completely by the end of her shift. Worth every dollar.',
   },
   {
     id: 'custom_fit',
-    stageMin: 4,
-    text: 'She asks for custom fit. Measurements taken twice. The tailor exhales. She grins. "Room to grow."',
+    stageMin: 8,
+    text: 'She asks for a custom fit. The tailor measures twice, exhales at the numbers, and lets out the pattern generously. She pats her belly and says the only words that matter: room to grow.',
+  },
+  {
+    id: 'chair_reinforce',
+    stageMin: 9,
+    text: 'The standard break room chair groans and buckles the moment she settles her spreading weight onto it. Maintenance rolls in a reinforced bench, bolted to the floor, and she claims it as hers before the day is out.',
+  },
+  {
+    id: 'wheelchair_arrival',
+    stageMin: 9,
+    text: 'Walking the halls has become a slow, breathless ordeal, so a wide-frame wheelchair arrives with her name on the back. She sinks into it gratefully, hands already reaching for the snack tray tucked beside the armrest.',
+  },
+  {
+    id: 'widened_door',
+    stageMin: 10,
+    text: 'Her doorway gets torn out and rebuilt a full foot wider, because her body no longer fits through the frame she once breezed past. Contractors work around her while she eats, immobile and unbothered, filling the room a little more each hour.',
+  },
+  {
+    id: 'home_feeding_visit',
+    stageMin: 10,
+    text: 'Too vast to travel, she takes her feeding at home now. Staff arrive with loaded carts and stay for hours, spooning course after course into a soft, spreading mass that has stopped pretending it will ever leave the couch.',
   },
 ];
 

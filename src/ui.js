@@ -48,6 +48,7 @@ import {
   performVisitAction,
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
+import { rosterMobilitySummary, getMobilityLabel } from './worldImpact.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -160,7 +161,7 @@ function renderTopNav(state) {
       <div class="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div>
           <button class="text-left" data-action="rename-clinic">
-            <p class="text-xs uppercase tracking-[0.32em] text-amber-200/70">Adult comfort management sim</p>
+            <p class="text-xs uppercase tracking-[0.32em] text-amber-200/70">Adult gluttony and feeding sim</p>
             <h1 class="text-2xl font-black tracking-tight text-stone-50 md:text-3xl">${e(state.clinicName)}</h1>
           </button>
           <p class="text-sm text-stone-300">Owned by <button class="text-amber-200 underline decoration-amber-200/30" data-action="rename-doctor">${e(state.doctorName)}</button></p>
@@ -343,17 +344,27 @@ function renderInteract(state) {
   const inProgress = state.activePatientVisit
     ? state.patients.find((p) => p.id === state.activePatientVisit.patientId)
     : null;
+  const mobility = rosterMobilitySummary(state);
+  const mobilityBanner =
+    mobility.outgrowing.length || mobility.immobile.length
+      ? `<p class="mt-3 rounded-2xl border border-pink-300/20 bg-pink-950/25 px-4 py-3 text-sm text-pink-100"><strong>${mobility.outgrowing.length} outgrowing the furniture</strong>, ${mobility.immobile.length} too wide to walk, ${mobility.blob.length} sunk into bedbound mass.${
+          mobility.immobile.length
+            ? ` Feed at their couches: ${mobility.immobile.map((c) => `${e(c.name)} (${e(getMobilityLabel(c))})`).join(', ')}.`
+            : ''
+        }</p>`
+      : '';
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient visits</p>
-        <h2 class="mt-2 text-3xl font-black text-stone-50">Run the exam room</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">Click each patient to start her visit. Greet, weigh, bill, upsell — every action costs AP and trades money, weight, and trust. You must see every patient each week or reputation drops.</p>
-        <p class="mt-2 text-sm text-stone-400">Minimum path: greet → chart → weigh → bill consult → end visit (~4 AP). Staff still use the profile modal on the left.</p>
+        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Feeding rounds</p>
+        <h2 class="mt-2 text-3xl font-black text-stone-50">Work the feeding room</h2>
+        <p class="mt-2 max-w-3xl text-stone-300">Click each patient to open her visit. Greet, weigh, bill, and upsell the next indulgence. Every action spends AP and trades money for pounds, appetite, and trust. Feed every patient each week or reputation drops as the hunger goes unmet.</p>
+        <p class="mt-2 text-sm text-stone-400">Minimum path: greet, chart, weigh, bill consult, end visit (around 4 AP). Staff still open on the profile panel to the left.</p>
+        ${mobilityBanner}
         ${
           unvisited.length
-            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still need a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
-            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">All patients seen this week.</p>`
+            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still hungry for a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
+            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">Every patient fed and seen this week.</p>`
         }
         ${
           inProgress
@@ -365,14 +376,14 @@ function renderInteract(state) {
       <div class="grid gap-6 2xl:grid-cols-2">
         <div>
           <h3 class="mb-3 text-xl font-bold text-amber-100">Staff</h3>
-          <p class="mb-3 text-xs text-stone-400">Check-ins, breaks, compounds — open profile for actions.</p>
+          <p class="mb-3 text-xs text-stone-400">Check-ins, catered breaks, appetite compounds. Open a profile to feed and grow them.</p>
           <div class="grid gap-4 md:grid-cols-2">
             ${state.staff.map((member) => characterCard(member, 'standard', state)).join('')}
           </div>
         </div>
         <div>
           <h3 class="mb-3 text-xl font-bold text-amber-100">Patients</h3>
-          <p class="mb-3 text-xs text-stone-400">Click to start or resume a visit. Seen patients open profile (recruit when ready).</p>
+          <p class="mb-3 text-xs text-stone-400">Click to start or resume a feeding visit. Well-fed patients open a profile, ready to recruit once they have grown loyal.</p>
           <div class="grid gap-4 md:grid-cols-2">
             ${state.patients.map((patient) => characterCard(patient, 'standard', state)).join('')}
           </div>
@@ -813,7 +824,7 @@ function openCharacterModal(id, tab = null) {
 
   const prefsBlock = `
     <div class="mt-4 space-y-2 text-xs text-stone-300">
-      <p class="font-bold text-amber-100">Comfort preferences</p>
+      <p class="font-bold text-amber-100">Feeding preferences</p>
       <label class="block">Pace
         <select data-action="set-pref" data-id="${e(character.id)}" data-key="pace" class="mt-1 w-full rounded-xl border border-amber-100/10 bg-stone-950 p-2 text-stone-200">
           <option value="gradual" ${prefs.pace === 'gradual' ? 'selected' : ''}>Gradual</option>
