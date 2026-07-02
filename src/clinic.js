@@ -1,5 +1,7 @@
 import { addWeekNote, formatMoney } from './state.js';
 import { getReputationBlockReason, isItemUnlockedByReputation } from './reputation.js';
+import { computeRoomEffects, autoAssignNewItems } from './rooms.js';
+import { styleFromPurchase, applyStylePerksToEffects } from './clinicStyle.js';
 
 export const shopItems = [
   {
@@ -156,6 +158,7 @@ export function buyManagementItem(state, id) {
 
   if (item.install) {
     state.pendingInstallations.push({ id: item.id, weekPurchased: state.week });
+    styleFromPurchase(state, item.id);
     addWeekNote({
       type: 'purchase',
       title: `${item.name} ordered`,
@@ -194,9 +197,11 @@ export function buyManagementItem(state, id) {
 
 export function applyPendingInstallations(state) {
   const installed = state.pendingInstallations.map((pending) => getItem(pending.id)).filter(Boolean);
+  const newIds = [];
   installed.forEach((item) => {
     if (!state.ownedUpgrades.includes(item.id)) {
       state.ownedUpgrades.push(item.id);
+      newIds.push(item.id);
       if (item.effects?.actionPointsMax) {
         state.actionPointsMax += item.effects.actionPointsMax;
       }
@@ -205,6 +210,7 @@ export function applyPendingInstallations(state) {
       }
     }
   });
+  autoAssignNewItems(state, newIds);
   state.pendingInstallations = [];
   return installed;
 }
@@ -236,6 +242,21 @@ export function computeClinicEffects(state) {
         }
       });
     });
+
+  const roomFx = computeRoomEffects(state);
+  Object.entries(roomFx).forEach(([key, value]) => {
+    if (key === 'gainMultiplier') {
+      effects.gainMultiplier += value;
+    } else if (key in effects) {
+      effects[key] += value;
+    }
+  });
+
+  if (state.ngPlusGain) {
+    effects.gainMultiplier += state.ngPlusGain;
+  }
+
+  applyStylePerksToEffects(state, effects);
 
   return effects;
 }

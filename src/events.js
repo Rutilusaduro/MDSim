@@ -10,13 +10,15 @@ import {
 import { applyPendingInstallations, computeClinicEffects } from './clinic.js';
 import {
   createPatient,
+  bumpLoyalty,
   getAttitudeKey,
-  getCharacterDialogue,
   getGainTemperament,
   getStageIndex,
   getStageInfo,
+  loyaltyRecruitDiscount,
   summarizeStageChange,
 } from './characters.js';
+import { getInteractionBanter } from './interactionDialogue.js';
 import { advanceArc, canAdvanceArc, getArcProgress } from './arcs.js';
 import { checkAchievements } from './achievements.js';
 import {
@@ -24,6 +26,16 @@ import {
   fireWardrobeEvents,
   pickWeeklyEvent,
 } from './weeklyContent.js';
+import { tickRival, rivalBlocksRecruitment } from './rival.js';
+import { checkChapterAdvance } from './chapters.js';
+import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchetypeBias } from './clinicStyle.js';
+import { pickGroupScene, setPendingGroupScene } from './groupScenes.js';
+import { getActiveSeasonalWeek } from './v3WeeklyContent.js';
+import { canShowEnding, computeEnding } from './endings.js';
+import { startNewWeekChallenge } from './challenges.js';
+import { advanceLoyaltyArc, loyaltyRecruitVisitShortcut } from './loyaltyArcs.js';
+import { consultReputationBonus } from './clinicStyle.js';
+import { visitWeekPenalty, getUnvisitedPatients } from './patientVisit.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -35,9 +47,9 @@ const RECRUIT_ROLES = [
 export const interactionCatalog = {
   consult: {
     label: 'Standard Comfort Consultation',
-    scope: ['patient'],
+    scope: [],
     money: 225,
-    description: 'Billable visit. Builds trust. Keeps her on the schedule.',
+    description: 'Legacy consult. Patients use the visit desk instead.',
   },
   personalTalk: {
     label: 'Private Staff Check-In',
@@ -52,32 +64,32 @@ export const interactionCatalog = {
   },
   comfortPlan: {
     label: 'Holistic Comfort Plan',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     cost: 90,
     description: 'Written plan: slower evenings, fuller meals, rest without guilt.',
   },
   comfortBlend: {
     label: 'Use Comfort Blend',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'comfortBlend',
     description: 'Vanilla powder. Calms nerves. Opens appetite.',
   },
   appetiteTonic: {
     label: 'Use Appetite Tonic',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'appetiteTonic',
     description: 'Amber dose. Hunger arrives fast and stays.',
   },
   recoveryShake: {
     label: 'Use Recovery Shake',
-    scope: ['staff', 'patient'],
+    scope: ['staff'],
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
-  arcScene: {
+    arcScene: {
     label: 'Advance Personal Arc',
     scope: ['staff'],
-    description: 'Private scene. Trust deepens. Story moves forward.',
+    description: 'Branching scene with multiple paths. Prior choices shape later beats. Costs 1 AP when you commit.',
   },
   recruit: {
     label: 'Recruit to Staff',
@@ -96,7 +108,6 @@ export function getInteractionOptions(state, character) {
     .filter(([, action]) => action.scope.includes(character.type))
     .map(([id, action]) => {
       const inventoryMissing = action.inventory && (state.inventory[action.inventory] || 0) <= 0;
-      const moneyMissing = action.cost && state.money < action.cost;
       let extraDisabled = false;
       let extraReason = '';
 
@@ -115,32 +126,39 @@ export function getInteractionOptions(state, character) {
         if (character.trust < 8) {
           extraDisabled = true;
           extraReason = 'Need trust 8+';
-        } else if (getStageIndex(character) < 4) {
+        } else if (getStageIndex(character) < 2) {
           extraDisabled = true;
-          extraReason = 'Need stage 5+';
-        } else if ((character.visits || 0) < 3) {
+          extraReason = 'Need stage 3+';
+        } else if ((character.visits || 0) < 3 - loyaltyRecruitVisitShortcut(character) && (character.loyalty || 0) < 5) {
           extraDisabled = true;
-          extraReason = 'Need 3+ visits';
+          extraReason = 'Need 3+ visits or loyalty 5+';
         } else if (state.staff.length >= 8) {
           extraDisabled = true;
           extraReason = 'Staff roster full';
+        } else if (rivalBlocksRecruitment(state)) {
+          extraDisabled = true;
+          extraReason = 'Reputation below rival. Win the race first.';
         }
       }
+
+      const recruitCost =
+        id === 'recruit' ? Math.max(400, 750 - loyaltyRecruitDiscount(character)) : action.cost;
 
       return {
         id,
         ...action,
+        cost: recruitCost,
         disabled:
           state.actionPoints <= 0 ||
           inventoryMissing ||
-          moneyMissing ||
+          (recruitCost && state.money < recruitCost) ||
           extraDisabled,
         reason:
           state.actionPoints <= 0
             ? 'No AP remaining'
             : inventoryMissing
               ? 'Out of stock'
-              : moneyMissing
+              : recruitCost && state.money < recruitCost
                 ? 'Insufficient funds'
                 : extraReason,
       };
@@ -149,56 +167,94 @@ export function getInteractionOptions(state, character) {
 
 function actionFlavor(character, actionId) {
   const name = character.name;
-  const dialogue = getCharacterDialogue(character);
+  const banter = getInteractionBanter(character, actionId);
   const preference = character.preference;
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
   const mid = attitude === 'hungry' || attitude === 'pleased';
+  const isPatient = character.type === 'patient';
+  const quote = banter ? ` ${banter}` : '';
+
+  if (isPatient) {
+    const patientCopy = {
+      consult: early
+        ? `${name} checks out after the visit. Follow-up on the calendar.${quote}`
+        : mid
+          ? `${name} lingers in the lobby after checkout, hand at her middle.${quote}`
+          : `${name} fills the exam chair, cheeks flushed.${quote}`,
+      comfortPlan: early
+        ? `${name} takes the pamphlet home, reassured.${quote}`
+        : mid
+          ? `${name} reads the plan in the car, engine running.${quote}`
+          : `${name} hugs the plan to her chest before she stands.${quote}`,
+      comfortBlend: early
+        ? `${name} drinks the blend in the exam room, unhurried.${quote}`
+        : mid
+          ? `${name} finishes the cup and blinks at the empty bottom.${quote}`
+          : `${name} savors the last swallow, eyes half closed.${quote}`,
+      appetiteTonic: early
+        ? `${name} takes the dose at the sink, clinical and brief.${quote}`
+        : mid
+          ? `${name} exhales after the tonic, already thinking about lunch.${quote}`
+          : `${name} laughs at the heat in her throat.${quote}`,
+      recoveryShake: early
+        ? `${name} finishes the shake before she leaves.${quote}`
+        : mid
+          ? `${name} grips the cup until the ice rattles empty.${quote}`
+          : `${name} leans back, belly rising with the last swallow.${quote}`,
+      recruit: `${name} accepts the offer on the spot.${quote}`,
+    };
+    return patientCopy[actionId];
+  }
 
   const copy = {
     consult: early
-      ? `${name} leaves on time. Visit went fine. She likes the lobby. "${dialogue}"`
+      ? `${name} leaves on time. Visit went fine.${quote}`
       : mid
-        ? `${name} lingers at the door. Food and fit occupy her mind more than the chart. "${dialogue}"`
-        : `${name} fills the chair. Talk turns to ${preference} and second helpings. She does not blush. "${dialogue}"`,
+        ? `${name} lingers at the door, distracted.${quote}`
+        : `${name} fills the chair, talk turning to ${preference}.${quote}`,
     personalTalk: early
-      ? `${name} checks in easy. Talks shop. Praises the team. "${dialogue}"`
+      ? `${name} checks in easy after a long shift.${quote}`
       : mid
-        ? `${name} unloads about hunger and tight scrubs. Voice low. Honest. "${dialogue}"`
-        : `${name} speaks plain about weight and want. No filter left. "${dialogue}"`,
+        ? `${name} unloads about hunger and tight scrubs.${quote}`
+        : `${name} speaks plain about weight and want.${quote}`,
     cateredBreak: early
-      ? `${name} eats from the tray. Chats between bites of ${preference}. Polite. Present.`
+      ? `${name} eats from the tray between bites of ${preference}.${quote}`
       : mid
-        ? `${name} clears the tray faster than planned. ${preference} goes first. She looks stunned at herself.`
-        : `Tray lands heavy with scent. ${name} sinks into cushions over ${preference}. Flesh settles. Eyes half close.`,
+        ? `${name} clears the tray faster than she planned.${quote}`
+        : `Tray lands heavy. ${name} sinks into cushions over ${preference}.${quote}`,
     comfortPlan: early
-      ? `${name} nods through the advice. Files it with the rest. Routine.`
+      ? `${name} nods through the advice and files it.${quote}`
       : mid
-        ? `${name} reads the plan twice. Quiet. Already picturing dinner.`
-        : `${name} takes the plan like permission. Richer snacks. Slower nights. Her face opens.`,
+        ? `${name} reads the plan twice, quiet.${quote}`
+        : `${name} takes the plan like permission.${quote}`,
     comfortBlend: early
-      ? `${name} drinks it down. Tastes fine, she says. Back to work.`
+      ? `${name} drinks it down between tasks.${quote}`
       : mid
-        ? `Blend goes down smooth. ${name} blinks. Hungry again. Already.`
-        : `Vanilla and cream. ${name} drinks slow. Hand on her middle. The room feels closer.`,
+        ? `Blend goes down smooth. ${name} blinks, hungry again.${quote}`
+        : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
     appetiteTonic: early
-      ? `${name} swallows the dose. Clinical. Unremarkable.`
+      ? `${name} swallows the dose between rooms.${quote}`
       : mid
-        ? `Tonic hits. ${name} exhales. Lunch suddenly urgent.`
-        : `Amber heat in the throat. ${name} laughs at how badly she wants more. Means it.`,
+        ? `Tonic hits. ${name} exhales. Lunch urgent.${quote}`
+        : `Amber heat in the throat. ${name} laughs, wanting more.${quote}`,
     recoveryShake: early
-      ? `${name} finishes the shake between tasks. Notes the flavor. Moves on.`
+      ? `${name} finishes the shake on the walk to the next room.${quote}`
       : mid
-        ? `${name} grips the cup with both hands. Last sip hurts. Hunger returns before she stands.`
-        : `Thick shake. Sweet. ${name} drains it. Steady. Warm. Heavy-lidded at the end.`,
+        ? `${name} grips the cup with both hands until it is empty.${quote}`
+        : `Thick shake. Sweet. ${name} drains it, heavy-lidded.${quote}`,
     arcScene: (() => {
       const progress = getArcProgress(character);
-      return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}. "${dialogue}"`;
+      return `${name}: ${progress?.track.title || 'Arc'}. Beat ${(progress?.completed || 0) + 1}.${quote}`;
     })(),
-    recruit: `${name} accepts the offer on the spot. New hire paperwork waits. She asks about the break room menu first.`,
+    recruit: `${name} accepts the offer. Paperwork waits.${quote}`,
   };
 
   return copy[actionId];
+}
+
+export function previewInteractionFlavor(character, actionId) {
+  return actionFlavor(character, actionId) || `No flavor for action "${actionId}".`;
 }
 
 export function performInteraction(state, characterId, actionId) {
@@ -209,7 +265,8 @@ export function performInteraction(state, characterId, actionId) {
   if (option?.disabled) return { ok: false, message: option.reason };
   if (!spendActionPoint(state)) return { ok: false, message: 'No action points remain.' };
 
-  if (action.cost) state.money -= action.cost;
+  const cost = option?.cost ?? action.cost;
+  if (cost) state.money -= cost;
   if (action.inventory) {
     state.inventory[action.inventory] -= 1;
     if (state.stats) state.stats.compoundsUsed = (state.stats.compoundsUsed || 0) + 1;
@@ -218,12 +275,24 @@ export function performInteraction(state, characterId, actionId) {
   switch (actionId) {
     case 'consult':
       state.money += action.money;
-      state.reputation += 1;
+      state.weekConsultIncome = (state.weekConsultIncome || 0) + action.money;
+      state.reputation += 1 + consultReputationBonus(state);
       character.visits += 1;
       character.seenThisWeek = true;
       character.trust += 0.65;
       character.openness += 2.5;
       character.weeklyMomentum += 0.65;
+      bumpLoyalty(character, 1);
+      if (state.challengeWeek === 'quiet') bumpLoyalty(character, 1);
+      {
+        const loyaltyResult = advanceLoyaltyArc(character, state);
+        if (loyaltyResult.ok) {
+          addWeekNote(
+            { type: 'loyalty', title: `Loyalty: ${character.name}`, text: loyaltyResult.text },
+            state,
+          );
+        }
+      }
       break;
     case 'personalTalk':
       character.trust += 0.7;
@@ -260,16 +329,8 @@ export function performInteraction(state, characterId, actionId) {
       character.indulgence += 3;
       character.weeklyMomentum += 1.35;
       break;
-    case 'arcScene': {
-      const arcResult = advanceArc(character, state);
-      if (!arcResult.ok) return { ok: false, message: arcResult.reason };
-      addWeekNote({
-        type: 'arc',
-        title: `Arc: ${character.name}`,
-        text: arcResult.text,
-      }, state);
-      return { ok: true, message: arcResult.text };
-    }
+    case 'arcScene':
+      return { ok: false, message: 'Use the arc scene modal.' };
     case 'recruit': {
       const role = RECRUIT_ROLES[state.staff.length % RECRUIT_ROLES.length];
       character.type = 'staff';
@@ -289,13 +350,18 @@ export function performInteraction(state, characterId, actionId) {
   }
 
   const text = actionFlavor(character, actionId);
+  let message = text;
+  if (actionId === 'consult' && action.money) {
+    message = `${text} Billed ${formatMoney(action.money)}.`;
+  }
+  bumpStyle(state, styleFromInteraction(actionId));
   addWeekNote({
     type: 'interaction',
     title: `${action.label}: ${character.name}`,
-    text,
+    text: message,
   }, state);
 
-  return { ok: true, message: text };
+  return { ok: true, message };
 }
 
 function calculateGain(state, character, effects, rng) {
@@ -318,10 +384,14 @@ function buildResolutionHtml({
   stageChanges,
   bills,
   clinicRevenue,
+  weekConsultIncome,
   newPatients,
   weeklyEvent,
   wardrobeFired,
   relationshipBeat,
+  rivalEvent,
+  chapterAdvance,
+  seasonal,
 }) {
   const installedText = installed.length
     ? `Sunday night. ${installed.map((item) => item.name).join(', ')} slots into place.`
@@ -349,12 +419,34 @@ function buildResolutionHtml({
   const relBlock = relationshipBeat
     ? `<p><strong>${relationshipBeat.beat.title}:</strong> ${relationshipBeat.beat.text}</p>`
     : '';
+  const rivalBlock = rivalEvent
+    ? `<p><strong>${rivalEvent.title}:</strong> ${rivalEvent.text}</p>`
+    : '';
+  const chapterBlock = chapterAdvance
+    ? `<p><strong>Chapter complete:</strong> ${chapterAdvance.completed.name}. Reward ${formatMoney(chapterAdvance.reward.money || 0)}.</p>`
+    : '';
+  const seasonalBlock = seasonal
+    ? `<p><strong>${seasonal.name}:</strong> ${seasonal.modifier}</p>`
+    : '';
+
+  const net = (weekConsultIncome || 0) + clinicRevenue - bills;
+  const incomeLines = [
+    weekConsultIncome ? `Visit fees ${formatMoney(weekConsultIncome)}` : null,
+    clinicRevenue ? `Clinic revenue ${formatMoney(clinicRevenue)}` : null,
+    `Bills ${formatMoney(bills)}`,
+    `Net ${formatMoney(net)}`,
+  ]
+    .filter(Boolean)
+    .join('. ');
 
   return `
     <p>${installedText}</p>
+    ${seasonalBlock}
     ${eventBlock}
+    ${rivalBlock}
     ${wardrobeBlock}
     ${relBlock}
+    ${chapterBlock}
     <p>Week ${state.week} closes. ${
       bestStaff
         ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.`
@@ -365,7 +457,7 @@ function buildResolutionHtml({
         : ''
     }</p>
     ${stageText}
-    <p>Revenue ${formatMoney(clinicRevenue)}. Bills ${formatMoney(bills)}. ${closingTone}</p>
+    <p>${incomeLines}. ${closingTone}</p>
   `;
 }
 
@@ -373,6 +465,8 @@ export function endWeek(state) {
   const rng = rngForState(state);
   const installed = applyPendingInstallations(state);
   updateInstallableAchievement(state);
+  applyStyleWeekTick(state);
+  const seasonal = getActiveSeasonalWeek(state);
   const effects = computeClinicEffects(state);
   const staffGains = [];
   const patientGains = [];
@@ -383,6 +477,8 @@ export function endWeek(state) {
     weeklyEvent.effect(state);
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
+
+  const rivalEvent = tickRival(state, rng);
 
   [...state.staff, ...state.patients].forEach((character) => {
     const oldStage = getStageIndex(character);
@@ -413,7 +509,37 @@ export function endWeek(state) {
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
 
+  const groupPick = pickGroupScene(state, rng);
+  if (groupPick) setPendingGroupScene(state, groupPick);
+
+  const chapterAdvance = checkChapterAdvance(state);
+  if (chapterAdvance && state.stats) {
+    state.stats.chaptersCompleted = (state.stats.chaptersCompleted || 0) + 1;
+  }
+
+  const ending = canShowEnding(state) ? computeEnding(state) : null;
+  if (ending) state.pendingEnding = ending;
+
+  const visitPenalty = visitWeekPenalty(state);
+  if (visitPenalty.unvisited > 0) {
+    state.reputation = Math.max(0, state.reputation - visitPenalty.reputation);
+    getUnvisitedPatients(state).forEach((patient) => {
+      patient.trust = Math.max(0, Math.round((patient.trust - visitPenalty.trustLossPerPatient) * 100) / 100);
+    });
+    addWeekNote({ type: 'penalty', title: 'Missed patient visits', text: visitPenalty.message }, state);
+  }
+
+  if (state.activePatientVisit) {
+    state.activePatientVisit = null;
+    addWeekNote({
+      type: 'system',
+      title: 'Visit abandoned',
+      text: 'An in-progress patient visit was cleared at week end.',
+    }, state);
+  }
+
   const clinicRevenue = effects.weeklyRevenue;
+  const weekConsultIncome = state.weekConsultIncome || 0;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
   state.money += clinicRevenue - bills;
   state.reputation = Math.max(0, state.reputation);
@@ -430,8 +556,9 @@ export function endWeek(state) {
   state.archivedPatients.push(...leaving);
 
   const newPatientCount = Math.min(5, 2 + Math.floor(state.reputation / 28) + (effects.newPatients || 0) + rng.int(0, 1));
+  const styleBias = stylePatientArchetypeBias(state);
   const newPatients = Array.from({ length: newPatientCount }, () => {
-    const patient = createPatient(rng);
+    const patient = createPatient(rng, { styleBias });
     patient.weeklyMomentum += effects.patientMomentum || 0;
     return patient;
   });
@@ -448,10 +575,14 @@ export function endWeek(state) {
     stageChanges,
     bills,
     clinicRevenue,
+    weekConsultIncome,
     newPatients,
     weeklyEvent,
     wardrobeFired,
     relationshipBeat,
+    rivalEvent,
+    chapterAdvance,
+    seasonal,
   });
 
   state.pendingStageHighlights = stageChanges;
@@ -470,6 +601,7 @@ export function endWeek(state) {
 
   const resolution = {
     week: state.week,
+    challengeWeek: state.challengeWeek,
     installed,
     staffGains,
     patientGains,
@@ -480,6 +612,10 @@ export function endWeek(state) {
     weeklyEvent,
     wardrobeFired,
     relationshipBeat,
+    rivalEvent,
+    chapterAdvance,
+    seasonal,
+    ending,
     newAchievements,
     html: resolutionHtml,
   };
@@ -494,8 +630,10 @@ export function endWeek(state) {
   state.week += 1;
   state.actionPoints = state.actionPointsMax;
   state.apSpentThisWeek = 0;
+  state.weekConsultIncome = 0;
   state.thisWeek = [];
   state.campaignBoost = null;
+  startNewWeekChallenge(state);
   saveGame(state);
 
   return resolution;

@@ -2,7 +2,7 @@ import { getStageIndex } from './characters.js';
 
 export const ACHIEVEMENTS = [
   { id: 'first_week', name: 'Doors Open', desc: 'Complete your first week.', check: (s) => s.week >= 2 },
-  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 4+.', check: (s, ctx) => ctx.maxStage >= 3 },
+  { id: 'first_stage', name: 'First Bloom', desc: 'Any character reaches stage 4+.', check: (s, ctx) => ctx.maxStage >= 2 },
   { id: 'first_arc', name: 'Private Story', desc: 'Complete an arc beat.', check: (s) => s.stats?.arcBeatsCompleted >= 1 },
   { id: 'recruit_one', name: 'New Hire', desc: 'Recruit a patient to staff.', check: (s) => s.stats?.patientsRecruited >= 1 },
   { id: 'staff_six', name: 'Full Bench', desc: 'Employ 6 or more staff.', check: (s) => s.staff.length >= 6 },
@@ -16,6 +16,12 @@ export const ACHIEVEMENTS = [
   { id: 'wardrobe_crisis', name: 'Button Pop', desc: 'Trigger a wardrobe strain event.', check: (s) => s.stats?.wardrobeEvents >= 1 },
   { id: 'relationship_spark', name: 'Office Tension', desc: 'Witness a staff relationship beat.', check: (s) => s.stats?.relationshipBeats >= 1 },
   { id: 'perfect_ap', name: 'Clean Week', desc: 'Spend every AP in a week.', check: (s, ctx) => ctx.perfectApWeek },
+  { id: 'chapter_one', name: 'Soft Opening', desc: 'Complete Chapter 1.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_1') },
+  { id: 'rival_win', name: 'Annex Silenced', desc: 'Defeat ThriveWell Annex.', check: (s) => s.rivalState?.defeated },
+  { id: 'group_scene', name: 'Crowd Scene', desc: 'Play a group scene.', check: (s) => (s.stats?.groupScenesPlayed || 0) >= 1 },
+  { id: 'chapter_three', name: 'City Whisper', desc: 'Complete Chapter 3.', check: (s) => (s.chapterGoalsMet || []).includes('chapter_3') },
+  { id: 'loyalty_arc', name: 'Regular\'s Story', desc: 'Complete a patient loyalty arc.', check: (s) => (s.stats?.loyaltyArcBeats || 0) >= 3 },
+  { id: 'rival_ops', name: 'Annex Operator', desc: 'Complete Annex ops arc.', check: (s) => s.rivalClinic?.complete },
 ];
 
 export function ensureAchievementState(state) {

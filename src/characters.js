@@ -1,16 +1,30 @@
+import {
+  composePatientAppearance,
+  ensurePatientAppearance,
+  generatePatientAppearance,
+  getPatientAppearanceSummary,
+} from './patientAppearance.js';
+import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientHook } from './patientDialogue.js';
+import { staffArchetypeLines } from './staffDialogue.js';
+import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
+
+export { getPatientAppearanceSummary };
+
+export const STAGE_MAX = 6;
+export const STAGE_COUNT = 7;
+
+/** Minimum absolute weight (lb) to reach each stage index. Stage 6 (1-indexed) tops near 350; max stage reaches ~1 ton. */
+export const STAGE_WEIGHT_FLOORS = [0, 168, 200, 235, 272, 310, 350];
+export const STAGE_WEIGHT_CEILING = 2000;
+
 export const weightStageNames = [
   'Bright Beginning',
-  'Softened Routine',
   'Comfortably Rounded',
-  'Plush Momentum',
   'Noticeable Bloom',
-  'Heavy-Lidded Ease',
   'Lush Presence',
-  'Opulent Curves',
   'Room-Filling Warmth',
-  'Radiant Heaviness',
   'Magnificent Softness',
-  'Commanding Abundance',
+  'Titanic Abundance',
 ];
 
 export const bodyTypes = {
@@ -129,6 +143,12 @@ export const bodyTypes = {
     ],
   },
 };
+
+for (const key of Object.keys(bodyTypes)) {
+  if (staffBodyDescriptions[key]) {
+    bodyTypes[key].descriptions = staffBodyDescriptions[key];
+  }
+}
 
 export const archetypes = {
   nurturer: {
@@ -271,6 +291,104 @@ export const archetypes = {
       devoted: 'I fly in monthly now. Fatter every time. Keep me on your best schedule.',
     },
   },
+  rivalSpy: {
+    label: "Rival's Mole",
+    appetiteMod: 0.95,
+    trustMod: 0.6,
+    hook: 'Sent from ThriveWell Annex. Curiosity wins over loyalty fast.',
+    lines: {
+      professional: 'Just researching wellness trends. Your lobby is... different.',
+      noticing: 'Okay. The chairs are nicer. And the snacks. Stop looking at me.',
+      hungry: 'I was supposed to report back. I ordered seconds instead.',
+      pleased: 'ThriveWell can wait. I am learning things about appetite.',
+      indulgent: 'Fine. I am a convert. Their juice bar can rot.',
+      devoted: 'I work for you now. Fat, happy, and done with detox culture.',
+    },
+  },
+  foodBlogger: {
+    label: 'Food Blogger',
+    appetiteMod: 1.2,
+    trustMod: 1.1,
+    hook: 'Reviews clinics like restaurants. Yours is trending.',
+    lines: {
+      professional: 'Great lighting. Good vibes. Content potential is insane.',
+      noticing: 'My ring light catches new curves. Engagement is up. So is my waist.',
+      hungry: 'I came for a post. Stayed for the casserole. Filmed both.',
+      pleased: 'The comments love my softness. I love the trays.',
+      indulgent: 'Sponsor me or feed me. Ideally both. I am not stopping.',
+      devoted: 'My channel is just me getting fatter here. Subscribers thank you.',
+    },
+  },
+  gymDefector: {
+    label: 'Gym Defector',
+    appetiteMod: 1.3,
+    trustMod: 0.9,
+    hook: 'Cancelled the membership. Kept the hunger.',
+    lines: {
+      professional: 'My trainer fired me. I needed a softer practice.',
+      noticing: 'Leggings dig in now. Good. That is data.',
+      hungry: 'I replaced cardio with your vending wall. No regrets yet.',
+      pleased: 'Muscle memory fading. Softness memory strong.',
+      indulgent: 'I want to be the cautionary tale that makes people jealous.',
+      devoted: 'Immobility is a goal now. Feed me like a retirement plan.',
+    },
+  },
+  housewifeDonor: {
+    label: 'Bored Housewife Donor',
+    appetiteMod: 1.15,
+    trustMod: 1.2,
+    hook: 'Funded a wing out of boredom. Stayed for the trays.',
+    lines: {
+      professional: 'My husband thinks I volunteer. I do. The snacks are the volunteer part.',
+      noticing: 'Designer waistbands lie. These curves do not.',
+      hungry: 'Book club can wait. Your casserole cannot.',
+      pleased: 'I donate and dine. Tax write-off and waistline both grow.',
+      indulgent: 'Money buys trays. Trays buy softness. I buy more trays.',
+      devoted: 'I fund the clinic with one hand and feed myself with the other. Both are full.',
+    },
+  },
+  rivalDoctor: {
+    label: "Rival Doctor's Patient",
+    appetiteMod: 1.05,
+    trustMod: 0.75,
+    hook: 'Sent by ThriveWell. Curiosity became appetite.',
+    lines: {
+      professional: 'My doctor says you are bad for discipline. I am checking.',
+      noticing: 'Discipline is losing. Comfort is winning.',
+      hungry: 'I was supposed to report back. I ordered seconds.',
+      pleased: 'ThriveWell can wait. I am learning appetite.',
+      indulgent: 'Tell my doctor I defected. Bring dessert.',
+      devoted: 'I switched clinics permanently. Fat and happy. No refunds.',
+    },
+  },
+  foodTruckOwner: {
+    label: 'Food Truck Owner',
+    appetiteMod: 1.25,
+    trustMod: 1.0,
+    hook: 'She samples everything. Including your policy.',
+    lines: {
+      professional: 'Good parking. Good foot traffic. Great smells.',
+      noticing: 'I taste-test for work. I taste-test for pleasure now too.',
+      hungry: 'My truck makes money. Your clinic makes me hungry.',
+      pleased: 'I park outside on Fridays. We both profit.',
+      indulgent: 'Free samples for staff. Paid samples for me. All calories welcome.',
+      devoted: 'I sold the truck. I eat here full time now.',
+    },
+  },
+  sleepClinicDefector: {
+    label: 'Sleep Clinic Defector',
+    appetiteMod: 1.2,
+    trustMod: 1.05,
+    hook: 'Left a sleep clinic. Found appetite instead of rest.',
+    lines: {
+      professional: 'I used to treat insomnia. Now I treat hunger.',
+      noticing: 'Sleep is overrated. Fullness is not.',
+      hungry: 'Midnight snacks became midday feasts. I am not going back.',
+      pleased: 'My old patients would not recognize me. Good.',
+      indulgent: 'Wake me for meals. Nothing else.',
+      devoted: 'I defected from rest culture entirely. Feed me until I nap happy.',
+    },
+  },
 };
 
 const staffTemplates = [
@@ -408,8 +526,14 @@ export function createStartingStaff(rng) {
 export function createPatient(rng, options = {}) {
   const bodyType = options.bodyType || rng.pick(bodyTypeKeys);
   let archetype = options.archetype || rng.pick(archetypeKeys);
-  if (!options.archetype && rng.next() < 0.18) {
+  if (!options.archetype && options.styleBias?.length && rng.next() < 0.35) {
+    archetype = rng.pick(options.styleBias);
+  } else if (!options.archetype && rng.next() < 0.18) {
     archetype = rng.pick(['patron', 'vip']);
+  } else if (!options.archetype && rng.next() < 0.08) {
+    archetype = rng.pick(['rivalSpy', 'foodBlogger', 'gymDefector']);
+  } else if (!options.archetype && rng.next() < 0.06) {
+    archetype = rng.pick(['housewifeDonor', 'rivalDoctor', 'foodTruckOwner', 'sleepClinicDefector']);
   }
   const profile = bodyTypes[bodyType];
   const baselineWeight = rng.int(profile.baseRange[0], profile.baseRange[1]);
@@ -443,53 +567,137 @@ export function createPatient(rng, options = {}) {
     preferences: defaultPreferences(),
     seenThisWeek: false,
     visits: 0,
+    loyalty: 0,
+    loyaltyArc: { completedBeats: [] },
+    appearance: generatePatientAppearance(rng),
     consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
     lastStage: 0,
   };
+}
+
+export function bumpLoyalty(patient, amount = 1) {
+  if (!patient || patient.type !== 'patient') return;
+  patient.loyalty = Math.min(10, (patient.loyalty || 0) + amount);
+}
+
+export function loyaltyRecruitDiscount(patient) {
+  const loyalty = patient.loyalty || 0;
+  if (loyalty >= 8) return 200;
+  if (loyalty >= 5) return 100;
+  return 0;
 }
 
 export function createPatientRoster(rng, count = 4) {
   return Array.from({ length: count }, () => createPatient(rng));
 }
 
+export function weightForStageIndex(character, stageIndex) {
+  const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(stageIndex)));
+  if (stage === 0) return character.baselineWeight;
+  if (stage === STAGE_MAX) return STAGE_WEIGHT_CEILING;
+  if (stage === STAGE_MAX - 1) return 345;
+  const low = STAGE_WEIGHT_FLOORS[stage];
+  const high = STAGE_WEIGHT_FLOORS[stage + 1];
+  return Math.round((low + high) / 2);
+}
+
 export function getStageIndex(character) {
-  const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
-  return Math.max(
-    0,
-    Math.min(11, Math.floor((character.weight - character.baselineWeight) / profile.stageSize)),
-  );
+  const weight = character.weight;
+  let stage = 0;
+  for (let i = STAGE_WEIGHT_FLOORS.length - 1; i >= 0; i -= 1) {
+    if (weight >= STAGE_WEIGHT_FLOORS[i]) {
+      stage = i;
+      break;
+    }
+  }
+  return Math.min(STAGE_MAX, stage);
 }
 
 export function getStageInfo(character) {
   const stage = getStageIndex(character);
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
+  let description = profile.descriptions[stage];
+  const floor = STAGE_WEIGHT_FLOORS[stage];
+  const cap = stage < STAGE_MAX ? STAGE_WEIGHT_FLOORS[stage + 1] : STAGE_WEIGHT_CEILING;
+  const progress =
+    cap > floor ? Math.min(100, Math.round(((character.weight - floor) / (cap - floor)) * 100)) : 100;
+  if (character.type === 'patient') {
+    ensurePatientAppearance(character);
+    const apparel = composePatientAppearance(character, stage);
+    const attitude = getAttitudeKey(character);
+    if (isEarlyPatientVoice(character)) {
+      description = getPatientEarlyBodyLine(character.bodyType, attitude);
+    } else {
+      const patientBody =
+        patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass;
+      description = patientBody[stage] || profile.descriptions[stage];
+    }
+    description = `${description} ${apparel.clothingLine}`;
+  }
   return {
     index: stage,
     name: weightStageNames[stage],
     bodyType: profile.label,
-    description: profile.descriptions[stage],
-    progress: Math.round((stage / (weightStageNames.length - 1)) * 100),
+    description,
+    progress,
   };
 }
 
 export function getAttitudeKey(character) {
   const stage = getStageIndex(character);
-  if (stage <= 1) return 'professional';
-  if (stage <= 3) return 'noticing';
-  if (stage <= 5) return 'hungry';
-  if (stage <= 7) return 'pleased';
-  if (stage <= 9) return 'indulgent';
+  if (stage <= 0) return 'professional';
+  if (stage <= 1) return 'noticing';
+  if (stage <= 2) return 'hungry';
+  if (stage <= 3) return 'pleased';
+  if (stage <= 4) return 'indulgent';
   return 'devoted';
 }
 
+export function isEarlyPatientVoice(character) {
+  if (character?.type !== 'patient') return false;
+  const attitude = getAttitudeKey(character);
+  return attitude === 'professional' || attitude === 'noticing';
+}
+
 export function getCharacterDialogue(character) {
-  const archetype = archetypes[character.archetype] || archetypes.nurturer;
-  return archetype.lines[getAttitudeKey(character)];
+  const attitude = getAttitudeKey(character);
+  if (character.type === 'patient') {
+    const patientLines =
+      patientArchetypeLines[character.archetype] || patientArchetypeLines.nurturer;
+    return patientLines[attitude];
+  }
+  const staffLines = staffArchetypeLines[character.archetype] || staffArchetypeLines.nurturer;
+  return staffLines[attitude];
 }
 
 export function describeCharacter(character) {
   const stage = getStageInfo(character);
   const archetype = archetypes[character.archetype] || archetypes.nurturer;
+
+  if (character.type === 'patient') {
+    ensurePatientAppearance(character);
+    const apparel = composePatientAppearance(character, stage.index);
+    const extras = [];
+    if (apparel.beat.showHair) extras.push(`<p>${apparel.hairLine}</p>`);
+    if (apparel.beat.showHeight) extras.push(`<p>${apparel.heightLine}</p>`);
+    const early = isEarlyPatientVoice(character);
+    const preferenceLine = early ? '' : ` Favors ${character.preference}.`;
+    const bodyLine = early
+      ? getPatientEarlyBodyLine(character.bodyType, getAttitudeKey(character))
+      : (patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass)[
+          stage.index
+        ] || stage.description;
+    const hookLine = getPatientHook(character.archetype);
+    return `
+    <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. ${getPatientAppearanceSummary(character)}.${preferenceLine}</p>
+    <p>${bodyLine}</p>
+    <p><em>Wardrobe:</em> ${apparel.clothingLine}</p>
+    ${extras.join('')}
+    <p>${hookLine}</p>
+    <p><em>"${getCharacterDialogue(character)}"</em></p>
+  `;
+  }
+
   return `
     <p><strong>${character.name}</strong>, ${character.age}, ${character.ethnicity}. ${character.role}. ${archetype.label}. Favors ${character.preference}.</p>
     <p>${stage.description}</p>
@@ -502,7 +710,19 @@ export function summarizeStageChange(character, oldStage, newStage) {
   const stage = getStageInfo(character);
   const profile = bodyTypes[character.bodyType] || bodyTypes.hourglass;
   const attitude = getAttitudeKey(character);
-  const base = `${character.name} reaches ${stage.name}. ${profile.descriptions[newStage]}`;
+  let base = `${character.name} reaches ${stage.name}. ${profile.descriptions[newStage]}`;
+  if (character.type === 'patient') {
+    ensurePatientAppearance(character);
+    const apparel = composePatientAppearance(character, newStage);
+    if (isEarlyPatientVoice(character)) {
+      base = `${character.name} reaches ${stage.name}. ${getPatientEarlyBodyLine(character.bodyType, attitude)}`;
+    } else {
+      const patientBody =
+        patientBodyDescriptions[character.bodyType] || patientBodyDescriptions.hourglass;
+      base = `${character.name} reaches ${stage.name}. ${patientBody[newStage] || profile.descriptions[newStage]}`;
+    }
+    base += ` ${apparel.clothingLine}`;
+  }
 
   if (attitude === 'professional' || attitude === 'noticing') {
     return `${base} Something shifted. She has not named it yet.`;

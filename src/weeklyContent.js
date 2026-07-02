@@ -1,4 +1,7 @@
 import { getStageIndex } from './characters.js';
+import { recordRelationshipBeat } from './relationships.js';
+import { V3_RELATIONSHIP_BEATS, V3_WEEKLY_EVENTS, getActiveSeasonalWeek } from './v3WeeklyContent.js';
+import { getChallenge } from './challenges.js';
 
 export const WEEKLY_EVENTS = [
   {
@@ -129,35 +132,37 @@ export const WEEKLY_EVENTS = [
   },
 ];
 
+export const ALL_WEEKLY_EVENTS = [...WEEKLY_EVENTS, ...V3_WEEKLY_EVENTS];
+
 export const WARDROBE_EVENTS = [
   {
     id: 'button_strain',
-    stageMin: 3,
+    stageMin: 2,
     text: 'A button holds on by thread during rounds. She fixes it with a safety pin. Laughs. Eats lunch anyway.',
   },
   {
     id: 'seam_split',
-    stageMin: 4,
+    stageMin: 2,
     text: 'A side seam whispers apart when she sits. She covers it with a cardigan. The cardigan gaps too.',
   },
   {
     id: 'new_scrubs',
-    stageMin: 5,
+    stageMin: 3,
     text: 'She orders scrubs one size up. They fit. For now. She already eyes the next size on the catalog.',
   },
   {
     id: 'zip_fail',
-    stageMin: 6,
+    stageMin: 3,
     text: 'A skirt zip stops halfway. She stays in the break room until someone brings a stretch waist option.',
   },
   {
     id: 'uniform_upgrade',
-    stageMin: 7,
+    stageMin: 4,
     text: 'Clinic uniform upgrade arrives. Reinforced seams. She fills it by end of shift. Worth every dollar.',
   },
   {
     id: 'custom_fit',
-    stageMin: 8,
+    stageMin: 4,
     text: 'She asks for custom fit. Measurements taken twice. The tailor exhales. She grins. "Room to grow."',
   },
 ];
@@ -214,34 +219,48 @@ export const RELATIONSHIP_BEATS = [
       });
     },
   },
+  ...V3_RELATIONSHIP_BEATS,
 ];
 
 export function pickWeeklyEvent(state, rng) {
   const owned = state.ownedUpgrades || [];
-  const pool = WEEKLY_EVENTS.filter((ev) => {
+  const seasonal = getActiveSeasonalWeek(state);
+  const pool = ALL_WEEKLY_EVENTS.filter((ev) => {
     if (ev.requiresUpgrade && !owned.includes(ev.requiresUpgrade)) return false;
+    if (ev.minWeek && state.week < ev.minWeek) return false;
     return true;
   });
   if (!pool.length) return null;
-  const total = pool.reduce((s, e) => s + e.weight, 0);
+
+  const weighted = pool.map((ev) => {
+    let w = ev.weight;
+    const challenge = getChallenge(state.challengeWeek);
+    if (seasonal && ev.seasonal === seasonal.eventBoost) w *= 2;
+    if (challenge?.eventBoost?.(ev)) w *= 2;
+    if (state.challengeWeek === 'quiet') w *= 0.65;
+    return { ev, w };
+  });
+  const total = weighted.reduce((s, e) => s + e.w, 0);
   let roll = rng.next() * total;
-  for (const ev of pool) {
-    roll -= ev.weight;
+  for (const { ev, w } of weighted) {
+    roll -= w;
     if (roll <= 0) return ev;
   }
-  return pool[pool.length - 1];
+  return weighted[weighted.length - 1].ev;
 }
 
 export function fireWardrobeEvents(state, rng) {
   const fired = [];
   const all = [...state.staff, ...state.patients];
+  const challenge = getChallenge(state.challengeWeek);
+  const wardrobeChance = 0.22 * (challenge?.wardrobeMult || 1);
   for (const character of all) {
     const stage = getStageIndex(character);
     for (const ev of WARDROBE_EVENTS) {
       if (stage < ev.stageMin) continue;
       const key = `wardrobe_${ev.id}_${character.id}`;
       if (state.firedEvents?.includes(key)) continue;
-      if (rng.next() > 0.22) continue;
+      if (rng.next() > wardrobeChance) continue;
       fired.push({ character, ...ev, key });
       character.openness += 2;
       character.weeklyMomentum += 0.35;
@@ -264,6 +283,7 @@ export function fireRelationshipBeat(state, rng) {
     if (chars.length < beat.pair.length) continue;
     beat.effect(state, chars);
     state.firedEvents.push(beat.id);
+    recordRelationshipBeat(state, beat);
     if (state.stats) state.stats.relationshipBeats = (state.stats.relationshipBeats || 0) + 1;
     return { beat, chars };
   }
