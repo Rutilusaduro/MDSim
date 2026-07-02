@@ -26,6 +26,7 @@ import {
   fireWardrobeEvents,
   pickWeeklyEvent,
 } from './weeklyContent.js';
+import { fireWorldImpactEvents } from './worldImpact.js';
 import { tickRival, rivalBlocksRecruitment } from './rival.js';
 import { checkChapterAdvance } from './chapters.js';
 import { bumpStyle, styleFromInteraction, applyStyleWeekTick, stylePatientArchetypeBias } from './clinicStyle.js';
@@ -46,7 +47,7 @@ const RECRUIT_ROLES = [
 
 export const interactionCatalog = {
   consult: {
-    label: 'Standard Comfort Consultation',
+    label: 'Standard Gluttony Consultation',
     scope: [],
     money: 225,
     description: 'Legacy consult. Patients use the visit desk instead.',
@@ -69,7 +70,7 @@ export const interactionCatalog = {
     description: 'A written plan for growing: slower evenings, fuller plates, and second helpings taken without a shred of guilt.',
   },
   comfortBlend: {
-    label: 'Use Comfort Blend',
+    label: 'Use Gorging Blend',
     scope: ['staff'],
     inventory: 'comfortBlend',
     description: 'Vanilla powder. Calms nerves. Opens appetite.',
@@ -126,9 +127,9 @@ export function getInteractionOptions(state, character) {
         if (character.trust < 8) {
           extraDisabled = true;
           extraReason = 'Need trust 8+';
-        } else if (getStageIndex(character) < 2) {
+        } else if (getStageIndex(character) < 4) {
           extraDisabled = true;
-          extraReason = 'Need stage 3+';
+          extraReason = 'Need stage 5+';
         } else if ((character.visits || 0) < 3 - loyaltyRecruitVisitShortcut(character) && (character.loyalty || 0) < 5) {
           extraDisabled = true;
           extraReason = 'Need 3+ visits or loyalty 5+';
@@ -172,6 +173,7 @@ function actionFlavor(character, actionId) {
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
   const mid = attitude === 'hungry' || attitude === 'pleased';
+  const immobile = attitude === 'immobile' || attitude === 'blob';
   const isPatient = character.type === 'patient';
   const quote = banter ? ` ${banter}` : '';
 
@@ -181,17 +183,23 @@ function actionFlavor(character, actionId) {
         ? `${name} checks out after the visit. Follow-up on the calendar.${quote}`
         : mid
           ? `${name} lingers in the lobby after checkout, hand at her middle.${quote}`
-          : `${name} fills the exam chair, cheeks flushed.${quote}`,
+          : immobile
+            ? `${name} finishes the visit from the widened lounge couch, tray balanced on her belly.${quote}`
+            : `${name} fills the exam chair, cheeks flushed.${quote}`,
       comfortPlan: early
-        ? `${name} takes the pamphlet home, reassured.${quote}`
+        ? `${name} takes the feeding plan home, reassured.${quote}`
         : mid
           ? `${name} reads the plan in the car, engine running.${quote}`
-          : `${name} hugs the plan to her chest before she stands.${quote}`,
+          : immobile
+            ? `${name} keeps the plan within reach on the couch, already planning seconds.${quote}`
+            : `${name} hugs the plan to her chest before she stands.${quote}`,
       comfortBlend: early
         ? `${name} drinks the blend in the exam room, unhurried.${quote}`
         : mid
           ? `${name} finishes the cup and blinks at the empty bottom.${quote}`
-          : `${name} savors the last swallow, eyes half closed.${quote}`,
+          : immobile
+            ? `${name} drains the blend without sitting up, cup handed back empty.${quote}`
+            : `${name} savors the last swallow, eyes half closed.${quote}`,
       appetiteTonic: early
         ? `${name} takes the dose at the sink, clinical and brief.${quote}`
         : mid
@@ -212,7 +220,9 @@ function actionFlavor(character, actionId) {
       ? `${name} leaves on time. Visit went fine.${quote}`
       : mid
         ? `${name} lingers at the door, distracted.${quote}`
-        : `${name} fills the chair, talk turning to ${preference}.${quote}`,
+        : immobile
+          ? `${name} stays put on the reinforced couch, visit notes taken between bites.${quote}`
+          : `${name} fills the chair, talk turning to ${preference}.${quote}`,
     personalTalk: early
       ? `${name} checks in easy after a long shift.${quote}`
       : mid
@@ -224,15 +234,19 @@ function actionFlavor(character, actionId) {
         ? `${name} clears the tray faster than she planned.${quote}`
         : `Tray lands heavy. ${name} sinks into cushions over ${preference}.${quote}`,
     comfortPlan: early
-      ? `${name} nods through the advice and files it.${quote}`
+      ? `${name} nods through the feeding advice and files it.${quote}`
       : mid
         ? `${name} reads the plan twice, quiet.${quote}`
-        : `${name} takes the plan like permission.${quote}`,
+        : immobile
+          ? `${name} pins the plan to the tray table and keeps eating.${quote}`
+          : `${name} takes the plan like permission.${quote}`,
     comfortBlend: early
       ? `${name} drinks it down between tasks.${quote}`
       : mid
         ? `Blend goes down smooth. ${name} blinks, hungry again.${quote}`
-        : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
+        : immobile
+          ? `Vanilla and cream. ${name} drinks from the straw without shifting her weight.${quote}`
+          : `Vanilla and cream. ${name} drinks slow, hand on her middle.${quote}`,
     appetiteTonic: early
       ? `${name} swallows the dose between rooms.${quote}`
       : mid
@@ -506,6 +520,8 @@ export function endWeek(state) {
   if (!state.firedEvents) state.firedEvents = [];
   const wardrobeFired = fireWardrobeEvents(state, rng);
   wardrobeFired.forEach((w) => state.firedEvents.push(w.key));
+
+  fireWorldImpactEvents(state, rng);
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
 

@@ -14,6 +14,8 @@ const targets = [
   'src/bodyProse.js',
   'src/patientAppearance.js',
   'src/interactionDialogue.js',
+  'src/worldImpact.js',
+  'src/arcs.js',
   'src/staffArcs/maya.js',
   'src/staffArcs/elena.js',
   'src/staffArcs/priya.js',

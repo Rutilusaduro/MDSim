@@ -3,6 +3,7 @@ import { getAttitudeKey } from './characters.js';
 function tierFromAttitude(attitude) {
   if (attitude === 'professional' || attitude === 'noticing') return 'early';
   if (attitude === 'hungry' || attitude === 'pleased') return 'mid';
+  if (attitude === 'immobile' || attitude === 'blob') return 'immobile';
   return 'late';
 }
 
@@ -30,6 +31,11 @@ const BANTER = {
         'She thanks you for the second snack without pretending she did not want it.',
         'She schedules again from the exam chair, phone in one hand, purse in the other.',
       ],
+      immobile: [
+        'She waves the clipboard away and asks for the feeding cart instead of standing.',
+        'Checkout happens from the widened lounge couch. She never leaves the cushions.',
+        'She books the next visit before the tray is empty, crumbs on the chart.',
+      ],
     },
     comfortPlan: {
       early: [
@@ -47,6 +53,11 @@ const BANTER = {
         'She asks you to initial the page about richer evenings. You do.',
         'She tucks the plan into her bra strap because her hands are full of take-home cups.',
       ],
+      immobile: [
+        'She pins the feeding plan to the tray table and keeps eating while she reads.',
+        'She asks whether the plan covers delivery portions. You say yes. She exhales.',
+        'She cannot fold the pamphlet with one hand and refuses to stop chewing long enough to try.',
+      ],
     },
     comfortBlend: {
       early: [
@@ -63,6 +74,11 @@ const BANTER = {
         'She holds the warm cup in both hands and does not stand until it is empty.',
         'She sighs when the last swallow goes down, eyes half closed.',
         'She asks if there is another portion for the road. There is.',
+      ],
+      immobile: [
+        'She drinks through a straw without shifting her weight off the couch.',
+        'Vanilla dust stays on her chin until staff wipe it away between sips.',
+        'She asks for a second cup before the first is finished. You pour anyway.',
       ],
     },
     appetiteTonic: {
@@ -118,7 +134,7 @@ const BANTER = {
         'She keeps her voice low so the hall cannot hear.',
       ],
       late: [
-        'She says she wants to stay on the comfort track and means every word.',
+        'She says she wants to stay on the gluttony track and means every word.',
         'She asks you not to schedule her on diet week. There is no diet week.',
         'She laughs about how soft she has gotten and does not sound unhappy.',
       ],
@@ -223,5 +239,5 @@ export function getInteractionBanter(character, actionId) {
   const actionPool = BANTER[type]?.[actionId];
   if (!actionPool) return '';
   if (Array.isArray(actionPool)) return pickLine(character, actionPool);
-  return pickLine(character, actionPool[tier] || actionPool.mid || actionPool.late || []);
+  return pickLine(character, actionPool[tier] || actionPool.late || actionPool.mid || actionPool.early || []);
 }
