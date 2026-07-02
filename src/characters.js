@@ -10,21 +10,28 @@ import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
 export { getPatientAppearanceSummary };
 
-export const STAGE_MAX = 6;
-export const STAGE_COUNT = 7;
+export const STAGE_MAX = 11;
+export const STAGE_COUNT = 12;
+export const IMMOBILE_STAGE = 10;
+export const BLOB_STAGE = 11;
 
-/** Minimum absolute weight (lb) to reach each stage index. Stage 6 (1-indexed) tops near 350; max stage reaches ~1 ton. */
-export const STAGE_WEIGHT_FLOORS = [0, 168, 200, 235, 272, 310, 350];
-export const STAGE_WEIGHT_CEILING = 2000;
+/** Weight floors for 12 stages. Stage 11 (index 10) immobile; stage 12 (index 11) bedbound blob. */
+export const STAGE_WEIGHT_FLOORS = [0, 165, 195, 230, 270, 310, 350, 430, 540, 700, 920, 1250];
+export const STAGE_WEIGHT_CEILING = 2400;
 
 export const weightStageNames = [
-  'Bright Beginning',
-  'Comfortably Rounded',
-  'Noticeable Bloom',
-  'Lush Presence',
-  'Room-Filling Warmth',
-  'Magnificent Softness',
-  'Titanic Abundance',
+  'Still Hungry',
+  'First Bites',
+  'Growing Appetite',
+  'Heavy Habit',
+  'Shameless Glutton',
+  'Swollen & Soft',
+  'Outgrowing Everything',
+  'Gorge Queen',
+  'Massive & Spreading',
+  'Too Wide to Walk',
+  'Immobile Blob',
+  'Titanic Mass',
 ];
 
 export const bodyTypes = {
@@ -517,7 +524,7 @@ export function createStartingStaff(rng) {
       preference: rng.pick(preferences),
       preferences: defaultPreferences(),
       arc: { completedBeats: [] },
-      consent: 'Enrolled in IndulgeCare staff comfort and nourishment research, 21+.',
+      consent: 'Enrolled in IndulgeCare staff gluttony research program, 21+. Consent covers feeding, weighing, and public display of gain.',
       lastStage: 0,
     };
   });
@@ -570,7 +577,7 @@ export function createPatient(rng, options = {}) {
     loyalty: 0,
     loyaltyArc: { completedBeats: [] },
     appearance: generatePatientAppearance(rng),
-    consent: 'Adult elective patient, 21+, opted into comfort-forward care.',
+    consent: 'Adult elective patient, 21+, opted into gluttony-forward care and supervised gorging.',
     lastStage: 0,
   };
 }
@@ -591,11 +598,28 @@ export function createPatientRoster(rng, count = 4) {
   return Array.from({ length: count }, () => createPatient(rng));
 }
 
+export function isImmobileStage(stageIndex) {
+  return stageIndex >= IMMOBILE_STAGE;
+}
+
+export function isBlobStage(stageIndex) {
+  return stageIndex >= BLOB_STAGE;
+}
+
+export function isCharacterImmobile(character) {
+  return isImmobileStage(getStageIndex(character));
+}
+
+export function isCharacterBlob(character) {
+  return isBlobStage(getStageIndex(character));
+}
+
 export function weightForStageIndex(character, stageIndex) {
   const stage = Math.max(0, Math.min(STAGE_MAX, Math.floor(stageIndex)));
   if (stage === 0) return character.baselineWeight;
-  if (stage === STAGE_MAX) return STAGE_WEIGHT_CEILING;
-  if (stage === STAGE_MAX - 1) return 345;
+  if (stage === BLOB_STAGE) return STAGE_WEIGHT_CEILING;
+  if (stage === IMMOBILE_STAGE) return 1100;
+  if (stage === 6) return 380;
   const low = STAGE_WEIGHT_FLOORS[stage];
   const high = STAGE_WEIGHT_FLOORS[stage + 1];
   return Math.round((low + high) / 2);
@@ -645,11 +669,13 @@ export function getStageInfo(character) {
 
 export function getAttitudeKey(character) {
   const stage = getStageIndex(character);
+  if (stage >= BLOB_STAGE) return 'blob';
+  if (stage >= IMMOBILE_STAGE) return 'immobile';
   if (stage <= 0) return 'professional';
-  if (stage <= 1) return 'noticing';
-  if (stage <= 2) return 'hungry';
-  if (stage <= 3) return 'pleased';
-  if (stage <= 4) return 'indulgent';
+  if (stage <= 2) return 'noticing';
+  if (stage <= 4) return 'hungry';
+  if (stage <= 6) return 'pleased';
+  if (stage <= 8) return 'indulgent';
   return 'devoted';
 }
 
