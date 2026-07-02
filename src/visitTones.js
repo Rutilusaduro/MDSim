@@ -1,5 +1,5 @@
 import { getVisitNarrative } from './patientVisitDialogue.js';
-import { applyFramingErosion } from './patientFraming.js';
+import { applyFramingErosion, visitDialogueTier } from './patientFraming.js';
 import { checkAuditGameOver } from './gameOver.js';
 
 const TONE_EFFECTS = {
@@ -18,7 +18,7 @@ const TONE_REPLIES = {
   },
   offer_water: {
     gentle: 'Water first. Then whatever you recommend.',
-    clinical: 'Hydration protocol. Fine.',
+    clinical: 'Water is fine. Thank you.',
     shameless: 'Water is just to make room for more.',
     cruel: 'Will this make me gain faster? Tell me the truth.',
   },
@@ -30,11 +30,31 @@ const TONE_REPLIES = {
   },
 };
 
+const TONE_REPLIES_CLINICAL = {
+  say_hi: {
+    shameless: 'I skipped breakfast. If the waiting room has anything, I would not say no.',
+    cruel: 'These pants felt fine last month. Tell me if you notice anything.',
+  },
+  offer_water: {
+    shameless: 'Water is fine. Is there coffee while I wait?',
+    cruel: 'I know water will not fix why my clothes are tight.',
+  },
+  weigh_patient: {
+    shameless: 'I ate before I came. Tell me if that skews it.',
+    cruel: 'Read it plain. I can tell the waistband is fighting me.',
+  },
+};
+
 const TONE_NARRATIVE_PREFIX = {
   gentle: 'You keep your voice soft. Permission without pressure.',
   clinical: 'You speak in chart language. Normal PCP rhythm.',
   shameless: 'You name appetite openly. The cover thins.',
   cruel: 'You tell the plain truth. No comfort offered.',
+};
+
+const TONE_NARRATIVE_PREFIX_CLINICAL = {
+  shameless: 'You keep it professional, but appetite slips into the small talk.',
+  cruel: 'You name what she already feels in her clothes. Still chart-clean.',
 };
 
 export function actionSupportsTone(actionId) {
@@ -45,15 +65,23 @@ export function getToneEffects(toneId) {
   return { ...(TONE_EFFECTS[toneId] || {}) };
 }
 
-export function getToneReply(actionId, toneId) {
+export function getToneReply(actionId, toneId, tier = 'early') {
+  if (tier === 'clinical') {
+    const clinicalReply = TONE_REPLIES_CLINICAL[actionId]?.[toneId];
+    if (clinicalReply) return clinicalReply;
+  }
   return TONE_REPLIES[actionId]?.[toneId] || '';
 }
 
 export function buildToneNarrative(patient, actionId, tier, toneId) {
   const base = getVisitNarrative(actionId, patient, tier);
-  const prefix = TONE_NARRATIVE_PREFIX[toneId] || '';
+  const dialogueTier = visitDialogueTier(patient, tier || 'early');
+  const prefix =
+    dialogueTier === 'clinical' && TONE_NARRATIVE_PREFIX_CLINICAL[toneId]
+      ? TONE_NARRATIVE_PREFIX_CLINICAL[toneId]
+      : TONE_NARRATIVE_PREFIX[toneId] || '';
   const narrative = prefix ? `${prefix} ${base.narrative}` : base.narrative;
-  const reply = getToneReply(actionId, toneId) || base.reply;
+  const reply = getToneReply(actionId, toneId, dialogueTier) || base.reply;
   return { narrative, reply };
 }
 

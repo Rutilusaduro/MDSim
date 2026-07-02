@@ -2,7 +2,7 @@ export const CHAPTERS = [
   {
     id: 1,
     name: 'Strip-Mall Opening',
-    tagline: 'Look like a normal PCP office while the first pounds land.',
+    tagline: 'Open the strip-mall suite. Earn trust before the waiting room fills.',
     goals: [
       { id: 'week', label: 'Reach week 6', check: (s) => s.week >= 6 },
       { id: 'hire', label: 'Hire a head nurse', check: (s) => s.staff.some((m) => m.arcSlot === 'maya') },

@@ -1,6 +1,6 @@
 /** Patient visit mini-game dialogue. Narrative + short replies only; no game logic. */
 import { getAttitudeKey } from './characters.js';
-import { visitDialogueTier, getPatientPublicReason, getPatientFramingNote } from './patientFraming.js';
+import { visitDialogueTier, getPatientFramingNote } from './patientFraming.js';
 
 function tierFromAttitude(attitude) {
   if (attitude === 'immobile') return 'immobile';
@@ -16,19 +16,34 @@ function pickLine(character, pool) {
   return pool[seed % pool.length];
 }
 
+function getVisitReply(actionId, resolvedTier, attitudeTier) {
+  const replies = VISIT_REPLIES[actionId];
+  if (!replies) return '';
+  if (typeof replies === 'string') return replies;
+  return (
+    replies[resolvedTier] ||
+    replies[attitudeTier] ||
+    replies.clinical ||
+    replies.early ||
+    replies.mid ||
+    replies.late ||
+    ''
+  );
+}
+
 const VISIT_NARRATIVE = {
   say_hi: {
     clinical: [
       'She checks in at the desk with her insurance card ready and asks whether labs from her last physical posted yet.',
       'She arrives on time for a routine follow-up, coat still buttoned, expecting vitals and a quick checkout.',
       'She offers her name, date of birth, and pharmacy on file without prompting. Normal Tuesday patient energy.',
-      'She reads the wall poster about flu shots and asks if she is due. She has not noticed the snack tray yet.',
+      'She reads the wall poster about flu shots and asks if she is due.',
     ],
     early: [
       'She steps off the elevator with her purse squared on her shoulder and offers her name before you ask.',
-      'The lobby scent reaches her first. She pauses at the desk, reading the snack menu with quiet attention.',
       'She checks her appointment time on her phone, then pockets it and meets your eyes with a small nod.',
-      'Her coat is still buttoned. She unbuttons one clasp while you greet her, as if the room asked for appetite.',
+      'Her coat is still buttoned. She asks whether you got her portal message about the refill.',
+      'She arrived on time for a follow-up and expects vitals before any new prescriptions.',
     ],
     mid: [
       'She waves before she reaches the desk, already smiling like this hallway belongs to her and her hunger.',
@@ -56,6 +71,12 @@ const VISIT_NARRATIVE = {
     ],
   },
   review_chart: {
+    clinical: [
+      'You open her chart on the tablet. Prior vitals sit in a clean column. She asks whether her last lipid panel flagged anything.',
+      'Medication list, allergies, family history: she confirms each line without drama.',
+      'You scroll to the problem list. She mentions seasonal allergies and a refill due next month.',
+      'The chart loads. She watches quietly while you review last visit notes and routine labs.',
+    ],
     early: [
       'You open her file on the tablet. She watches the gain column without leaning in, trusting the numbers to climb.',
       'Prior weights sit in a tidy column, each entry higher than the last. She asks one question and accepts the answer.',
@@ -88,6 +109,12 @@ const VISIT_NARRATIVE = {
     ],
   },
   offer_water: {
+    clinical: [
+      'You pour room-temperature water into a paper cup. She takes it with both hands and sips while you wash your hands.',
+      'She accepts the cup, thanks you, and sets it on the side table until vitals are done.',
+      'Condensation beads on the paper. She drinks half, folds the napkin, and waits for the blood pressure cuff.',
+      'Water first, as usual. She sips once and asks whether you need a urine sample today.',
+    ],
     early: [
       'You pour room-temperature water into a paper cup. She takes it with both hands and sips before asking about snacks.',
       'The cup sweats on the tray. She thanks you, drinks half, and saves the rest for after the weigh-in.',
@@ -120,6 +147,12 @@ const VISIT_NARRATIVE = {
     ],
   },
   weigh_patient: {
+    clinical: [
+      'She steps onto the scale in flat shoes and holds still while the digits settle. One glance, then she steps off.',
+      'The platform chirps. She reads the number, nods once, and reaches for her cardigan.',
+      'You note the weight. She asks whether shoes count. You say they do. She accepts it with a small shrug.',
+      'She stands centered on the mat, posture straight, as if this were any other checkup.',
+    ],
     early: [
       'She steps onto the scale in flat shoes and holds still while the digits settle. One glance, then she steps off.',
       'The platform chirps. She reads the number, smiles briefly, and reaches for her cardigan.',
@@ -335,38 +368,6 @@ const VISIT_NARRATIVE = {
       'The cabinet runs low before her appetite does. You promise more from the kitchen. She settles, patient and huge.',
     ],
   },
-  note_symptoms: {
-    early: [
-      'You ask about straining seams and afternoon hunger. She answers in clinical terms, relieved you celebrate the signs.',
-      'She lists gluttony symptoms like weather reports: belt notch moved, appetite louder, evenings spent eating.',
-      'You note the symptoms without judgment. She exhales and admits the scale has been kinder than her old wardrobe.',
-      'Chart open, pen ready. She volunteers one symptom, then another, each easier than the last.',
-    ],
-    mid: [
-      'She describes hunger arriving earlier each day. You log it. She watches your face for approval and finds it.',
-      'Tight clothes, louder stomach, softer furniture. She recites the list like a progress report she is proud of.',
-      'You note afternoon cravings and evening gorging. She nods hard. "Exactly that," she says.',
-      'Symptoms spill out faster than you can write. She laughs once and says the clinic finally speaks her appetite.',
-    ],
-    late: [
-      'She lists symptoms you stopped needing to ask about. Fullness, heat, appetite that outlasts meals. You tick each box.',
-      'Gluttony symptoms fill half the page. She reads over your shoulder and adds one you forgot: joy.',
-      'She describes her body in plain terms now. No apology. You note everything and she thanks you for listening.',
-      'The symptom review becomes a celebration. She pats her middle when you write indulgence and says, "Accurate."',
-    ],
-    immobile: [
-      'She reports what immobility feels like: furniture groaning, hips spilling, hunger that never leaves. You write it all down.',
-      'Symptoms of growing too heavy to stand. She lists them without shame. You note each and she looks lighter for saying them.',
-      'You ask about feeding in place. She laughs. "Constant," she says. You underline constant twice.',
-      'Chart full of gluttony signs. She cannot see over her own middle to read it. You read back. She says, "Perfect."',
-    ],
-    blob: [
-      'Symptoms now include bed sores prevented, skin folds tended, appetite that outgrows schedules. You log methodically.',
-      'She describes pressure, heat, the way weight pools. You note it. She adds that she still wants more food.',
-      'Gluttony symptoms at this scale: breath shorter, world narrower, hunger undiminished. You tick each box.',
-      'She cannot roll to show you a strain mark. Staff point. You write. She whispers, "I am still growing."',
-    ],
-  },
   warm_blanket: {
     early: [
       'You drape a heated throw across her lap. She stiffens once, then melts into the chair with a quiet sigh.',
@@ -399,7 +400,167 @@ const VISIT_NARRATIVE = {
       'Wrapped as well as anyone can wrap her. She blinks slow and says the room feels like a womb. She wants to be fed in it.',
     ],
   },
+  review_symptoms: {
+    clinical: [
+      'You ask about sleep, energy, and anything new since last visit. She answers in plain terms, relieved you listen.',
+      'She mentions afternoon fatigue and waking once at night. No drama. Just facts.',
+      'You note headache frequency and whether stress changed. She volunteers one symptom, then another.',
+      'Chart open, pen ready. She describes tightness in her chest when she climbs stairs and asks if that warrants labs.',
+    ],
+    early: [
+      'You ask about straining seams and afternoon hunger. She answers in clinical terms, relieved you celebrate the signs.',
+      'She lists appetite shifts like weather reports: belt notch moved, evenings longer at the table.',
+      'You note the symptoms without judgment. She exhales and admits the scale has been kinder than her old wardrobe.',
+      'Chart open, pen ready. She volunteers one symptom, then another, each easier than the last.',
+    ],
+    mid: [
+      'She describes hunger arriving earlier each day. You log it. She watches your face for approval and finds it.',
+      'Tight clothes, louder stomach, softer furniture. She recites the list like a progress report she is proud of.',
+      'You note afternoon cravings and evening eating. She nods hard. "Exactly that," she says.',
+      'Symptoms spill out faster than you can write. She laughs once and says the clinic finally speaks her appetite.',
+    ],
+    late: [
+      'She lists symptoms you stopped needing to ask about. Fullness, heat, appetite that outlasts meals. You tick each box.',
+      'Appetite symptoms fill half the page. She reads over your shoulder and adds one you forgot: joy.',
+      'She describes her body in plain terms now. No apology. You note everything and she thanks you for listening.',
+      'The symptom review becomes a celebration. She pats her middle when you write indulgence and says, "Accurate."',
+    ],
+    immobile: [
+      'She reports what immobility feels like: furniture groaning, hips spilling, hunger that never leaves. You write it all down.',
+      'Symptoms of growing too heavy to stand. She lists them without shame. You note each and she looks lighter for saying them.',
+      'You ask about feeding in place. She laughs. "Constant," she says. You underline constant twice.',
+      'Chart full of appetite signs. She cannot see over her own middle to read it. You read back. She says, "Perfect."',
+    ],
+    blob: [
+      'Symptoms now include bed sores prevented, skin folds tended, appetite that outgrows schedules. You log methodically.',
+      'She describes pressure, heat, the way weight pools. You note it. She adds that she still wants more food.',
+      'Appetite symptoms at this scale: breath shorter, world narrower, hunger undiminished. You tick each box.',
+      'She cannot roll to show you a strain mark. Staff point. You write. She whispers, "I am still growing."',
+    ],
+  },
+  offer_snack_menu: {
+    early: [
+      'You slide the printed menu across the side table. She reads the pastry list and asks what is fresh today.',
+      'The lounge menu opens on dense options. She circles two items and looks up for permission.',
+      'She accepts the menu with both hands and reads it like a wine list, slow and pleased.',
+      'Printed specials, warmed cabinet items: she traces each line and saves the menu for later.',
+    ],
+    mid: [
+      'She orders from the menu without looking at prices. Hunger makes the choice easy.',
+      'The menu barely lasts one read. She points at three items and asks you to start with the densest.',
+      'She knows the menu by heart now. She recites her order before you open the cabinet.',
+      'Snack menu in hand, she leans back and says she will need a tray, not a plate.',
+    ],
+    late: [
+      'She takes the menu and orders everything that sounds heavy. No pretense left.',
+      'The printed list is a wish list. She reads it aloud and waits for the cart.',
+      'Menu open on her lap. She taps each pastry name and says, "All of those."',
+      'She folds the menu into her purse for home reference and orders enough for now and later.',
+    ],
+    immobile: [
+      'You read the menu aloud. She chooses by voice. Staff prepare the tray within arm\'s reach.',
+      'The menu stays on the couch arm. She points at each item she wants. The list runs long.',
+      'She cannot hold the menu. You read options. She says yes until you stop asking.',
+      'Snack menu becomes a relay order. She eats what arrives and asks what is next on the page.',
+    ],
+    blob: [
+      'Menu read to her in pieces. She mouths yes to each dense option until the kitchen groans.',
+      'The printed list is ceremonial now. Staff already know her order. She listens anyway, pleased.',
+      'She cannot see the menu. She hears the names and whispers yes to each one.',
+      'Snack menu read like a feast program. She waits, vast and patient, for every item named.',
+    ],
+  },
+  prescribe_mirtazapine: {
+    clinical: [
+      'You explain the low dose for sleep and appetite side effects. She listens, asks about morning grogginess, and nods.',
+      'The script prints. She reads the label twice and tucks it with her pharmacy card.',
+      'You review common side effects in plain language. She says she will call if dreams get strange.',
+      'She accepts the prescription for sleep support and asks whether to take it with food.',
+    ],
+    early: [
+      'You mention the medication may sharpen appetite. She listens carefully and asks how soon effects start.',
+      'The vial label goes in her purse. She reads the dosing card twice before she agrees.',
+      'You explain sleep first, hunger second. She nods like someone weighing tradeoffs.',
+      'She signs the consent line and asks whether the pharmacy stocks the generic.',
+    ],
+    mid: [
+      'You dose for sleep. She knows the side effect list by heart now and smiles at the appetite line.',
+      'She swallows the first tablet with water and asks when hunger usually follows.',
+      'The script renews. She tucks it beside a snack cup in her bag without embarrassment.',
+      'You warn her about drowsiness. She says she will eat dinner before bed and looks pleased about it.',
+    ],
+    late: [
+      'She takes the dose like ritual. Sleep, then appetite, then whatever you serve after.',
+      'You renew the script. She asks for the higher tolerated dose and you note it for next visit.',
+      'The tablet goes down. She fans her collar and says hunger already feels closer.',
+      'She pockets the bottle, checks the refill date, and asks you to renew early if she runs low.',
+    ],
+    immobile: [],
+    blob: [],
+  },
+  nutrition_counseling: {
+    clinical: [
+      'You discuss balanced meals and regular timing. She takes notes on her phone and asks one clarifying question.',
+      'Portion guidance, protein at breakfast, fewer skipped lunches: she scans each point and nods slowly.',
+      'You slide a handout across the desk. She folds it once and says she will try it this week.',
+      'She asks whether late dinners matter for weight. You answer. She looks thoughtful, not defensive.',
+    ],
+    early: [
+      'You talk portions without preaching. She underlines one line on the handout and pockets it.',
+      'Larger plates, slower meals, fewer skipped lunches: she scans each bullet and asks what counts as a serving.',
+      'The counseling sheet smells like fresh toner. She says she will start tonight and means it.',
+      'She asks whether seconds are ever appropriate. You answer carefully. She nods and saves the pamphlet.',
+    ],
+    mid: [
+      'She underlines the snack list in pen before she stands. Second helpings get a star in the margin.',
+      'She reads the evening section twice in the car with the engine running. You watch through the window.',
+      'She asks whether the plan allows thirds. You say yes. She exhales like a door opened.',
+      'The meal plan disappears into her bag because her hands are full of take-home cups.',
+    ],
+    late: [
+      'She takes the plan like permission and smiles with her whole face. "Finally," she says, soft.',
+      'She asks you to initial the page about larger portions. You do. She hugs the paper to her chest once.',
+      'Every line gets a checkmark. She pockets the plan, pats her middle, and says she is ready to outgrow more furniture.',
+      'She reads the snack list aloud to herself, savoring each item, then asks for a duplicate for her fridge.',
+    ],
+    immobile: [],
+    blob: [],
+  },
+  order_labs: {
+    clinical: [
+      'You tick fasting labs on the order set. She asks how long to fast and where to go for the draw.',
+      'CBC, metabolic panel, thyroid: she repeats each name and confirms her lab preference on file.',
+      'The requisition prints. She reads the code, pockets it, and asks when results usually post.',
+      'You explain which labs need morning draws. She schedules around work and thanks you for the clarity.',
+    ],
+    early: [
+      'You order routine panels. She asks whether she needs to fast and writes the draw time on her receipt.',
+      'Lab slip in hand, she confirms her preferred draw site and whether results post to the portal.',
+      'You explain thyroid and metabolic screens. She nods and asks when to expect a call if anything flags.',
+      'The requisition prints. She folds it into her wallet beside her insurance card.',
+    ],
+    mid: [
+      'Standing labs again. She jokes she knows the phlebotomist by name now and holds out her arm.',
+      'You add an A1c to the panel. She asks what number you are hoping to see and smiles when you explain.',
+      'She pockets the slip and asks whether she can eat after the draw. You say yes. She already has a snack in mind.',
+      'Orders placed. She schedules the draw before she leaves and texts herself the fasting window.',
+    ],
+    late: [
+      'Labs ordered without much discussion. She trusts the panel and asks you to call if anything surprises you.',
+      'You add inflammatory markers. She says she will fast and asks whether the lounge has anything after.',
+      'The requisition joins a stack of prior slips in her bag. She treats labs like another reason to return.',
+      'She confirms the draw time and asks you to note her appetite in the chart when results return.',
+    ],
+    immobile: [],
+    blob: [],
+  },
   personal_talk: {
+    clinical: [
+      'You ask how her week went. She mentions work deadlines, a neighbor\'s dog, the commute. Her voice stays even.',
+      'Small talk first: parking, the weather, whether the front desk found her referral. Then she quiets and lets you lead.',
+      'She shares one worry about sleep, accepts your reassurance, and straightens her sleeve.',
+      'She talks about her mother\'s blood pressure and laughs that she probably inherited the worry gene.',
+    ],
     early: [
       'You ask how her week went. She mentions work, a neighbor, the new bakery on the bridge. Her voice stays even.',
       'She talks about appetite and schedule with the calm of someone reporting weather. You listen. She appreciates it.',
@@ -464,10 +625,16 @@ const VISIT_NARRATIVE = {
     ],
   },
   bill_consultation: {
+    clinical: [
+      'You print the visit summary and slide it across the desk. She reviews each line item with care.',
+      'The consult fee sits at the bottom. She pays without comment and pockets the receipt folded once.',
+      'She asks whether insurance covers the wellness screening code. You explain. She nods and taps her card.',
+      'Checkout takes three minutes. She thanks you for the clarity and checks the total twice before approving.',
+    ],
     early: [
       'You print the visit summary and slide it across the desk. She reviews each line item with care.',
-      'The gluttony consult fee sits at the bottom. She pays without comment and pockets the receipt folded once.',
-      'She asks whether insurance covers gorging compounds. You explain. She nods and taps her card.',
+      'The office visit fee sits at the bottom. She pays without comment and pockets the receipt folded once.',
+      'She asks whether insurance covers the wellness screening code. You explain. She nods and taps her card.',
       'Checkout takes three minutes. She thanks you for the clarity and checks the total twice before approving.',
     ],
     mid: [
@@ -496,9 +663,15 @@ const VISIT_NARRATIVE = {
     ],
   },
   schedule_followup: {
+    clinical: [
+      'You offer next Thursday at two. She checks her calendar, confirms, and writes it on the back of her receipt.',
+      'She books three weeks out to recheck labs. Steady cadence, she says.',
+      'The scheduler loads. She picks the first open slot and asks what to bring next time.',
+      'She accepts the follow-up date, sets a phone reminder at the desk, and tests the alarm once.',
+    ],
     early: [
       'You offer next Thursday at two. She checks her calendar, confirms, and writes it on the back of her receipt.',
-      'She books three weeks out to start. Steady cadence, she says. She wants to see how the gorging plan feels.',
+      'She books three weeks out to recheck labs. Steady cadence, she says.',
       'The scheduler loads. She picks the first open slot and asks what to bring next time.',
       'She accepts the follow-up date, sets a phone reminder at the desk, and tests the alarm once.',
     ],
@@ -562,38 +735,151 @@ const VISIT_NARRATIVE = {
 };
 
 const VISIT_REPLIES = {
-  say_hi: 'Good to see you. I have been hungry for this visit.',
-  review_chart: 'Show me what I gained since last time.',
-  offer_water: 'Yes, please. My throat is dry before the real eating starts.',
-  weigh_patient: 'Go ahead. I want the real number.',
-  estimate_weight: 'Tell me what I weigh now. I want to hear it.',
-  feed_in_place: 'Bring it close. I am not getting up.',
-  comfort_blend: 'I will drink whatever makes room for more.',
-  appetite_tonic: 'If it makes me hungrier, I am in.',
-  recovery_shake: 'Chocolate sounds perfect before the next course.',
-  comfort_plan: 'I want the full gorging plan, not the summary.',
-  lounge_snack: 'What do you have out today? All of it.',
-  personal_talk: 'Can we talk about how hungry I have been?',
-  note_symptoms: 'Write down how tight everything feels. It is real.',
-  warm_blanket: 'Oh, that is nice. Heat makes me want to eat.',
-  upsell_package: 'Tell me what the premium feeding visit includes.',
-  bill_consultation: 'Walk me through the gorging charges once.',
-  schedule_followup: 'Book me before my appetite cools.',
-  end_visit: 'Thank you. Same feeding time next visit?',
+  say_hi: {
+    clinical: 'Good morning. I am here for my appointment.',
+    early: 'Good to see you. I am ready when you are.',
+    mid: 'Good to see you. I have been hungry for this visit.',
+    late: 'Good to see you. I came hungry.',
+  },
+  review_chart: {
+    clinical: 'Labs back yet from last time?',
+    early: 'What does my chart say so far?',
+    mid: 'Show me what I gained since last time.',
+    late: 'Read the gain lines aloud. I want to hear them.',
+  },
+  offer_water: {
+    clinical: 'Yes, please. Plain water is fine.',
+    early: 'Water sounds good. Thank you.',
+    mid: 'Yes, please. My throat is dry before the real eating starts.',
+    late: 'Water first. Then whatever else you have.',
+  },
+  weigh_patient: {
+    clinical: 'Go ahead. Is the scale calibrated?',
+    early: 'Go ahead. I want the real number.',
+    mid: 'Go ahead. I want the real number.',
+    late: 'Read it loud. I want to hear it climb.',
+  },
+  estimate_weight: {
+    clinical: 'Whatever you need for the chart.',
+    early: 'Tell me what you estimate. I want to hear it.',
+    mid: 'Tell me what I weigh now. I want to hear it.',
+    late: 'Tell me what I weigh now. I want to hear it.',
+  },
+  feed_in_place: {
+    clinical: 'I can manage from the chair, thanks.',
+    early: 'Bring it close if I need help.',
+    mid: 'Bring it close. I am not getting up.',
+    late: 'Bring it close. I am not getting up.',
+  },
+  comfort_blend: {
+    clinical: 'I am fine without a supplement today.',
+    early: 'I will try a small cup if you recommend it.',
+    mid: 'I will drink whatever makes room for more.',
+    late: 'I will drink whatever makes room for more.',
+  },
+  appetite_tonic: {
+    clinical: 'I would rather talk about sleep first.',
+    early: 'If you think I need it, I will try.',
+    mid: 'If it makes me hungrier, I am in.',
+    late: 'If it makes me hungrier, I am in.',
+  },
+  recovery_shake: {
+    clinical: 'No shake today. Water was enough.',
+    early: 'Chocolate sounds fine if it is part of the plan.',
+    mid: 'Chocolate sounds perfect before the next course.',
+    late: 'Chocolate sounds perfect before the next course.',
+  },
+  comfort_plan: {
+    clinical: 'Send me the standard handout. I will read it at home.',
+    early: 'I want the meal plan, not just the summary.',
+    mid: 'I want the full plan, not the summary.',
+    late: 'I want the full plan, not the summary.',
+  },
+  lounge_snack: {
+    clinical: 'I ate before I came, but thank you.',
+    early: 'What do you have out today?',
+    mid: 'What do you have out today? All of it.',
+    late: 'What do you have out today? All of it.',
+  },
+  offer_snack_menu: {
+    early: 'What is on the snack menu today?',
+    mid: 'What do you have out today? All of it.',
+    late: 'What do you have out today? All of it.',
+  },
+  personal_talk: {
+    clinical: 'I have been tired lately. Can we talk about that?',
+    early: 'Can we talk about how the week went?',
+    mid: 'Can we talk about how hungry I have been?',
+    late: 'Can we talk about how hungry I have been?',
+  },
+  personal_talk: {
+    clinical: 'I have been tired. And my sleep is off.',
+    early: 'Write down what feels different. It is real.',
+    mid: 'Write down how tight everything feels. It is real.',
+    late: 'Write down how tight everything feels. It is real.',
+  },
+  prescribe_mirtazapine: {
+    clinical: 'If it helps me sleep, I will try it.',
+    early: 'Walk me through side effects again.',
+    mid: 'Refill it. The appetite side effect is not a problem anymore.',
+    late: 'Refill it. The appetite side effect is not a problem anymore.',
+  },
+  nutrition_counseling: {
+    clinical: 'What should I actually be eating day to day?',
+    early: 'I want practical advice, not a lecture.',
+    mid: 'Tell me what portions you want me hitting.',
+    late: 'Tell me what portions you want me hitting.',
+  },
+  order_labs: {
+    clinical: 'Order whatever you need. I can fast tomorrow.',
+    early: 'Do I need labs today or can I come back fasting?',
+    mid: 'Add whatever tracks appetite and weight.',
+    late: 'Add whatever tracks appetite and weight.',
+  },
+  warm_blanket: {
+    clinical: 'I am comfortable, but thank you.',
+    early: 'A warm blanket sounds nice, actually.',
+    mid: 'Oh, that is nice. Heat makes me want to eat.',
+    late: 'Oh, that is nice. Heat makes me want to eat.',
+  },
+  upsell_package: {
+    clinical: 'What does the premium visit include? I am just comparing options.',
+    early: 'Tell me what the premium visit includes.',
+    mid: 'Tell me what the premium feeding visit includes.',
+    late: 'Tell me what the premium feeding visit includes.',
+  },
+  bill_consultation: {
+    clinical: 'Walk me through the charges once, please.',
+    early: 'Walk me through the consult fee once.',
+    mid: 'Walk me through the charges once.',
+    late: 'Charge it. I am not stopping.',
+  },
+  schedule_followup: {
+    clinical: 'Book whatever follow-up you recommend.',
+    early: 'Book me a few weeks out.',
+    mid: 'Book me before my appetite cools.',
+    late: 'Book me before my appetite cools.',
+  },
+  end_visit: {
+    clinical: 'Thank you. See you at the follow-up.',
+    early: 'Thank you. Same time next visit?',
+    mid: 'Thank you. Same feeding time next visit?',
+    late: 'Thank you. Same feeding time next visit?',
+  },
 };
 
 const VISIT_OPENING = {
   clinical: [
     'She signs the HIPAA sheet and asks whether her copay posted correctly.',
-    'She arrived for a scheduled primary-care visit and expects a normal exam room.',
-    'She flips through a magazine in the waiting area, unaware the break room pastries are warming.',
-    'She checks her blood pressure cuff fit on her wrist while the receptionist calls her name.',
+    'She arrived for a scheduled appointment and waits for the nurse to call her back.',
+    'She flips through a magazine in the waiting area until the receptionist calls her name.',
+    'She checks her blood pressure cuff fit on her wrist while she waits for vitals.',
   ],
   early: [
-    'She arrives on time with questions folded in her purse and appetite tucked beneath her patience.',
-    'The lobby still feels new to her. She reads the snack signage, then your face, then nods hello.',
-    'She checks in quietly, coat neat, voice low, ready to be guided toward larger portions.',
-    'First impressions matter to her. She notices the chairs, the scent of pastry, the calm, and decides to stay hungry.',
+    'She arrives on time with her insurance card ready and a short list of questions from her last visit.',
+    'The lobby still feels familiar. She nods at the front desk and asks whether her labs posted yet.',
+    'She checks in quietly, coat neat, voice low, expecting vitals and a straight conversation.',
+    'She notices the chairs, the magazine rack, the hum of the cooler. Normal clinic morning.',
   ],
   mid: [
     'She walks in like someone who knows which chair yields and which cabinet hums with fresh trays.',
@@ -622,11 +908,17 @@ const VISIT_OPENING = {
 };
 
 const VISIT_CLOSING = {
+  clinical: [
+    'She gathers her coat and paperwork, thanks you once at the desk, and steps into the hall at an ordinary pace.',
+    'Visit complete. She checks her phone for the portal message about labs and pushes through the glass doors.',
+    'You walk her to the elevator. She says goodbye like any other checkup, receipt folded in her purse.',
+    'She sets a reminder for her follow-up at the lobby bench, then leaves with a small wave.',
+  ],
   early: [
-    'She leaves with pamphlets flat in her bag and next week already on her calendar.',
-    'The visit ends tidy. Receipt tucked away. Steps measured. Trust earned over shared meals.',
-    'She pauses at the door, thanks you once more, and walks out already thinking about dinner.',
-    'Checkout complete. She buttons her coat and carries the fullness with her to the elevator.',
+    'She leaves with paperwork flat in her bag and next week already on her calendar.',
+    'The visit ends tidy. Receipt tucked away. Steps measured. Trust earned, visit by visit.',
+    'She pauses at the door, thanks you once more, and walks out with her coat buttoned.',
+    'Checkout complete. She buttons her coat and heads to the elevator without looking back.',
   ],
   mid: [
     'She lingers in the lobby after payment, hand at her middle, savoring the afterglow of gorging.',
@@ -676,33 +968,39 @@ export function getVisitNarrative(actionId, patient, tier) {
   [];
   return {
     narrative: pickLine(patient, pool),
-    reply: VISIT_REPLIES[actionId] || '',
+    reply: getVisitReply(actionId, resolvedTier, attitudeTier),
   };
 }
 
 export function getVisitOpening(patient) {
   const attitudeTier = tierFromAttitude(getAttitudeKey(patient));
   const tier = visitDialogueTier(patient, attitudeTier);
-  const reason = getPatientPublicReason(patient);
-  const clinicalLine = pickLine(patient, VISIT_OPENING.clinical || VISIT_OPENING.early);
   if (tier === 'clinical') {
-    return `${clinicalLine} Chart reason: ${reason}. ${getPatientFramingNote(patient)}`;
+    const reason = getPatientPublicReason(patient);
+    const reasonOpenings = [
+      `She checked in for her ${reason} and waits with her insurance card ready.`,
+      `Reception called her name for a ${reason}. She follows you toward the exam room, coat still buttoned.`,
+      `She arrived on time for a ${reason}, phone silenced, refill questions folded in her purse.`,
+      `The chart lists ${reason}. She confirms her pharmacy and asks whether labs from the last draw posted.`,
+    ];
+    return pickLine(patient, reasonOpenings);
   }
   return pickLine(patient, VISIT_OPENING[tier] || VISIT_OPENING.early);
 }
 
 export function getVisitClosing(patient, visitSummary = {}) {
-  const tier = tierFromAttitude(getAttitudeKey(patient));
-  let pool = VISIT_CLOSING[tier] || VISIT_CLOSING.mid;
+  const attitudeTier = tierFromAttitude(getAttitudeKey(patient));
+  const tier = visitDialogueTier(patient, attitudeTier);
+  let pool = VISIT_CLOSING[tier] || VISIT_CLOSING.early || VISIT_CLOSING.mid;
 
-  if (visitSummary.compoundsUsed > 0 && tier !== 'early') {
+  if (visitSummary.compoundsUsed > 0 && tier !== 'early' && tier !== 'clinical') {
     pool = [
       ...pool,
       'She pats the compound line on her receipt and says it was worth every drop toward heaviness.',
       'Take-home cups rattle in her bag. She shakes them once, listening, then laughs.',
     ];
   }
-  if (visitSummary.premiumSold) {
+  if (visitSummary.premiumSold && tier !== 'clinical') {
     pool = [
       ...pool,
       'Premium card tucked in her wallet. She taps it twice, like a superstition for more food.',

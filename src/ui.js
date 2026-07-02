@@ -342,7 +342,7 @@ function renderRecruitmentSection(state) {
     <section class="mb-8 rounded-[2rem] border border-emerald-300/15 bg-emerald-950/15 p-6">
       <p class="text-sm uppercase tracking-[0.28em] text-emerald-200/70">Staff recruitment</p>
       <h3 class="mt-1 text-2xl font-black text-stone-50">Build the roster</h3>
-      <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Your private goal is simpler: grow them. Patients should only hear medicine until they are hooked.</p>
+      <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Hire credentialed staff for intake, vitals, and charting. A full roster keeps the schedule moving.</p>
       ${candidateHtml || '<p class="mt-3 text-sm text-stone-400">No open roles this week. Grow reputation and advance the calendar to unlock hiring.</p>'}
       ${pipeline}
     </section>
@@ -432,13 +432,13 @@ function renderInteract(state) {
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient rounds</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Run the office</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">To them this is a normal primary-care visit: vitals, labs, follow-ups. Your charting stays clinical while you steer each woman toward appetite. Public face: family medicine. Private work: pounds.</p>
+        <p class="mt-2 max-w-3xl text-stone-300">Run visits: vitals, chart review, prescriptions, follow-up. Deeper options unlock as patients return.</p>
         <p class="mt-2 text-sm text-stone-400">Minimum path: greet, chart, weigh, bill consult, end visit (around 4 AP). Staff hiring is on the Management tab.</p>
         ${mobilityBanner}
         ${
           unvisited.length
-            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still hungry for a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
-            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">Every patient fed and seen this week.</p>`
+            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still need a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
+            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">All scheduled visits completed this week.</p>`
         }
         ${
           inProgress
@@ -457,7 +457,7 @@ function renderInteract(state) {
         </div>
         <div>
           <h3 class="mb-3 text-xl font-bold text-amber-100">Patients</h3>
-          <p class="mb-3 text-xs text-stone-400">Click to start or resume a feeding visit. Well-fed patients open a profile, ready to recruit once they have grown loyal.</p>
+          <p class="mb-3 text-xs text-stone-400">Click to start or resume an office visit. Patients seen this week open a profile—loyal returns can join your roster.</p>
           <div class="grid gap-4 md:grid-cols-2">
             ${state.patients.map((patient) => characterCard(patient, 'standard', state)).join('')}
           </div>

@@ -5,6 +5,7 @@ import {
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
 import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientHook } from './patientDialogue.js';
+import { getClinicalPatientLine, shouldUseClinicalPatientVoice } from './patientClinicalVoice.js';
 import { staffArchetypeLines } from './staffDialogue.js';
 import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
@@ -765,6 +766,9 @@ export function isEarlyPatientVoice(character) {
 export function getCharacterDialogue(character) {
   const attitude = getAttitudeKey(character);
   if (character.type === 'patient') {
+    if (shouldUseClinicalPatientVoice(character)) {
+      return getClinicalPatientLine(character);
+    }
     const patientLines =
       patientArchetypeLines[character.archetype] || patientArchetypeLines.nurturer;
     return patientLines[attitude];

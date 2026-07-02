@@ -1,8 +1,7 @@
 import { getStageIndex } from './characters.js';
 
 /**
- * Public framing: normal primary-care office.
- * Private reality: fattening under cover of routine medicine.
+ * Patient visit framing tiers and in-world chart snippets.
  * Shifts per patient as trust, visits, and indulgence climb.
  */
 
@@ -42,15 +41,15 @@ export function getPatientFramingNote(patient) {
   const reason = getPatientPublicReason(patient);
   switch (tier) {
     case 'clinical':
-      return `Chart says ${reason}. She expects a normal PCP visit.`;
+      return `Chart: ${reason}. Vitals and intake pending.`;
     case 'clinical_plus':
-      return `Still here for ${reason}, but she lingers after vitals. Appetite questions feel less clinical now.`;
+      return `Chart: ${reason}. Prior note: patient lingered after vitals; appetite screening added.`;
     case 'warming':
-      return `She books under ${reason}. The meal tray gets as much attention as the stethoscope.`;
+      return `Chart: ${reason}. Meal tray on standing order; vitals secondary.`;
     case 'complicit':
-      return `Insurance still codes ${reason}. She knows what she comes for.`;
+      return `Chart: ${reason}. Extended nutrition block approved; billing codes unchanged.`;
     default:
-      return `Routine visit.`;
+      return `Chart: routine visit.`;
   }
 }
 
