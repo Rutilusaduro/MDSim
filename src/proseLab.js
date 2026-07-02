@@ -17,7 +17,7 @@ import {
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
 import { getArcProgress } from './arcs.js';
-import { getStaffArcScene } from './staffArcScenes.js';
+import { getStaffArcScene } from './staffArcs/index.js';
 import { getLoyaltyArcProgress } from './loyaltyArcs.js';
 import { ALL_WEEKLY_EVENTS, WARDROBE_EVENTS } from './weeklyContent.js';
 import { createRng } from './state.js';

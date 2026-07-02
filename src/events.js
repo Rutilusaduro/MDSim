@@ -86,10 +86,10 @@ export const interactionCatalog = {
     inventory: 'recoveryShake',
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach.',
   },
-  arcScene: {
+    arcScene: {
     label: 'Advance Personal Arc',
     scope: ['staff'],
-    description: 'Private scene with choices. Trust and stage must be high enough. Costs 1 AP when you commit.',
+    description: 'Branching scene with multiple paths. Prior choices shape later beats. Costs 1 AP when you commit.',
   },
   recruit: {
     label: 'Recruit to Staff',

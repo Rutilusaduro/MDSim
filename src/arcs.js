@@ -1,6 +1,8 @@
 import { getAttitudeKey, getStageIndex } from './characters.js';
 import { spendActionPoint, addWeekNote } from './state.js';
-import { formatArcSceneNote, getStaffArcScene } from './staffArcScenes.js';
+import { formatArcSceneNote, getStaffArcScene, applyChoiceFlags, getRouteLabel } from './staffArcs/index.js';
+
+export { getRouteLabel };
 
 export const STAFF_ARC_TRACKS = {
   'Maya Okafor': {
@@ -29,10 +31,17 @@ export const STAFF_ARC_TRACKS = {
       },
       {
         id: 3,
+        trustMin: 10,
+        stageMin: 3,
+        title: 'The Break Room Offer',
+        text: 'Maya asks you to stay after close. Food, honesty, and a question about whether you like watching her grow.',
+      },
+      {
+        id: 4,
         trustMin: 11,
         stageMin: 4,
         title: 'Night Shift Feast',
-        text: 'Maya closes the clinic alone. You find her at the break table with two trays. "Overtime hazard," she says. She saves you a plate without asking.',
+        text: 'Maya closes the clinic alone. Trays, locked doors, and an ending that depends on how you got here.',
       },
     ],
   },
@@ -62,10 +71,17 @@ export const STAFF_ARC_TRACKS = {
       },
       {
         id: 3,
+        trustMin: 10,
+        stageMin: 3,
+        title: 'Feeding at the Desk',
+        text: 'Elena wants you at the front desk after hours. Hips on the counter, appetite on display.',
+      },
+      {
+        id: 4,
         trustMin: 11,
         stageMin: 4,
         title: 'Desk as Stage',
-        text: 'Elena poses at the desk for a staff photo. Belly forward. Hips wide. She posts it before you approve. Patients book faster.',
+        text: 'Elena poses for the clinic page, belly forward, unapologetic. Patients book faster.',
       },
     ],
   },
@@ -95,10 +111,17 @@ export const STAFF_ARC_TRACKS = {
       },
       {
         id: 3,
+        trustMin: 10,
+        stageMin: 3,
+        title: 'Private Consult',
+        text: 'Priya asks for a private exam room. Charting stops. Honesty starts.',
+      },
+      {
+        id: 4,
         trustMin: 11,
         stageMin: 4,
         title: 'Published Appetite',
-        text: 'Priya drafts a comfort-care paper citing her own gain curves. She asks you to co-sign. The chart is honest. The belly in the photo is hers.',
+        text: 'Priya drafts a comfort-care paper citing her own gain curves. She asks you to co-sign.',
       },
     ],
   },
@@ -128,10 +151,17 @@ export const STAFF_ARC_TRACKS = {
       },
       {
         id: 3,
+        trustMin: 10,
+        stageMin: 3,
+        title: 'Closed Door Dinner',
+        text: 'Nadia locks the office. Fork in hand. A question about power, appetite, and your eyes on her.',
+      },
+      {
+        id: 4,
         trustMin: 11,
         stageMin: 4,
         title: 'Budget Victory Lap',
-        text: 'Nadia triples the snack line again. No vote. She eats a slice of cake at the staff meeting while announcing it. Nobody objects.',
+        text: 'Nadia triples the snack line at the staff meeting. Cake in hand. Nobody objects.',
       },
     ],
   },
@@ -161,10 +191,17 @@ export const STAFF_ARC_TRACKS = {
       },
       {
         id: 3,
+        trustMin: 10,
+        stageMin: 3,
+        title: 'After the Last Draw',
+        text: 'Jasmine finds you before clock-out. Donuts, hunger, and a confession about lab days.',
+      },
+      {
+        id: 4,
         trustMin: 11,
         stageMin: 4,
         title: 'Last Draw, First Bite',
-        text: 'Jasmine finishes her last blood draw and walks straight to the donut box. She offers you the biggest one. "Lab reward," she says. "Clinical necessity."',
+        text: 'Jasmine finishes her last blood draw and walks straight to the donut box.',
       },
     ],
   },
@@ -195,9 +232,16 @@ const PROCEDURAL_BEAT_TEMPLATES = [
   {
     trustMin: 10,
     stageMin: 3,
-    title: 'Full Belly Confidence',
+    title: 'Hunger Confession',
     text: (name) =>
-      `${name} tells you hunger feels like part of the job now. Belly forward. Voice warm. She wants the clinic to keep pace with her.`,
+      `${name} asks if the clinic can keep pace with her appetite. Her hand rests on her middle while she waits for an answer.`,
+  },
+  {
+    trustMin: 11,
+    stageMin: 4,
+    title: 'After-Close Feast',
+    text: (name) =>
+      `${name} waits after close with trays and a smile that says she knows exactly what she wants from you and from dinner.`,
   },
 ];
 
@@ -257,8 +301,10 @@ export function advanceArc(character, state, choiceId) {
     return { ok: false, reason: 'No action points remain.' };
   }
 
-  if (!character.arc) character.arc = { completedBeats: [] };
+  if (!character.arc) character.arc = { completedBeats: [], choices: {}, flags: [] };
   character.arc.completedBeats.push(check.beat.id);
+  character.arc.choices[check.beat.id] = choiceId;
+  applyChoiceFlags(character, choice);
 
   character.trust = Math.round((character.trust + 0.5 + (choice.effects?.trust || 0)) * 100) / 100;
   character.openness = Math.min(100, character.openness + 4 + (choice.effects?.openness || 0));

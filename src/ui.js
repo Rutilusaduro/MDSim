@@ -3,7 +3,8 @@ import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSum
 import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
-import { getArcProgress, getArcSceneForCharacter, advanceArc } from './arcs.js';
+import { formatArcSceneNote } from './staffArcs/index.js';
+import { getArcProgress, getArcSceneForCharacter, advanceArc, getRouteLabel } from './arcs.js';
 import { getReputationBlockReason, getReputationTier, isItemUnlockedByReputation } from './reputation.js';
 import { renderSilhouette, renderSilhouetteCompare } from './silhouettes.js';
 import { ROOMS, assignItemToRoom, getRoomBonusSummary } from './rooms.js';
@@ -47,7 +48,6 @@ import {
   performVisitAction,
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
-import { formatArcSceneNote } from './staffArcScenes.js';
 
 let activeTab = 'management';
 let toastTimer = null;
@@ -718,13 +718,14 @@ function openStaffArcModal(characterId) {
 
   const { beat, scene, progress } = payload;
   const stageIdx = getStageIndex(character);
+  const route = getRouteLabel(character);
 
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
         <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Staff arc · ${progress.completed + 1} / ${progress.total}</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(beat.title)}</h2>
-        <p class="mt-1 text-stone-400">${e(progress.track.title)} · ${e(character.name)}</p>
+        <p class="mt-1 text-stone-400">${e(progress.track.title)} · ${e(character.name)}${route ? ` · <span class="text-pink-200">${e(route)}</span>` : ''}</p>
       </div>
       <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
     </div>
@@ -751,6 +752,7 @@ function openStaffArcModal(characterId) {
                 (choice) => `
               <button class="soft-card rounded-2xl p-4 text-left hover:border-amber-200/40" data-action="arc-choice" data-id="${e(character.id)}" data-choice="${e(choice.id)}" ${gameState.actionPoints <= 0 ? 'disabled' : ''}>
                 <strong class="text-stone-50">${e(choice.label)}</strong>
+                ${choice.hint ? `<p class="mt-1 text-xs text-stone-400">${e(choice.hint)}</p>` : ''}
               </button>`,
               )
               .join('')}

@@ -14,7 +14,12 @@ const targets = [
   'src/bodyProse.js',
   'src/patientAppearance.js',
   'src/interactionDialogue.js',
-  'src/staffArcScenes.js',
+  'src/staffArcs/maya.js',
+  'src/staffArcs/elena.js',
+  'src/staffArcs/priya.js',
+  'src/staffArcs/nadia.js',
+  'src/staffArcs/jasmine.js',
+  'src/staffArcs/procedural.js',
 ];
 
 let failed = false;
