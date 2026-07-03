@@ -299,6 +299,38 @@ function nextPhase(phase) {
   return VISIT_PHASES[index + 1];
 }
 
+/** Actions that clear each visit phase gate (any one is enough). */
+const PHASE_GATE_ACTIONS = {
+  greeting: ['say_hi'],
+  intake: ['review_chart', 'review_symptoms', 'order_labs', 'personal_talk'],
+  exam: ['weigh_patient', 'estimate_weight'],
+  services: ['bill_consultation'],
+  checkout: ['end_visit'],
+};
+
+function phaseGateMet(phase, completed) {
+  const gates = PHASE_GATE_ACTIONS[phase];
+  if (!gates) return false;
+  return gates.some((id) => completed.includes(id));
+}
+
+export function syncVisitPhase(visit) {
+  if (!visit) return;
+  const completed = visit.completedActions || [];
+  let guard = 0;
+  while (guard < VISIT_PHASES.length) {
+    guard += 1;
+    const idx = VISIT_PHASES.indexOf(visit.phase);
+    if (idx < 0) {
+      visit.phase = 'greeting';
+      continue;
+    }
+    if (!phaseGateMet(visit.phase, completed)) break;
+    if (idx >= VISIT_PHASES.length - 1) break;
+    visit.phase = VISIT_PHASES[idx + 1];
+  }
+}
+
 function actionById(actionId) {
   return VISIT_ACTIONS.find((action) => action.id === actionId);
 }
@@ -460,7 +492,11 @@ export function applyWeighChartChoice(state, choiceId) {
   }
 
   visit.pendingWeigh = null;
-  return finishWeighAction(state, visit, patient, visit.pendingWeighTone || null);
+  const tone = visit.pendingWeighTone || null;
+  visit.pendingWeighTone = null;
+  const result = finishWeighAction(state, visit, patient, tone);
+  syncVisitPhase(visit);
+  return result;
 }
 
 function framingRank(tier) {
@@ -487,6 +523,7 @@ function finishWeighAction(state, visit, patient, toneId) {
   if (!visit.visitLog) visit.visitLog = [];
   visit.visitLog.push({ label: action.label, narrative, reply, tone: toneId || null });
   visit.pendingWeighAction = null;
+  syncVisitPhase(visit);
 
   const interrupt = checkVisitInterrupt(state, patient, action.id);
   if (interrupt) {
@@ -718,13 +755,15 @@ export function performVisitAction(state, actionId, toneId = null) {
   visit.completedActions.push(action.id);
 
   if (action.id === 'end_visit') {
+    syncVisitPhase(visit);
     const result = completeVisit(state);
-    return { ok: result.ok, message: result.message, visitComplete: true };
+    return { ok: result.ok, message: result.message, visitComplete: true, phase: visit.phase };
   }
 
   if (action.advancesPhase) {
     visit.phase = nextPhase(visit.phase);
   }
+  syncVisitPhase(visit);
 
   let narrative;
   let reply;

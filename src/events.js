@@ -19,6 +19,7 @@ import {
   summarizeStageChange,
 } from './characters.js';
 import { getInteractionBanter } from './interactionDialogue.js';
+import { getStaffCheckInBeat, formatStaffCheckInDialogue } from './staffCheckInDialogue.js';
 import { advanceArc, canAdvanceArc, getArcProgress } from './arcs.js';
 import { checkAchievements } from './achievements.js';
 import {
@@ -391,7 +392,10 @@ export function performInteraction(state, characterId, actionId) {
       break;
   }
 
-  const text = actionFlavor(character, actionId);
+  const text =
+    actionId === 'personalTalk' && character.type === 'staff'
+      ? formatStaffCheckInDialogue(character, getStaffCheckInBeat(character, state))
+      : actionFlavor(character, actionId);
   let message = text;
   if (actionId === 'consult' && action.money) {
     message = `${text} Billed ${formatMoney(action.money)}.`;

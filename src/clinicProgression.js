@@ -105,14 +105,18 @@ export function getPatientCap(state) {
 
 export function weeklyNewPatientCount(state, rng, effects = {}) {
   const tier = getClinicTier(state);
+  const cap = getPatientCap(state);
+  const room = Math.max(0, cap - state.patients.length);
+
+  if (state.week === 1) {
+    return Math.min(room, state.patients.length ? 0 : 1);
+  }
   if (state.week < 2) return 0;
   let count = tier.newPatientsBase;
   if (state.week === 2 && state.patients.length === 0) count = Math.max(count, 1);
   count += Math.floor(state.reputation / 32);
   count += effects.newPatients || 0;
   count += rng.int(0, state.reputation >= 20 ? 1 : 0);
-  const cap = getPatientCap(state);
-  const room = Math.max(0, cap - state.patients.length);
   return Math.min(room, Math.max(0, count));
 }
 

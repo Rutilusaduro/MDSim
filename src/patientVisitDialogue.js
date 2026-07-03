@@ -2,6 +2,7 @@
 import { getAttitudeKey } from './characters.js';
 import { visitDialogueTier, getPatientFramingNote, getPatientFramingTier, getPatientPublicReason } from './patientFraming.js';
 import { tierFromAttitude } from './mechanics/attitudeTier.js';
+import { getVisitBeat } from './visitDialogueBeats.js';
 import { worldEcho } from './worldEcho.js';
 
 function pickLine(character, pool) {
@@ -27,12 +28,7 @@ function getVisitReply(actionId, resolvedTier, attitudeTier) {
 
 const VISIT_NARRATIVE = {
   say_hi: {
-    clinical: [
-      'She checks in at the desk with her insurance card ready and asks whether labs from her last physical posted yet.',
-      'She arrives on time for a routine follow-up, coat still buttoned, expecting vitals and a quick checkout.',
-      'She offers her name, date of birth, and pharmacy on file without prompting. Normal Tuesday patient energy.',
-      'She reads the wall poster about flu shots and asks if she is due.',
-    ],
+    clinical: [],
     early: [
       'She steps off the elevator with her purse squared on her shoulder and offers her name before you ask.',
       'She checks her appointment time on her phone, then pockets it and meets your eyes with a small nod.',
@@ -65,12 +61,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   review_chart: {
-    clinical: [
-      'You open her chart on the tablet. Prior vitals sit in a clean column. She asks whether her last lipid panel flagged anything.',
-      'Medication list, allergies, family history: she confirms each line without drama.',
-      'You scroll to the problem list. She mentions seasonal allergies and a refill due next month.',
-      'The chart loads. She watches quietly while you review last visit notes and routine labs.',
-    ],
+    clinical: [],
     early: [
       'You open her file on the tablet. She watches the gain column without leaning in, trusting the numbers to climb.',
       'Prior weights sit in a tidy column, each entry higher than the last. She asks one question and accepts the answer.',
@@ -103,12 +94,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   offer_water: {
-    clinical: [
-      'You pour room-temperature water into a paper cup. She takes it with both hands and sips while you wash your hands.',
-      'She accepts the cup, thanks you, and sets it on the side table until vitals are done.',
-      'Condensation beads on the paper. She drinks half, folds the napkin, and waits for the blood pressure cuff.',
-      'Water first, as usual. She sips once and asks whether you need a urine sample today.',
-    ],
+    clinical: [],
     early: [
       'You pour room-temperature water into a paper cup. She takes it with both hands and sips before asking about snacks.',
       'The cup sweats on the tray. She thanks you, drinks half, and saves the rest for after the weigh-in.',
@@ -141,12 +127,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   weigh_patient: {
-    clinical: [
-      'She steps onto the scale in flat shoes and holds still while the digits settle. One glance, then she steps off.',
-      'The platform chirps. She reads the number, nods once, and reaches for her cardigan.',
-      'You note the weight. She asks whether shoes count. You say they do. She accepts it with a small shrug.',
-      'She stands centered on the mat, posture straight, as if this were any other checkup.',
-    ],
+    clinical: [],
     early: [
       'She steps onto the scale in flat shoes and holds still while the digits settle. One glance, then she steps off.',
       'The platform chirps. She reads the number, smiles briefly, and reaches for her cardigan.',
@@ -395,12 +376,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   review_symptoms: {
-    clinical: [
-      'You ask about sleep, energy, and anything new since last visit. She answers in plain terms, relieved you listen.',
-      'She mentions afternoon fatigue and waking once at night. No drama. Just facts.',
-      'You note headache frequency and whether stress changed. She volunteers one symptom, then another.',
-      'Chart open, pen ready. She describes tightness in her chest when she climbs stairs and asks if that warrants labs.',
-    ],
+    clinical: [],
     early: [
       'You ask about straining seams and afternoon hunger. She answers in clinical terms, relieved you celebrate the signs.',
       'She lists appetite shifts like weather reports: belt notch moved, evenings longer at the table.',
@@ -465,12 +441,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   prescribe_mirtazapine: {
-    clinical: [
-      'You explain the low dose for sleep and appetite side effects. She listens, asks about morning grogginess, and nods.',
-      'The script prints. She reads the label twice and tucks it with her pharmacy card.',
-      'You review common side effects in plain language. She says she will call if dreams get strange.',
-      'She accepts the prescription for sleep support and asks whether to take it with food.',
-    ],
+    clinical: [],
     early: [
       'You mention the medication may sharpen appetite. She listens carefully and asks how soon effects start.',
       'The vial label goes in her purse. She reads the dosing card twice before she agrees.',
@@ -493,12 +464,7 @@ const VISIT_NARRATIVE = {
     blob: [],
   },
   nutrition_counseling: {
-    clinical: [
-      'You discuss balanced meals and regular timing. She takes notes on her phone and asks one clarifying question.',
-      'Portion guidance, protein at breakfast, fewer skipped lunches: she scans each point and nods slowly.',
-      'You slide a handout across the desk. She folds it once and says she will try it this week.',
-      'She asks whether late dinners matter for weight. You answer. She looks thoughtful, not defensive.',
-    ],
+    clinical: [],
     early: [
       'You talk portions without preaching. She underlines one line on the handout and pockets it.',
       'Larger plates, slower meals, fewer skipped lunches: she scans each bullet and asks what counts as a serving.',
@@ -521,12 +487,7 @@ const VISIT_NARRATIVE = {
     blob: [],
   },
   order_labs: {
-    clinical: [
-      'You tick fasting labs on the order set. She asks how long to fast and where to go for the draw.',
-      'CBC, metabolic panel, thyroid: she repeats each name and confirms her lab preference on file.',
-      'The requisition prints. She reads the code, pockets it, and asks when results usually post.',
-      'You explain which labs need morning draws. She schedules around work and thanks you for the clarity.',
-    ],
+    clinical: [],
     early: [
       'You order routine panels. She asks whether she needs to fast and writes the draw time on her receipt.',
       'Lab slip in hand, she confirms her preferred draw site and whether results post to the portal.',
@@ -549,12 +510,7 @@ const VISIT_NARRATIVE = {
     blob: [],
   },
   personal_talk: {
-    clinical: [
-      'You ask how her week went. She mentions work deadlines, a neighbor\'s dog, the commute. Her voice stays even.',
-      'Small talk first: parking, the weather, whether the front desk found her referral. Then she quiets and lets you lead.',
-      'She shares one worry about sleep, accepts your reassurance, and straightens her sleeve.',
-      'She talks about her mother\'s blood pressure and laughs that she probably inherited the worry gene.',
-    ],
+    clinical: [],
     early: [
       'You ask how her week went. She mentions work, a neighbor, the new bakery on the bridge. Her voice stays even.',
       'She talks about appetite and schedule with the calm of someone reporting weather. You listen. She appreciates it.',
@@ -619,12 +575,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   bill_consultation: {
-    clinical: [
-      'You print the visit summary and slide it across the desk. She reviews each line item with care.',
-      'The consult fee sits at the bottom. She pays without comment and pockets the receipt folded once.',
-      'She asks whether insurance covers the wellness screening code. You explain. She nods and taps her card.',
-      'Checkout takes three minutes. She thanks you for the clarity and checks the total twice before approving.',
-    ],
+    clinical: [],
     early: [
       'You print the visit summary and slide it across the desk. She reviews each line item with care.',
       'The office visit fee sits at the bottom. She pays without comment and pockets the receipt folded once.',
@@ -657,12 +608,7 @@ const VISIT_NARRATIVE = {
     ],
   },
   schedule_followup: {
-    clinical: [
-      'You offer next Thursday at two. She checks her calendar, confirms, and writes it on the back of her receipt.',
-      'She books three weeks out to recheck labs. Steady cadence, she says.',
-      'The scheduler loads. She picks the first open slot and asks what to bring next time.',
-      'She accepts the follow-up date, sets a phone reminder at the desk, and tests the alarm once.',
-    ],
+    clinical: [],
     early: [
       'You offer next Thursday at two. She checks her calendar, confirms, and writes it on the back of her receipt.',
       'She books three weeks out to recheck labs. Steady cadence, she says.',
@@ -801,16 +747,10 @@ const VISIT_REPLIES = {
     late: 'What do you have out today? All of it.',
   },
   personal_talk: {
-    clinical: 'I have been tired lately. Can we talk about that?',
+    clinical: 'I have been tired lately. Sleep has been off too.',
     early: 'Can we talk about how the week went?',
     mid: 'Can we talk about how hungry I have been?',
     late: 'Can we talk about how hungry I have been?',
-  },
-  personal_talk: {
-    clinical: 'I have been tired. And my sleep is off.',
-    early: 'Write down what feels different. It is real.',
-    mid: 'Write down how tight everything feels. It is real.',
-    late: 'Write down how tight everything feels. It is real.',
   },
   prescribe_mirtazapine: {
     clinical: 'If it helps me sleep, I will try it.',
@@ -950,20 +890,39 @@ export const MISSED_VISIT_WEEK_LINES = [
 
 export function getVisitNarrative(actionId, patient, tier) {
   const actionPool = VISIT_NARRATIVE[actionId];
-  if (!actionPool) return { narrative: '', reply: '' };
   const attitudeTier = tier || tierFromAttitude(getAttitudeKey(patient));
   const resolvedTier = visitDialogueTier(patient, attitudeTier);
-  const pool =
-    actionPool[resolvedTier] ||
-    actionPool[attitudeTier] ||
-    actionPool.late ||
-    actionPool.mid ||
-    actionPool.early ||
-  [];
-  return {
-    narrative: pickLine(patient, pool),
-    reply: getVisitReply(actionId, resolvedTier, attitudeTier),
-  };
+
+  const beat = getVisitBeat(actionId, patient, resolvedTier);
+  if (beat) return beat;
+
+  if (!actionPool) return { narrative: '', reply: '' };
+
+  let pool = actionPool[resolvedTier] || [];
+  if (!pool.length && resolvedTier !== 'clinical') {
+    pool =
+      actionPool[attitudeTier] ||
+      (resolvedTier === 'warming' ? actionPool.warming : null) ||
+      actionPool.mid ||
+      actionPool.early ||
+      actionPool.late ||
+      [];
+  }
+
+  const line = pickLine(patient, pool);
+  if (!line) return { narrative: '', reply: '' };
+
+  const reply = getVisitReply(actionId, resolvedTier, attitudeTier);
+  if (line.startsWith('You ')) {
+    return { narrative: line, reply };
+  }
+  if (line.startsWith('"')) {
+    return { narrative: '', reply: line.replace(/^"|"$/g, '') };
+  }
+  if (reply) {
+    return { narrative: 'You continue with the visit.', reply };
+  }
+  return { narrative: line, reply: '' };
 }
 
 export function getVisitOpening(patient) {

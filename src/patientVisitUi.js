@@ -205,8 +205,8 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
           (entry) => `
         <div class="rounded-2xl border border-amber-100/10 bg-stone-950/40 p-4 text-sm leading-7 text-stone-200">
           <p class="text-xs font-bold uppercase tracking-wide text-amber-200/80">${esc(entry.label)}</p>
-          <p class="mt-2">${esc(entry.narrative)}</p>
-          ${entry.reply ? `<p class="mt-2 text-pink-100"><em>"${esc(entry.reply)}"</em></p>` : ''}
+          <p class="mt-2 text-stone-100">${esc(entry.narrative)}</p>
+          ${entry.reply ? `<p class="mt-3 border-l-2 border-pink-300/40 pl-3 text-pink-100"><em>"${esc(entry.reply)}"</em></p>` : ''}
         </div>`,
         )
         .join('')
