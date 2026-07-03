@@ -1,14 +1,8 @@
 /** Patient visit mini-game dialogue. Narrative + short replies only; no game logic. */
 import { getAttitudeKey } from './characters.js';
-import { visitDialogueTier, getPatientFramingNote } from './patientFraming.js';
-
-function tierFromAttitude(attitude) {
-  if (attitude === 'immobile') return 'immobile';
-  if (attitude === 'blob') return 'blob';
-  if (attitude === 'professional' || attitude === 'noticing') return 'early';
-  if (attitude === 'hungry' || attitude === 'pleased') return 'mid';
-  return 'late';
-}
+import { visitDialogueTier, getPatientFramingNote, getPatientFramingTier, getPatientPublicReason } from './patientFraming.js';
+import { tierFromAttitude } from './mechanics/attitudeTier.js';
+import { worldEcho } from './worldEcho.js';
 
 function pickLine(character, pool) {
   if (!pool?.length) return '';
@@ -1031,6 +1025,46 @@ export function getVisitClosing(patient, visitSummary = {}) {
   }
 
   return pickLine(patient, pool);
+}
+
+const WEIGH_RITUAL = {
+  clinical: [
+    'Shoes on. That counts for something.',
+    'You read the number. She shrugs. "Morning weight," she says.',
+    'The dial settles. She looks away first.',
+    'Flat tone. "For the chart only," she reminds you.',
+  ],
+  clinical_plus: [
+    'She watches the dial. The number sits a beat before she speaks.',
+    'Her jaw tightens, then loosens. "Write it down," she says.',
+    'She reads it with you. No comment yet.',
+    'A slow breath. "That is higher than last month," she admits quietly.',
+  ],
+  warming: [
+    'She reads it before you do. Unbothered. Curious.',
+    '"Huh," she says, and smiles like the number is a weather report.',
+    'She leans closer to the display. "Still room," she murmurs.',
+    'No flinch. She taps the glass once, friendly.',
+  ],
+  complicit: [
+    'She is watching you watch the dial.',
+    'Her eyes stay on your face, not the number.',
+    '"Say it," she whispers. She already knows.',
+    'She licks her lips. The scale is not the point. Your reaction is.',
+  ],
+};
+
+export function getWeighRitualReaction(patient) {
+  const framing = getPatientFramingTier(patient);
+  const pool = WEIGH_RITUAL[framing] || WEIGH_RITUAL.clinical;
+  return pickLine(patient, pool);
+}
+
+export function getVisitOpeningWithEcho(state, patient) {
+  const base = getVisitOpening(patient);
+  const echo = worldEcho(state, patient);
+  if (!echo) return base;
+  return `${base} ${echo}`;
 }
 
 export function getMissedVisitPenalty(patient) {

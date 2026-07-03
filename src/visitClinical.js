@@ -189,15 +189,38 @@ function framingRank(tier) {
   return FRAMING_RANK[tier] ?? 0;
 }
 
+/** Player-facing framing chip labels. */
+export function getFramingChipLabel(tier) {
+  const labels = {
+    clinical: 'Clinical',
+    clinical_plus: 'Returning',
+    warming: 'Warming',
+    complicit: 'Complicit',
+  };
+  return labels[tier] || 'Clinical';
+}
+
+function warmingLockHint(patient, framing) {
+  const visits = patient.visits || 0;
+  const trust = patient.trust || 0;
+  if (visits < 3) return 'Unlocks as her guard drops (more visits)';
+  if (trust < 5) return 'Unlocks as her guard drops (build trust)';
+  return 'Unlocks as her guard drops';
+}
+
 /**
  * Gate and optionally relabel a visit action for the patient's framing tier.
- * @returns {{ visible: boolean, label?: string, description?: string, disabledReason?: string }}
+ * @returns {{ visible: boolean, locked?: boolean, lockHint?: string, label?: string, description?: string, disabledReason?: string }}
  */
 export function getVisitActionGate(actionId, patient) {
   const framing = getPatientVisitFraming(patient);
 
   if (WARMING_GATED_ACTIONS.has(actionId) && framingRank(framing) < framingRank('warming')) {
-    return { visible: false };
+    return {
+      visible: true,
+      locked: true,
+      lockHint: warmingLockHint(patient, framing),
+    };
   }
 
   const copyTable = ACTION_FRAMING_COPY[actionId];

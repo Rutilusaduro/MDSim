@@ -1,64 +1,199 @@
-/**
- * Confession scenes: moments where a patient or staff member says out loud
- * what has been true for weeks. Mindset-gated, high-heat openings.
- */
+/** Confession scenes: chart-quote crown jewel + supporting beats. */
+
+import { dishonestChartEntries } from '../memoryLedger.js';
+
+const FAMILY_MAP = {
+  nurturer: 'nurturing',
+  dreamer: 'nurturing',
+  perfectionist: 'analytical',
+  scholar: 'analytical',
+  socialite: 'social',
+  patron: 'social',
+  vip: 'social',
+  foodBlogger: 'social',
+  housewifeDonor: 'social',
+  rebel: 'defiant',
+  rivalSpy: 'defiant',
+  rivalDoctor: 'defiant',
+  gymDefector: 'defiant',
+};
+
+function archetypeFamily(archetype) {
+  return FAMILY_MAP[archetype] ?? 'hedonic';
+}
+
+function dishonestOpening(ctx) {
+  const { firstName, character } = ctx;
+  const f = archetypeFamily(character.archetype);
+
+  if (f === 'nurturing') {
+    return `${firstName} closed the door before she sat. She smoothed her coat once, the way she does when something costs her. "I went back through the numbers," she says. Soft voice. Steady hands. She has had this planned.`;
+  }
+  if (f === 'analytical') {
+    return `${firstName} placed a folded page on the desk before she sat. No preamble. Three columns: week, scale reading, what the chart says. The gaps are highlighted in yellow. She lets you read it first.`;
+  }
+  if (f === 'social') {
+    return `${firstName} followed you back from the front desk without being asked. "I want to show you something," she says. Her tone is warm and bright. That is exactly the part worth paying attention to.`;
+  }
+  if (f === 'defiant') {
+    return `${firstName} crossed her arms the moment you entered. Not hostile. Defensive, maybe. "I pulled my records," she says. "The patient portal lets you do that now." She did not come here for a fight. She came with evidence.`;
+  }
+  return `${firstName} was mid-reach for the snack tray when she paused. She set it back down. She turned toward you with the patience of someone who rehearsed staying calm. "I have a question," she says, "about the chart."`;
+}
+
+function buildCitationBlock(ctx) {
+  const entries = dishonestChartEntries(ctx.state, ctx.character.id);
+  if (!entries.length) return '';
+  const recent = entries.slice(-Math.min(4, Math.max(2, entries.length)));
+  const lines = recent.map((row) => {
+    const { kind, excuse, weight, charted } = row.data;
+    if (kind === 'fabrication') {
+      return `"${excuse || 'fluid retention'}." She reads it flat. "Week ${row.week}. I was ${weight} pounds."`;
+    }
+    return `"Weight stable." She smiles at that one. "Stable. I'd split a seam that month."`;
+  });
+  return lines.join(' ');
+}
+
+export const WARMING_CONFESSION = {
+  id: 'warming_confession',
+  title: 'The Chart, Laid Out',
+  heatBand: 'charged',
+  scope: 'visit',
+  requires: { notFlags: ['confession_resolved'] },
+  opening: dishonestOpening,
+  citationBlock: buildCitationBlock,
+  turn: `She is not angry. She kept receipts because she wanted to know if you would keep covering for her.`,
+  choices: [
+    {
+      id: 'own_it',
+      label: '"That is on me. The numbers were wrong."',
+      hint: '+trust · −cover · resolves',
+      apCost: 0,
+      setsFlags: ['confession_resolved', 'confession_owned', 'global:global_warming_confession'],
+      effects: { trust: 0.5, coverRating: -10, openness: 3, framingErosion: 5 },
+      outcome: (ctx) =>
+        `${ctx.firstName} holds still a moment. Then her shoulders drop. "Okay," she says. Not forgiveness yet. The first beat of something honest between you.`,
+    },
+    {
+      id: 'clinical_mask',
+      label: 'Cite measurement variance; keep clinical register',
+      hint: '+cover · −trust · buildup',
+      apCost: 0,
+      setsFlags: ['confession_masked'],
+      effects: { coverRating: 4, trust: -0.4, framingErosion: 12 },
+      outcome: (ctx) =>
+        `${ctx.firstName} folds the sheet once and tucks it into her bag. "Right," she says. She does not believe you. She will bring more receipts next time.`,
+    },
+    {
+      id: 'turn_it_back',
+      label: '"You never raised a concern before."',
+      hint: '−trust · −openness · risk',
+      apCost: 0,
+      setsFlags: ['confession_deflected'],
+      effects: { trust: -0.6, openness: -2, framingErosion: 8 },
+      outcome: (ctx) =>
+        `${ctx.firstName} thanks you for your time, picks up her bag, and leaves with everything she brought. Next visit she brings a friend.`,
+    },
+    {
+      id: 'ask_what_she_wants',
+      label: '"What would you like the chart to reflect?"',
+      hint: '+openness · +indulgence · complicit shift',
+      apCost: 1,
+      setsFlags: ['confession_resolved', 'confession_complicit', 'global:global_warming_confession'],
+      effects: { openness: 5, indulgence: 3, trust: 0.3, framingErosion: 15, coverRating: -5 },
+      outcome: (ctx) =>
+        `${ctx.firstName} leans back and thinks with her whole body. "Comfortable," she says. "Just write comfortable." You do. It changes the chart less than it changes the room.`,
+    },
+  ],
+};
+
+export const WARMING_CONFESSION_HONEST = {
+  id: 'warming_confession_honest',
+  title: 'The Chart, Kept True',
+  heatBand: 'warm',
+  scope: 'visit',
+  requires: { notFlags: ['confession_honest_resolved'] },
+  opening: (ctx) => {
+    const { firstName } = ctx;
+    return `${firstName} caught you reading her prior chart before she sat down. "You always put the real number," she says. No question in it. She drapes her coat over her lap and waits.`;
+  },
+  choices: [
+    {
+      id: 'acknowledge',
+      label: '"The chart belongs to you, not me."',
+      hint: '+trust · +openness',
+      apCost: 0,
+      setsFlags: ['confession_honest_resolved', 'global:global_warming_confession_honest'],
+      effects: { trust: 0.6, openness: 3 },
+      outcome: (ctx) =>
+        `${ctx.firstName} smiles. A real one. "I appreciate that," she says. She means it fully.`,
+    },
+    {
+      id: 'explain_philosophy',
+      label: '"Clinical honesty is the baseline. It is not a favor."',
+      hint: '+trust · +cover',
+      apCost: 0,
+      setsFlags: ['confession_honest_resolved'],
+      effects: { trust: 0.4, coverRating: 3, openness: 2 },
+      outcome: (ctx) =>
+        `${ctx.firstName} nods slowly. She glances at the chart again as if reading it for the first time.`,
+    },
+    {
+      id: 'admit_the_temptation',
+      label: '"I have considered otherwise. Comfortable numbers keep patients in the door."',
+      hint: '+openness · slow burn',
+      apCost: 0,
+      setsFlags: ['confession_honest_resolved', 'confession_honest_candid'],
+      effects: { openness: 4, trust: 0.3, indulgence: 1, framingErosion: 4 },
+      outcome: (ctx) =>
+        `"But you did not," ${ctx.firstName} says. That distinction matters to her more than the honesty itself.`,
+    },
+    {
+      id: 'show_her_the_trend',
+      label: 'Open the chart and walk through the trend together',
+      hint: '+trust · +heat · intimacy',
+      apCost: 1,
+      setsFlags: ['confession_honest_resolved', 'confession_shared_chart', 'global:global_warming_confession_honest'],
+      effects: { trust: 0.5, openness: 3, heat: 4, indulgence: 2 },
+      outcome: (ctx) =>
+        `Week by week the numbers climb. ${ctx.firstName} leans forward, chin almost at your shoulder. "That is a lot," she says quietly. She does not look away.`,
+    },
+  ],
+};
 
 export const CONFESSION_FIRST_ADMISSION = {
   id: 'confession_first_admission',
   title: 'First Admission',
-  scope: 'visit',
-  heatBand: [0, 50],
+  scope: 'weekly',
+  heatBand: 'warm',
   trigger: { minStage: 2, mindsetMin: 'curiosity' },
   opening: (ctx) => {
     if (ctx.mindset === 'devoted') {
-      return `${ctx.firstName} sits in the wide chair by the window and does not bother with the usual opener. "I want you to know I know exactly what I'm doing," she says. Her hands are folded over the forward curve of her belly like she has been waiting to say this for weeks. "I thought you should hear me say it plainly."`;
+      return `${ctx.firstName} sits in the wide chair and does not bother with the usual opener. "I want you to know I know exactly what I'm doing," she says.`;
     }
-    if (ctx.mindset === 'complicity') {
-      return `${ctx.firstName} gets through intake and then stops. She looks at the chart, at you, at her hands. "I'm not going to pretend anymore," she says. "That I don't know what this is. That I don't come here on purpose." She waits to see if that changes anything.`;
-    }
-    return `Midway through the visit ${ctx.firstName} goes quiet. You wait. "I think I've been wanting this," she says, finally. "Not just the food. All of it." She does not name what all of it means. She looks at the window instead of at you while she says it.`;
+    return `Midway through the visit ${ctx.firstName} goes quiet. "I think I've been wanting this," she says, finally. She does not name what all of it means.`;
   },
   choices: [
     {
       id: 'receive_quietly',
       label: 'Listen. Say nothing until she finishes.',
-      hint: '+trust · +openness · gives her space',
+      hint: '+trust · +openness',
       apCost: 0,
-      setsFlags: ['confession_received_quiet'],
+      setsFlags: ['confession_received_quiet', 'global:global_patient_confessed'],
       effects: { trust: 0.45, openness: 5, indulgence: 2, framingErosion: 12 },
       outcome: (ctx) =>
-        `You let the silence hold until it belongs to her. ${ctx.firstName} works through the rest of it at her own pace, saying more than she planned because you did not rush her. By the end she looks lighter. Not smaller. Lighter. "Thank you for not making it weird," she says. You both understand that you made it exactly the right amount of weird.`,
+        `${ctx.firstName} works through the rest at her own pace. "Thank you for not making it weird," she says.`,
     },
     {
       id: 'confirm_openly',
       label: '"Yes. And that is all right here."',
-      hint: '+indulgence · +heat · full acknowledgment',
+      hint: '+indulgence · +heat',
       apCost: 0,
       requires: { mindsetMin: 'complicity' },
       setsFlags: ['confession_confirmed', 'global:global_patient_confessed'],
       effects: { indulgence: 6, openness: 6, trust: 0.5, heat: 10, coverRating: -8, framingErosion: 25, slimMindset: false },
-      outcome: (ctx) =>
-        `${ctx.firstName} exhales the way people exhale after holding their breath in a long meeting. "Okay," she says. "Okay." She does not add anything else. She does not need to. The chart stays professional. The room is something else entirely.`,
-    },
-    {
-      id: 'clinical_soften',
-      label: '"I hear you. Appetite changes are common at this stage. Let\'s talk through it."',
-      hint: '+cover · warm but clinical · builds trust slowly',
-      apCost: 0,
-      setsFlags: ['confession_clinical_soften'],
-      effects: { coverRating: 6, trust: 0.35, openness: 3, framingErosion: 8 },
-      outcome: (ctx) =>
-        `You keep the register clinical but the warmth is there underneath and she feels it. ${ctx.firstName} accepts the framing with visible relief. It gives her something to say to herself later, a safe label for what she said. She books a follow-up. The chart note says appetite review.`,
-    },
-    {
-      id: 'ask_what_she_wants',
-      label: '"What would you like this to look like, going forward?"',
-      hint: '+openness · agency · path-setting',
-      apCost: 0,
-      setsFlags: ['confession_agency'],
-      effects: { trust: 0.4, openness: 5, indulgence: 3, framingErosion: 15 },
-      outcome: (ctx) =>
-        `${ctx.firstName} blinks. No one asked her that before. She thinks for a real minute. "More of this," she says, meaning the tray, the chair, the fact that you are still listening. "More of all of it." She books weekly. She brings the recommendation to a friend. Your reputation goes up two points by Thursday.`,
+      outcome: (ctx) => `${ctx.firstName} exhales. "Okay," she says. The chart stays professional. The room is something else entirely.`,
     },
   ],
 };
@@ -67,60 +202,29 @@ export const CONFESSION_MIRROR_MOMENT = {
   id: 'confession_mirror_moment',
   title: 'The Mirror Question',
   scope: 'weekly',
-  heatBand: [5, 70],
+  heatBand: 'charged',
   trigger: { minStage: 4, mindsetMin: 'curiosity' },
-  opening: (ctx) => {
-    if (ctx.mindset === 'devoted') {
-      return `${ctx.firstName} caught herself in the exam room mirror while you were reviewing labs and did not look away. She stood there for a long moment, head tipped to one side, studying. When you looked up she was still watching her own reflection. "I keep thinking I'll be surprised," she said, "but I'm just not." She sounded completely at peace with that.`;
-    }
-    if (ctx.mindset === 'complicity') {
-      return `After vitals ${ctx.firstName} glanced at the mirror above the sink and then looked back at herself a second time, like she caught something. "I keep forgetting what I look like now," she said. "Then I remember." She turned from the mirror and sat back down. "Is that normal?" She did not look like she was worried. She looked like she wanted to talk about it.`;
-    }
-    return `${ctx.firstName} paused at the exam room mirror during intake with a look you have learned to read: half recognition, half something she has not named yet. She smoothed her blouse over her middle before turning back to the chair. "I look different," she said, flat, not asking.`;
-  },
+  opening: (ctx) =>
+    `${ctx.firstName} paused at the exam room mirror during intake. She smoothed her blouse over her middle before turning back. "I look different," she said, flat, not asking.`,
   choices: [
     {
       id: 'affirm_change',
-      label: '"You do. Your body has been changing. How does that feel?"',
-      hint: '+openness · gentle confrontation',
+      label: '"You do. How does that feel?"',
+      hint: '+openness',
       apCost: 0,
-      requires: { mindsetMin: 'curiosity' },
-      setsFlags: ['mirror_affirmed'],
-      effects: { openness: 5, trust: 0.35, framingErosion: 14, heat: 5, indulgence: 2 },
-      outcome: (ctx) =>
-        `${ctx.firstName} sits with the question longer than most. "Good," she says eventually. "Actually good." She sounds surprised and then decides not to be. "I wasn't expecting that answer from myself." You write it down where she can see it. She asks you to keep it in the chart.`,
+      setsFlags: ['mirror_affirmed', 'global:global_mirror_photo_taken'],
+      effects: { openness: 5, trust: 0.35, framingErosion: 14, heat: 5 },
+      outcome: (ctx) => `"Good," ${ctx.firstName} says eventually. "Actually good."`,
     },
     {
       id: 'mirror_clinical',
       label: 'Explain that weight distribution shifts are normal at this gain range',
-      hint: '+cover · clinical anchor',
+      hint: '+cover',
       apCost: 0,
       setsFlags: ['mirror_clinical'],
-      effects: { coverRating: 5, trust: 0.2, framingErosion: 5, openness: 1 },
+      effects: { coverRating: 5, trust: 0.2, framingErosion: 5 },
       outcome: (ctx) =>
-        `You walk her through the physiology in calm, even language. ${ctx.firstName} listens and you can see her using the explanation the way people use labels: to make things smaller and safer. She does not stop looking in the mirror. She just has a word for it now.`,
-    },
-    {
-      id: 'bring_the_tray',
-      label: 'Bring the snack tray in and let her keep looking',
-      hint: '+indulgence · sensory · no words needed',
-      apCost: 0,
-      requires: { mindsetMin: 'complicity' },
-      setsFlags: ['mirror_fed'],
-      effects: { indulgence: 5, openness: 3, heat: 8, weight: 0.3, framingErosion: 18 },
-      outcome: (ctx) =>
-        `You set the tray beside her without interrupting the mirror moment. ${ctx.firstName} reaches for the tray without looking away from her reflection. She eats facing herself and something visibly resolves. When she turns back to you she has decided something. The decision is not spoken. It does not have to be.`,
-    },
-    {
-      id: 'take_a_photo',
-      label: 'Ask if she wants a progress photo for the clinic record',
-      hint: '+openness · +heat · documentation',
-      apCost: 0,
-      requires: { mindsetMin: 'complicity' },
-      setsFlags: ['mirror_photo', 'global:global_mirror_photo_taken'],
-      effects: { openness: 6, heat: 10, indulgence: 3, framingErosion: 22, coverRating: -6 },
-      outcome: (ctx) =>
-        `${ctx.firstName} goes still at the question. Then she straightens. "Yes," she says, and the yes is not about documentation. She faces the mirror fully. You take the photo from behind her shoulder so she can see her own face looking back. She asks for a copy. It goes in her file under: wellness progress.`,
+        `${ctx.firstName} listens and uses the explanation like a label. She does not stop looking in the mirror.`,
     },
   ],
 };

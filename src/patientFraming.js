@@ -65,10 +65,22 @@ export function applyFramingErosion(patient, delta) {
   if (patient.framingErosion >= 25) patient.slimMindset = false;
 }
 
+export function chartGap(patient) {
+  const charted = patient.chartedWeight ?? patient.weight;
+  return Math.max(0, Math.round((patient.weight - charted) * 10) / 10);
+}
+
 export function getCoverLabel(state) {
   const cover = state.coverRating ?? 100;
-  if (cover >= 80) return 'Spotless charting';
-  if (cover >= 60) return 'Plausible PCP';
+  const patients = state.patients || [];
+  const warmingCount = patients.filter((p) => {
+    const t = getPatientFramingTier(p);
+    return t === 'warming' || t === 'complicit';
+  }).length;
+  const rosterWarming = patients.length && warmingCount >= patients.length / 2;
+
+  if (cover >= 80) return rosterWarming ? 'They would never testify' : 'Spotless charting';
+  if (cover >= 60) return rosterWarming ? 'Plausible until someone talks' : 'Plausible PCP';
   if (cover >= 35) return 'Board might notice';
   if (cover >= 15) return 'Audit risk';
   return 'Imminent shutdown';

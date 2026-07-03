@@ -50,7 +50,14 @@ export function resolveScene(sceneId, ctx) {
   const raw = getSceneDefinition(sceneId);
   if (!raw) return null;
 
-  const opening = resolveText(raw.opening, ctx);
+  const openingBase = resolveText(raw.opening, ctx);
+  const citation = raw.citationBlock
+    ? typeof raw.citationBlock === 'function'
+      ? raw.citationBlock(ctx)
+      : raw.citationBlock
+    : '';
+  const turn = raw.turn ? (typeof raw.turn === 'function' ? raw.turn(ctx) : raw.turn) : '';
+  const opening = [openingBase, citation, turn].filter(Boolean).join('\n\n');
   const choices = (raw.choices || [])
     .filter((choice) => choiceAvailable(ctx, choice))
     .map((choice) => ({

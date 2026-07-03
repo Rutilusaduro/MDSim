@@ -1,5 +1,6 @@
 import { getVisitNarrative } from './patientVisitDialogue.js';
-import { applyFramingErosion, visitDialogueTier } from './patientFraming.js';
+import { applyCharacterEffects } from './mechanics/applyEffects.js';
+import { applyFramingErosion, visitDialogueTier, getPatientFramingTier } from './patientFraming.js';
 import { checkAuditGameOver } from './gameOver.js';
 
 const TONE_EFFECTS = {
@@ -57,8 +58,20 @@ const TONE_NARRATIVE_PREFIX_CLINICAL = {
   cruel: 'You name what she already feels in her clothes. Still chart-clean.',
 };
 
-export function actionSupportsTone(actionId) {
-  return ['say_hi', 'offer_water', 'weigh_patient'].includes(actionId);
+export function actionSupportsTone(actionId, patient = null) {
+  if (!['say_hi', 'offer_water', 'weigh_patient'].includes(actionId)) return false;
+  return true;
+}
+
+export function isToneLocked(toneId, patient) {
+  if (!patient) return false;
+  if (toneId !== 'shameless' && toneId !== 'cruel') return false;
+  const framing = getPatientFramingTier(patient);
+  return framing === 'clinical' || framing === 'clinical_plus';
+}
+
+export function getToneLockHint() {
+  return 'She is not ready to hear it.';
 }
 
 export function getToneEffects(toneId) {
@@ -87,21 +100,7 @@ export function buildToneNarrative(patient, actionId, tier, toneId) {
 
 export function applyToneEffects(state, patient, toneId) {
   const effects = getToneEffects(toneId);
-  if (effects.trust) patient.trust = Math.round((patient.trust + effects.trust) * 100) / 100;
-  if (effects.openness) patient.openness = Math.min(100, patient.openness + effects.openness);
-  if (effects.indulgence) patient.indulgence = Math.min(100, patient.indulgence + effects.indulgence);
-  if (effects.coverRating && state) {
-    state.coverRating = Math.max(0, Math.min(100, (state.coverRating ?? 100) + effects.coverRating));
-  }
-  if (effects.heat && state) {
-    state.heat = Math.min(100, (state.heat || 0) + effects.heat);
-    if (effects.heat > 0 && state.coverRating != null) {
-      state.coverRating = Math.max(0, state.coverRating - Math.floor(effects.heat / 4));
-    }
-  }
-  if (effects.framingErosion) {
-    applyFramingErosion(patient, effects.framingErosion);
-  }
+  applyCharacterEffects(state, patient, effects);
   if (toneId === 'shameless' || toneId === 'cruel') {
     patient.slimMindset = false;
   }

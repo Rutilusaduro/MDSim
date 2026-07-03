@@ -1,11 +1,6 @@
 import { getAttitudeKey } from './characters.js';
 
-function tierFromAttitude(attitude) {
-  if (attitude === 'professional' || attitude === 'noticing') return 'early';
-  if (attitude === 'hungry' || attitude === 'pleased') return 'mid';
-  if (attitude === 'immobile' || attitude === 'blob') return 'immobile';
-  return 'late';
-}
+import { tierFromAttitude } from './mechanics/attitudeTier.js';
 
 function pickLine(character, pool) {
   if (!pool?.length) return '';

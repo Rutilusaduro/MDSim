@@ -83,7 +83,7 @@ function parseScenes(source, filePath) {
     const isSceneObject = /opening\s*:/.test(block) && /choices\s*:/.test(block);
     if (!isSceneObject) continue;
 
-    const hasHeatBand = /heatBand\s*:\s*\[/.test(block);
+    const hasHeatBand = /heatBand\s*:\s*(\[|')/.test(block);
     const hasEnqueue = /enqueueScene\s*:/.test(block);
 
     scenes.push({

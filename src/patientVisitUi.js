@@ -3,17 +3,19 @@ import { formatMoney } from './state.js';
 import {
   VISIT_PHASES,
   TONE_ENABLED_ACTIONS,
-  canEndVisit,
-  completeVisit,
   getVisitActions,
   getVisitInterruptScene,
   performVisitAction,
   startVisit,
+  applyWeighChartChoice,
 } from './patientVisit.js';
-import { getVisitOpening } from './patientVisitDialogue.js';
+import { getVisitOpeningWithEcho } from './patientVisitDialogue.js';
 import { VISIT_TONES } from './scenes/catalog.js';
 import { renderSilhouette } from './silhouettes.js';
 import { visitMobilityWarning } from './worldImpact.js';
+import { getFramingChipLabel } from './visitClinical.js';
+import { getPatientFramingNote, getPatientFramingTier } from './patientFraming.js';
+import { isToneLocked, getToneLockHint } from './visitTones.js';
 
 function esc(value) {
   return String(value ?? '')
@@ -72,20 +74,31 @@ function renderActionTags(option) {
 
 function renderVisitActionButton(option) {
   const tags = renderActionTags(option);
+  const lockedCls = option.locked ? 'opacity-40' : option.disabled ? 'opacity-50' : '';
   return `
-    <button class="rounded-2xl p-3 text-left transition ${option.disabled ? 'dark-button opacity-50' : 'soft-card hover:border-amber-200/40'}" data-action="visit-action" data-id="${esc(option.id)}" ${option.disabled ? 'disabled' : ''}>
+    <button class="rounded-2xl p-3 text-left transition ${option.disabled || option.locked ? `dark-button ${lockedCls}` : 'soft-card hover:border-amber-200/40'}" data-action="visit-action" data-id="${esc(option.id)}" ${option.disabled || option.locked ? 'disabled' : ''}>
       <div class="flex items-start justify-between gap-2">
         <strong class="text-sm text-stone-50">${esc(option.label)}</strong>
         <span class="text-xs text-amber-100">${option.apCost ? `${option.apCost} AP` : 'free'}</span>
       </div>
       <p class="mt-1 text-xs leading-5 text-stone-400">${esc(option.description)}</p>
       ${tags.length ? `<p class="mt-2 text-xs text-emerald-200">${tags.join(' · ')}</p>` : ''}
-      ${option.reason && option.disabled ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>` : ''}
+      ${option.lockHint && option.locked ? `<p class="mt-1 text-xs text-stone-500">${esc(option.lockHint)}</p>` : ''}
+      ${option.reason && option.disabled && !option.locked ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>` : ''}
     </button>`;
 }
 
-function renderToneActionGroup(option) {
+function renderToneActionGroup(option, patient) {
   const tags = renderActionTags(option);
+  const tones = VISIT_TONES.map((tone) => {
+    const locked = isToneLocked(tone.id, patient);
+    return `
+      <button class="rounded-xl border border-amber-100/10 bg-stone-950/50 px-3 py-2 text-left text-xs transition ${locked ? 'opacity-40' : 'hover:border-amber-200/40'}" data-action="${locked ? '' : 'visit-tone-action'}" data-id="${esc(option.id)}" data-tone="${esc(tone.id)}" ${locked || option.disabled ? 'disabled' : ''}>
+        <span class="font-bold text-stone-100">${esc(tone.label)}</span>
+        <span class="ml-2 text-stone-500">${esc(tone.hint)}</span>
+        ${locked ? `<span class="ml-2 text-stone-600">${esc(getToneLockHint())}</span>` : ''}
+      </button>`;
+  }).join('');
   return `
     <div class="rounded-2xl p-3 ${option.disabled ? 'dark-button opacity-50' : 'soft-card'}">
       <div class="flex items-start justify-between gap-2">
@@ -99,16 +112,37 @@ function renderToneActionGroup(option) {
           ? `<p class="mt-1 text-xs text-red-200">${esc(option.reason)}</p>`
           : `
       <p class="mt-2 text-xs font-bold uppercase tracking-wide text-amber-200/80">Choose tone</p>
-      <div class="mt-2 grid gap-1.5">
-        ${VISIT_TONES.map(
-          (tone) => `
-          <button class="rounded-xl border border-amber-100/10 bg-stone-950/50 px-3 py-2 text-left text-xs transition hover:border-amber-200/40" data-action="visit-tone-action" data-id="${esc(option.id)}" data-tone="${esc(tone.id)}">
-            <span class="font-bold text-stone-100">${esc(tone.label)}</span>
-            <span class="ml-2 text-stone-500">${esc(tone.hint)}</span>
-          </button>`,
-        ).join('')}
-      </div>`
+      <div class="mt-2 grid gap-1.5">${tones}</div>`
       }
+    </div>`;
+}
+
+function renderWeighRitualPanel(state, visit, patient) {
+  if (!visit.pendingWeigh) return '';
+  const weight = visit.pendingWeigh.weight;
+  const framing = getPatientFramingTier(patient);
+  const reaction = visit.pendingWeigh.reaction || '';
+  const canFabricate = framing === 'clinical_plus' || framing === 'warming' || framing === 'complicit';
+  return `
+    <div class="rounded-3xl border border-sky-300/30 bg-sky-950/25 p-5 weigh-ritual-panel">
+      <p class="text-xs font-bold uppercase tracking-wide text-sky-200">Vitals: weight</p>
+      <p class="mt-3 text-4xl font-black text-stone-50 weigh-number" data-weight="${weight}">${weight} lb</p>
+      ${reaction ? `<p class="mt-3 text-sm italic text-pink-100">"${esc(reaction)}"</p>` : ''}
+      <p class="mt-4 text-sm text-stone-200">What do you chart?</p>
+      <div class="mt-3 grid gap-2 sm:grid-cols-3">
+        <button class="soft-card rounded-2xl p-3 text-left" data-action="weigh-chart" data-choice="chart_true">
+          <strong class="text-sm text-stone-50">Chart it true</strong>
+          <p class="mt-1 text-xs text-stone-400">Real weight on record. +trust.</p>
+        </button>
+        <button class="soft-card rounded-2xl p-3 text-left" data-action="weigh-chart" data-choice="chart_hedge">
+          <strong class="text-sm text-stone-50">Hedge</strong>
+          <p class="mt-1 text-xs text-stone-400">"Weight stable." +cover.</p>
+        </button>
+        <button class="soft-card rounded-2xl p-3 text-left ${canFabricate ? '' : 'opacity-40'}" data-action="weigh-chart" data-choice="chart_fabricate" ${canFabricate ? '' : 'disabled'}>
+          <strong class="text-sm text-stone-50">Fabricate</strong>
+          <p class="mt-1 text-xs text-stone-400">Fluid retention note. +cover, +erosion.</p>
+        </button>
+      </div>
     </div>`;
 }
 
@@ -145,7 +179,11 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
     (a) => VISIT_PHASES.indexOf(a.phase) <= VISIT_PHASES.indexOf(visit.phase),
   );
   const phaseIdx = VISIT_PHASES.indexOf(visit.phase);
-  const opening = visit.visitLog?.length ? '' : getVisitOpening(patient);
+  const opening = visit.visitLog?.length ? '' : getVisitOpeningWithEcho(state, patient);
+  const framingTier = getPatientFramingTier(patient);
+  const framingChip = getFramingChipLabel(framingTier);
+  const framingNote = getPatientFramingNote(patient);
+  const weighPanel = renderWeighRitualPanel(state, visit, patient);
   const mobilityWarning = visitMobilityWarning(patient);
   const log = visit.visitLog || [];
   const interruptScene = getVisitInterruptScene(state);
@@ -177,18 +215,18 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
       : '';
 
   const endVisitDone = visit.completedActions.includes('end_visit');
-  const canComplete = canEndVisit(state);
 
   const actionsHtml = interruptScene
     ? renderInterruptPanel(state, interruptScene)
-    : `
+    : weighPanel ||
+      `
         <div>
           <h3 class="text-lg font-bold text-amber-100">${PHASE_LABELS[visit.phase]} actions</h3>
           <div class="mt-3 grid gap-2 sm:grid-cols-2">
             ${actions
               .map((option) =>
                 TONE_ENABLED_ACTIONS.includes(option.id)
-                  ? renderToneActionGroup(option)
+                  ? renderToneActionGroup(option, patient)
                   : renderVisitActionButton(option),
               )
               .join('')}
@@ -201,10 +239,13 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
         <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Patient visit</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${esc(patient.name)}</h2>
         <p class="mt-1 text-stone-300">${esc(patient.role)} · ${esc(stage.bodyType)} · ${Math.round(patient.weight)} lb</p>
+        <p class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="rounded-full bg-amber-200/15 px-3 py-1 text-xs font-bold text-amber-100">${esc(framingChip)}</span>
+          <span class="text-xs text-stone-400">${esc(framingNote)}</span>
+        </p>
         <p class="mt-1 text-xs text-stone-400">${esc(getPatientAppearanceSummary(patient))}</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        ${canComplete ? `<button class="gold-button rounded-2xl px-5 py-2 font-bold" data-action="visit-complete">Complete visit</button>` : ''}
         <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="visit-abandon">Leave desk</button>
       </div>
     </div>

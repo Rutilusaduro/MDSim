@@ -117,6 +117,10 @@ export function createNewGame(options = {}) {
     sceneState: { resolved: [], weekInterrupt: null },
     globalFlags: [],
     gameOver: null,
+    ledger: [],
+    gameSettings: { heatCap: 'charged', onboardingDismissed: false },
+    pendingRungScenes: [],
+    supplyCostChapterFired: false,
   };
 
   refreshRecruitmentOffers(game, rng);
@@ -209,7 +213,11 @@ function migrateCharacter(c) {
   }
   if (c.type === 'patient' && c.loyalty == null) c.loyalty = Math.min(3, c.visits || 0);
   if (c.type === 'patient' && !c.loyaltyArc) c.loyaltyArc = { completedBeats: [] };
-  if (c.type === 'patient') ensurePatientAppearance(c);
+  if (c.type === 'patient') {
+    ensurePatientAppearance(c);
+    if (c.chartedWeight == null) c.chartedWeight = c.weight;
+    if (!c.lastFramingTier) c.lastFramingTier = 'clinical';
+  }
   return c;
 }
 
@@ -256,6 +264,10 @@ function normaliseState(raw) {
   merged.sceneState = raw.sceneState || { resolved: [], weekInterrupt: null };
   merged.globalFlags = raw.globalFlags || [];
   merged.gameOver = raw.gameOver || null;
+  merged.ledger = raw.ledger || [];
+  merged.gameSettings = { heatCap: 'charged', onboardingDismissed: false, ...(raw.gameSettings || {}) };
+  merged.pendingRungScenes = raw.pendingRungScenes || [];
+  merged.supplyCostChapterFired = raw.supplyCostChapterFired || false;
   return merged;
 }
 

@@ -2,7 +2,7 @@ import { WORLD_DOORWAY_WEDGE, WORLD_DOORWAY_ESCALATED } from './world.js';
 import { EXAM_BUTTON_POP, EARLY_JEANS_TIGHT } from './wardrobe.js';
 import { RUNG_SCENES } from './rungs.js';
 import { MOLE_FLIP_SCENE } from './mole.js';
-import { CONFESSION_FIRST_ADMISSION, CONFESSION_MIRROR_MOMENT } from './confession.js';
+import { CONFESSION_FIRST_ADMISSION, CONFESSION_MIRROR_MOMENT, WARMING_CONFESSION, WARMING_CONFESSION_HONEST } from './confession.js';
 import { EARLY_BRA_STRAP, EARLY_CHAIR_PINCH, EARLY_SCALE_WINCE } from './early.js';
 
 export const SCENE_CATALOG = {
@@ -12,6 +12,8 @@ export const SCENE_CATALOG = {
   early_jeans_tight: EARLY_JEANS_TIGHT,
   ...RUNG_SCENES,
   mole_flip: MOLE_FLIP_SCENE,
+  warming_confession: WARMING_CONFESSION,
+  warming_confession_honest: WARMING_CONFESSION_HONEST,
   confession_first_admission: CONFESSION_FIRST_ADMISSION,
   confession_mirror_moment: CONFESSION_MIRROR_MOMENT,
   early_bra_strap: EARLY_BRA_STRAP,

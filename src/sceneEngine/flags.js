@@ -1,3 +1,5 @@
+import { recordLedger } from '../memoryLedger.js';
+
 export function ensureSceneState(state) {
   if (!state.sceneState) {
     state.sceneState = { resolved: [], weekInterrupt: null };
@@ -22,9 +24,12 @@ export function charFlag(character, key) {
   return character.scenes.flags.includes(key);
 }
 
-export function setCharFlag(character, key) {
+export function setCharFlag(character, key, state = null) {
   ensureCharacterScenes(character);
-  if (!character.scenes.flags.includes(key)) character.scenes.flags.push(key);
+  if (!character.scenes.flags.includes(key)) {
+    character.scenes.flags.push(key);
+    if (state) recordLedger(state, { id: flagKeyToLedgerId(key), characterId: character.id });
+  }
 }
 
 export function globalFlag(state, key) {
@@ -34,7 +39,14 @@ export function globalFlag(state, key) {
 
 export function setGlobalFlag(state, key) {
   ensureSceneState(state);
-  if (!state.globalFlags.includes(key)) state.globalFlags.push(key);
+  if (!state.globalFlags.includes(key)) {
+    state.globalFlags.push(key);
+    recordLedger(state, { id: flagKeyToLedgerId(key), characterId: null });
+  }
+}
+
+function flagKeyToLedgerId(key) {
+  return `flag:${key}`;
 }
 
 export function sceneResolved(state, character, sceneId) {
