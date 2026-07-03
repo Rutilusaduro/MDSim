@@ -1,5 +1,5 @@
 import { addWeekNote, formatMoney, rngForState, spendActionPoint } from './state.js';
-import { findCharacter } from './events.js';
+import { findCharacter } from './roster.js';
 import {
   bumpLoyalty,
   getGainTemperament,
@@ -14,131 +14,190 @@ import {
   getVisitClosing,
   getVisitNarrative,
   getMissedVisitPenalty,
+  getWeighRitualReaction,
 } from './patientVisitDialogue.js';
 import {
   actionSupportsTone,
   applyToneEffects,
   buildToneNarrative,
+  isToneLocked,
 } from './visitTones.js';
 import { applySceneChoice, buildSceneContext, resolveScene } from './sceneEngine/index.js';
 import { checkVisitInterrupt } from './sceneEngine/triggers.js';
 import { checkAuditGameOver } from './gameOver.js';
+import { getVisitActionGate, getFramingChipLabel } from './visitClinical.js';
+import { applyCharacterEffects } from './mechanics/applyEffects.js';
+import { tierFromAttitude } from './mechanics/attitudeTier.js';
+import { recordLedger } from './memoryLedger.js';
+import { chartGap, getPatientFramingTier } from './patientFraming.js';
 
-function tierFromAttitude(attitude) {
-  if (attitude === 'immobile') return 'immobile';
-  if (attitude === 'blob') return 'blob';
-  if (attitude === 'professional' || attitude === 'noticing') return 'early';
-  if (attitude === 'hungry' || attitude === 'pleased') return 'mid';
-  return 'late';
-}
+export { getPatientVisitFraming, isClinicalVisit, getVisitActionGate, getFramingChipLabel } from './visitClinical.js';
 
 export const VISIT_PHASES = ['greeting', 'intake', 'exam', 'services', 'checkout'];
 export const TONE_ENABLED_ACTIONS = ['say_hi', 'offer_water', 'weigh_patient'];
 
 const CONSULT_FEE = 225;
 
+const CLINICAL_CLUSTER = new Set([
+  'review_symptoms',
+  'order_labs',
+  'prescribe_mirtazapine',
+  'nutrition_counseling',
+]);
+const INDULGENT_CLUSTER = new Set([
+  'feed_in_place',
+  'lounge_snack',
+  'comfort_blend',
+  'appetite_tonic',
+  'warm_blanket',
+  'recovery_shake',
+  'offer_snack_menu',
+]);
+
+const FABRICATION_EXCUSES = [
+  'fluid retention',
+  'dryer shrinkage note',
+  'scale recalibration',
+  'muscle mass',
+];
+
 export const VISIT_ACTIONS = [
   {
     id: 'say_hi',
-    label: 'Warm Greeting',
-    description: 'Meet her at the door. Her name on your lips. Appetite in the room before the chart opens.',
+    label: 'Greet Patient',
+    description: 'Meet her at the door. Insurance card, appointment time, normal Tuesday energy.',
     apCost: 1,
     phase: 'greeting',
-    effects: { trust: 0.2, openness: 1.5, loyalty: 0 },
+    effects: { trust: 0.2, openness: 0.5, loyalty: 0 },
     once: true,
     advancesPhase: true,
   },
   {
     id: 'review_chart',
     label: 'Review Chart',
-    description: 'Read gain lines aloud. She hears you celebrate every logged pound.',
+    description: 'Open her record. Prior vitals, medications, and the reason for today\'s visit.',
     apCost: 1,
     phase: 'intake',
-    effects: { trust: 0.15, openness: 1 },
+    effects: { trust: 0.15, openness: 0.5 },
     once: true,
     advancesPhase: true,
   },
   {
     id: 'offer_water',
-    label: 'Offer Water and Snack Menu',
-    description: 'Chilled water, printed menu. Hunger stirs before the first weigh-in.',
+    label: 'Offer Water',
+    description: 'Paper cup from the cooler. Standard hydration before vitals.',
     apCost: 1,
     phase: 'intake',
-    effects: { appetite: 0.08, indulgence: 1.5, openness: 0.5 },
+    effects: { trust: 0.05, openness: 0.3 },
+    once: true,
+  },
+  {
+    id: 'offer_snack_menu',
+    label: 'Offer Snack Menu',
+    description: 'Printed lounge menu. Pastries and dense options within arm\'s reach.',
+    apCost: 1,
+    phase: 'intake',
+    cluster: 'indulgent',
+    effects: { appetite: 0.12, indulgence: 1.5, openness: 0.8 },
     once: true,
   },
   {
     id: 'personal_talk',
-    label: 'Personal Check-In',
-    description: 'No charting. Ask how her appetite has been. Listen until she fills the silence with cravings.',
+    label: 'Social History',
+    description: 'Ask about sleep, stress, and eating patterns. Listen without charting every answer yet.',
     apCost: 1,
     phase: 'intake',
-    effects: { trust: 0.35, openness: 3, indulgence: 1.5, weeklyMomentum: 0.4 },
+    effects: { trust: 0.25, openness: 1.5, weeklyMomentum: 0.15 },
     once: true,
   },
   {
-    id: 'note_symptoms',
-    label: 'Note Gluttony Symptoms',
-    description: 'Straining seams. Constant hunger. Record each sign of growing heavy without alarm.',
+    id: 'review_symptoms',
+    label: 'Review of Systems',
+    description: 'Run through ROS: fatigue, appetite changes, weight trend, sleep quality.',
     apCost: 1,
     phase: 'intake',
-    effects: { trust: 0.1, openness: 2, indulgence: 0.5 },
+    cluster: 'clinical',
+    effects: { trust: 0.1, openness: 1, appetite: 0.03 },
+    once: true,
+  },
+  {
+    id: 'order_labs',
+    label: 'Order Labs',
+    description: 'CMP, lipids, A1c, TSH. Routine panel before adjusting any appetite protocol.',
+    apCost: 1,
+    phase: 'intake',
+    cluster: 'clinical',
+    effects: { trust: 0.1, weight: 0.05 },
     once: true,
   },
   {
     id: 'weigh_patient',
-    label: 'Weigh Patient',
-    description: 'Scale under bare feet. Numbers climb. She watches your face for approval.',
+    label: 'Record Vitals & Weight',
+    description: 'Blood pressure, pulse, height. Scale under flat shoes. Numbers logged to the chart.',
     apCost: 1,
     phase: 'exam',
-    effects: { trust: 0.2, openness: 1, weight: 0.15 },
+    effects: { trust: 0.2, openness: 0.5, weight: 0.1 },
     once: true,
     advancesPhase: true,
   },
   {
     id: 'estimate_weight',
     label: 'Estimate Weight',
-    description: 'Couch scale, tape measure, trained eye. Log the gain without asking her to stand.',
+    description: 'Couch scale, tape measure, trained eye. Estimate logged when standing is not safe.',
     apCost: 1,
     phase: 'exam',
-    effects: { trust: 0.2, openness: 1, weight: 0.12 },
+    effects: { trust: 0.2, openness: 0.5, weight: 0.1 },
     once: true,
     advancesPhase: true,
   },
   {
-    id: 'feed_in_place',
-    label: 'Feed In Place',
-    description: 'Tray to the couch. Spoon in hand. Seconds arrive before she asks.',
+    id: 'prescribe_mirtazapine',
+    label: 'Prescribe Mirtazapine',
+    description: '15mg at bedtime for insomnia and poor appetite. Document indication on the chart.',
     apCost: 1,
     phase: 'exam',
+    cluster: 'clinical',
+    effects: { trust: 0.15, appetite: 0.12, openness: 0.5 },
+    once: true,
+  },
+  {
+    id: 'feed_in_place',
+    label: 'In-Room Nutrition Support',
+    description: 'Tray to the couch. Comfort feeding logged as nutritional intervention.',
+    apCost: 1,
+    phase: 'exam',
+    cluster: 'indulgent',
     effects: { trust: 0.3, indulgence: 6, appetite: 0.25, weightRoll: 0.75 },
     once: true,
   },
   {
     id: 'warm_blanket',
-    label: 'Heated Lap Wrap',
-    description: 'Heated throw across her middle. Warmth loosens her into eating. Shoulders drop. Jaw unclenches.',
+    label: 'Thermal Comfort Wrap',
+    description: 'Heated throw across her lap. Warmth and comfort before the next intervention.',
     apCost: 1,
     phase: 'exam',
+    cluster: 'indulgent',
     effects: { trust: 0.25, indulgence: 2, openness: 1 },
     once: true,
   },
   {
     id: 'comfort_blend',
-    label: 'Serve Gorging Blend',
-    description: 'Vanilla powder in warm milk. Heavy gut. Heavier lids. Room for more.',
+    label: 'Serve Comfort Blend',
+    description: 'Vanilla nutritional powder in warm milk. Caloric supplement per protocol.',
     apCost: 1,
     phase: 'exam',
+    cluster: 'indulgent',
     effects: { trust: 0.2, openness: 2, indulgence: 4, weightRoll: 0.45 },
     requires: { inventory: 'comfortBlend' },
     once: true,
   },
   {
     id: 'appetite_tonic',
-    label: 'Dose Appetite Tonic',
-    description: 'Amber vial. Hunger arrives fast, stays loud, demands feeding.',
+    label: 'Appetite Stimulation Trial',
+    description: 'Amber vial from the formulary. Logged as appetite-stimulation study dose.',
     apCost: 1,
     phase: 'exam',
+    cluster: 'indulgent',
     effects: { appetite: 0.35, openness: 2, indulgence: 5, weightRoll: 0.55 },
     requires: { inventory: 'appetiteTonic' },
     once: true,
@@ -149,13 +208,24 @@ export const VISIT_ACTIONS = [
     description: 'Pastry plate within arm\'s reach. She finishes what you bring and asks what follows.',
     apCost: 1,
     phase: 'services',
+    cluster: 'indulgent',
     effects: { indulgence: 3.5, appetite: 0.2, weightRoll: 0.65 },
     once: true,
   },
   {
+    id: 'nutrition_counseling',
+    label: 'Nutrition Counseling',
+    description: 'Counsel on calorie-dense options: nut butters, whole milk, avocado, frequent small meals.',
+    apCost: 1,
+    phase: 'services',
+    cluster: 'clinical',
+    effects: { trust: 0.2, appetite: 0.1, openness: 1, indulgence: 0.5, weeklyMomentum: 0.2 },
+    once: true,
+  },
+  {
     id: 'comfort_plan',
-    label: 'Gorging Meal Plan',
-    description: 'Written plan: larger portions, slower chewing, growing heavy without apology.',
+    label: 'Enhanced Meal Plan',
+    description: 'Written plan: larger portions, calorie-dense meals, follow-up in two weeks.',
     apCost: 1,
     phase: 'services',
     effects: { trust: 0.25, openness: 2.5, indulgence: 3, weeklyMomentum: 0.5 },
@@ -167,14 +237,15 @@ export const VISIT_ACTIONS = [
     description: 'Thick shake. Sweet. Labeled for recovery. Fills the stomach for the next course.',
     apCost: 1,
     phase: 'services',
+    cluster: 'indulgent',
     effects: { trust: 0.15, indulgence: 2.5, weightRoll: 0.5 },
     requires: { inventory: 'recoveryShake' },
     once: true,
   },
   {
     id: 'upsell_wellness_kit',
-    label: 'Bill Gorging Kit',
-    description: 'Take-home bars and cream cups. Upsell code on the invoice. More eating at home.',
+    label: 'Bill Wellness Kit',
+    description: 'Take-home bars and supplement cups. Upsell code on the invoice.',
     apCost: 1,
     phase: 'services',
     effects: { money: 85, indulgence: 1, trust: 0.1 },
@@ -182,8 +253,8 @@ export const VISIT_ACTIONS = [
   },
   {
     id: 'bill_consultation',
-    label: 'Bill Gluttony Consult',
-    description: 'Standard gorging consult code. Visit fee posts to the ledger.',
+    label: 'Bill Office Visit',
+    description: 'Standard office visit code. Exam and counseling documented. Fee posts to the ledger.',
     apCost: 1,
     phase: 'services',
     effects: { money: CONSULT_FEE, trust: 0.15, reputation: 1 },
@@ -194,10 +265,10 @@ export const VISIT_ACTIONS = [
   {
     id: 'schedule_followup',
     label: 'Schedule Follow-Up',
-    description: 'Next feeding slot on the calendar before she reaches the lobby doors.',
+    description: 'Book the next appointment before she reaches the lobby doors.',
     apCost: 0,
     phase: 'checkout',
-    effects: { trust: 0.15, loyalty: 1, openness: 1 },
+    effects: { trust: 0.15, loyalty: 1, openness: 0.5 },
     once: true,
   },
   {
@@ -291,38 +362,189 @@ function visitWeightBump(state, patient, scale = 0.4) {
   return Math.max(0.15, Math.round(raw * 10) / 10);
 }
 
+function visitClusterLock(visit, action) {
+  if (!action.cluster) return null;
+  const done = visit.completedActions || [];
+  const didClinical = done.some((id) => CLINICAL_CLUSTER.has(id));
+  const didIndulgent = done.some((id) => INDULGENT_CLUSTER.has(id));
+  if (action.cluster === 'clinical' && didIndulgent) {
+    return 'The tray is already out.';
+  }
+  if (action.cluster === 'indulgent' && didClinical) {
+    return 'You committed to the clinical script today.';
+  }
+  return null;
+}
+
 function applyVisitEffects(state, patient, action) {
-  const effects = action.effects || {};
-
-  if (effects.money) {
-    state.money += effects.money;
-    if (action.id === 'bill_consultation' || action.id === 'upsell_wellness_kit') {
-      state.weekConsultIncome = (state.weekConsultIncome || 0) + effects.money;
-    }
-  }
-
-  if (effects.reputation) {
-    const bonus = action.id === 'bill_consultation' ? consultReputationBonus(state) : 0;
-    state.reputation += effects.reputation + bonus;
-  }
-
-  if (effects.weight) {
-    patient.weight = Math.round((patient.weight + effects.weight) * 10) / 10;
-  }
+  const effects = { ...(action.effects || {}) };
 
   if (effects.weightRoll) {
     const gain = visitWeightBump(state, patient, effects.weightRoll);
-    patient.weight = Math.round((patient.weight + gain) * 10) / 10;
-    patient.indulgence = Math.min(100, patient.indulgence + gain * 0.5);
+    effects.weight = (effects.weight || 0) + gain;
+    effects.indulgence = (effects.indulgence || 0) + gain * 0.5;
+    delete effects.weightRoll;
   }
 
-  if (effects.trust) patient.trust = Math.round((patient.trust + effects.trust) * 100) / 100;
-  if (effects.openness) patient.openness = Math.min(100, patient.openness + effects.openness);
-  if (effects.indulgence) patient.indulgence = Math.min(100, patient.indulgence + effects.indulgence);
-  if (effects.appetite) patient.appetite = Math.round((patient.appetite + effects.appetite) * 100) / 100;
-  if (effects.weeklyMomentum) patient.weeklyMomentum += effects.weeklyMomentum;
+  const reputationBonus =
+    action.id === 'bill_consultation' ? consultReputationBonus(state) : 0;
 
-  if (effects.loyalty) bumpLoyalty(patient, effects.loyalty);
+  applyCharacterEffects(state, patient, effects, {
+    consultIncome: action.id === 'bill_consultation' || action.id === 'upsell_wellness_kit',
+    reputationBonus,
+    framingScale: getIndulgentHeatScale(patient, action),
+  });
+}
+
+function getIndulgentHeatScale(patient, action) {
+  if (!action.cluster || action.cluster !== 'indulgent') return 1;
+  const framing = getPatientFramingTier(patient);
+  if (framing === 'complicit') return 0.25;
+  if (framing === 'warming') return 0.6;
+  return 1;
+}
+
+export function recordChartEntry(state, patient, { honest, kind, excuse, weight }) {
+  const realWeight = weight ?? patient.weight;
+  if (honest) {
+    patient.chartedWeight = realWeight;
+  } else if (kind === 'hedge') {
+    const prev = patient.chartedWeight ?? patient.weight;
+    patient.chartedWeight = Math.min(realWeight, Math.round((prev + 0.5) * 10) / 10);
+  } else if (kind === 'fabrication') {
+    // chartedWeight unchanged
+  }
+  recordLedger(state, {
+    id: 'chart_entry',
+    characterId: patient.id,
+    data: {
+      weight: realWeight,
+      charted: patient.chartedWeight,
+      honest,
+      kind: kind || (honest ? 'true' : 'hedge'),
+      excuse: excuse || null,
+    },
+  });
+}
+
+export function applyWeighChartChoice(state, choiceId) {
+  const visit = getVisit(state);
+  if (!visit?.pendingWeigh) return { ok: false, message: 'No weigh-in in progress.' };
+  const patient = getPatientForVisit(state);
+  if (!patient) return { ok: false, message: 'Patient not found.' };
+
+  const realWeight = visit.pendingWeigh.weight;
+  const framing = getPatientFramingTier(patient);
+
+  if (choiceId === 'chart_fabricate' && framingRank(framing) < framingRank('clinical_plus')) {
+    return { ok: false, message: 'Fabrication requires more familiarity.' };
+  }
+
+  if (choiceId === 'chart_true') {
+    recordChartEntry(state, patient, { honest: true, weight: realWeight });
+    applyCharacterEffects(state, patient, { trust: 0.2 });
+  } else if (choiceId === 'chart_hedge') {
+    recordChartEntry(state, patient, { honest: false, kind: 'hedge', weight: realWeight });
+    applyCharacterEffects(state, patient, { coverRating: 2 });
+  } else if (choiceId === 'chart_fabricate') {
+    const excuse = FABRICATION_EXCUSES[state.week % FABRICATION_EXCUSES.length];
+    recordChartEntry(state, patient, {
+      honest: false,
+      kind: 'fabrication',
+      excuse,
+      weight: realWeight,
+    });
+    applyCharacterEffects(state, patient, { coverRating: 4, framingErosion: 2 });
+  } else {
+    return { ok: false, message: 'Unknown chart choice.' };
+  }
+
+  visit.pendingWeigh = null;
+  return finishWeighAction(state, visit, patient, visit.pendingWeighTone || null);
+}
+
+function framingRank(tier) {
+  const ranks = { clinical: 0, clinical_plus: 1, warming: 2, complicit: 3 };
+  return ranks[tier] ?? 0;
+}
+
+function finishWeighAction(state, visit, patient, toneId) {
+  const action = actionById(visit.pendingWeighAction || 'weigh_patient');
+  if (!action) return { ok: false, message: 'Weigh action missing.' };
+
+  visit.completedActions.push(action.id);
+  if (action.advancesPhase) visit.phase = nextPhase(visit.phase);
+
+  let narrative;
+  let reply;
+  if (toneId && actionSupportsTone(action.id)) {
+    const tier = tierFromAttitude(getAttitudeKey(patient));
+    ({ narrative, reply } = buildToneNarrative(patient, action.id, tier, toneId));
+  } else {
+    ({ narrative, reply } = visitDialogue(patient, action.id));
+  }
+
+  if (!visit.visitLog) visit.visitLog = [];
+  visit.visitLog.push({ label: action.label, narrative, reply, tone: toneId || null });
+  visit.pendingWeighAction = null;
+
+  const interrupt = checkVisitInterrupt(state, patient, action.id);
+  if (interrupt) {
+    visit.interrupt = { sceneId: interrupt.sceneId, triggerActionId: action.id };
+  }
+
+  addWeekNote(
+    { type: 'visit', title: `${action.label}: ${patient.name}`, text: narrative },
+    state,
+  );
+
+  return {
+    ok: true,
+    message: narrative,
+    phase: visit.phase,
+    interrupt: interrupt?.sceneId || null,
+  };
+}
+
+export function beginWeighRitual(state, toneId = null) {
+  const visit = getVisit(state);
+  if (!visit) return { ok: false, message: 'No active visit.' };
+  const patient = getPatientForVisit(state);
+  if (!patient) return { ok: false, message: 'Patient not found.' };
+
+  const actionId = hasCompletedAction(visit, 'weigh_patient') ? null : 'weigh_patient';
+  const altId = hasCompletedAction(visit, 'estimate_weight') ? null : 'estimate_weight';
+  const targetId = actionId || altId;
+  if (!targetId) return { ok: false, message: 'Weight already recorded.' };
+
+  const option = getVisitActions(state).find((item) => item.id === targetId);
+  if (!option || option.disabled) {
+    return { ok: false, message: option?.reason || 'Weigh-in unavailable.' };
+  }
+
+  const action = actionById(targetId);
+  if (action.apCost > 0 && !spendActionPoint(state)) {
+    return { ok: false, message: 'No action points remain.' };
+  }
+
+  applyVisitEffects(state, patient, action);
+  patient.weight = Math.round(patient.weight * 10) / 10;
+
+  visit.pendingWeigh = {
+    weight: patient.weight,
+    step: 'landing',
+    toneId,
+    reaction: getWeighRitualReaction(patient),
+  };
+  visit.pendingWeighAction = targetId;
+  visit.pendingWeighTone = toneId;
+
+  return {
+    ok: true,
+    weighRitual: true,
+    weight: patient.weight,
+    reaction: getWeighRitualReaction(patient),
+  };
 }
 
 function consumeInventory(state, action) {
@@ -384,23 +606,36 @@ export function getVisitActions(state) {
   return VISIT_ACTIONS.filter((action) => {
     if (action.id === 'weigh_patient' && mobilityRestricted) return false;
     if (action.id === 'estimate_weight' && !mobilityRestricted) return false;
-    return true;
+    const gate = getVisitActionGate(action.id, patient);
+    return gate.visible !== false;
   }).map((action) => {
-    const wrongPhase = VISIT_PHASES.indexOf(action.phase) > VISIT_PHASES.indexOf(visit.phase);
-    const alreadyDone = action.once && hasCompletedAction(visit, action.id);
-    const requirement = meetsActionRequirements(state, visit, action);
-    const needsAp = action.apCost > 0 && state.actionPoints < action.apCost;
+    const gate = getVisitActionGate(action.id, patient);
+    const display = {
+      ...action,
+      label: gate.label ?? action.label,
+      description: gate.description ?? action.description,
+      locked: gate.locked || false,
+      lockHint: gate.lockHint || '',
+    };
 
-    let disabled = wrongPhase || alreadyDone || !requirement.ok || needsAp;
-    let reason = '';
+    const wrongPhase = VISIT_PHASES.indexOf(display.phase) > VISIT_PHASES.indexOf(visit.phase);
+    const alreadyDone = display.once && hasCompletedAction(visit, display.id);
+    const requirement = meetsActionRequirements(state, visit, display);
+    const needsAp = display.apCost > 0 && state.actionPoints < display.apCost;
+    const clusterReason = visitClusterLock(visit, display);
 
-    if (wrongPhase) reason = `Available in ${action.phase}`;
+    let disabled = wrongPhase || alreadyDone || !requirement.ok || needsAp || display.locked || Boolean(clusterReason);
+    let reason = gate.disabledReason || '';
+
+    if (display.locked) reason = display.lockHint || 'Locked';
+    else if (clusterReason) reason = clusterReason;
+    else if (wrongPhase) reason = `Available in ${display.phase}`;
     else if (alreadyDone) reason = 'Already done this visit';
     else if (!requirement.ok) reason = requirement.reason;
     else if (needsAp) reason = 'No AP remaining';
 
     return {
-      ...action,
+      ...display,
       disabled,
       reason,
     };
@@ -459,6 +694,10 @@ export function performVisitAction(state, actionId, toneId = null) {
   const action = actionById(actionId);
   if (!action) return { ok: false, message: 'Unknown visit action.' };
 
+  if (actionId === 'weigh_patient' || actionId === 'estimate_weight') {
+    return beginWeighRitual(state, toneId);
+  }
+
   const option = getVisitActions(state).find((item) => item.id === actionId);
   if (!option || option.disabled) {
     return { ok: false, message: option?.reason || 'That action is unavailable.' };
@@ -478,6 +717,11 @@ export function performVisitAction(state, actionId, toneId = null) {
 
   visit.completedActions.push(action.id);
 
+  if (action.id === 'end_visit') {
+    const result = completeVisit(state);
+    return { ok: result.ok, message: result.message, visitComplete: true };
+  }
+
   if (action.advancesPhase) {
     visit.phase = nextPhase(visit.phase);
   }
@@ -492,7 +736,7 @@ export function performVisitAction(state, actionId, toneId = null) {
   }
 
   if (!narrative) {
-    narrative = `${action.label} with ${patient.name}.`;
+    narrative = `${option.label} with ${patient.name}.`;
   }
   let message = narrative;
   if (reply) message = `${narrative} "${reply}"`;
@@ -502,7 +746,7 @@ export function performVisitAction(state, actionId, toneId = null) {
   }
 
   if (!visit.visitLog) visit.visitLog = [];
-  visit.visitLog.push({ label: action.label, narrative, reply, tone: toneId || null });
+  visit.visitLog.push({ label: option.label, narrative, reply, tone: toneId || null });
 
   if (action.id === 'bill_consultation') {
     bumpStyle(state, styleFromInteraction('consult'));
@@ -537,7 +781,7 @@ export function performVisitAction(state, actionId, toneId = null) {
 export function canEndVisit(state) {
   const visit = getVisit(state);
   if (!visit || visit.phase !== 'checkout') return false;
-  return hasCompletedAction(visit, 'bill_consultation') && hasCompletedAction(visit, 'end_visit');
+  return hasCompletedAction(visit, 'bill_consultation');
 }
 
 export function completeVisit(state) {

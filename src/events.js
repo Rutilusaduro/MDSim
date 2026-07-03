@@ -45,6 +45,10 @@ import { ensureSceneState } from './sceneEngine/flags.js';
 import { setWeekInterrupt, getWeekInterrupt } from './weekScenes.js';
 import { SCENE_CATALOG } from './scenes/catalog.js';
 import { checkAuditGameOver } from './gameOver.js';
+import { chartGap, getPatientFramingTier } from './patientFraming.js';
+import { recordLedger, dishonestChartEntries, ledgerWhere } from './memoryLedger.js';
+import { getDominantStyle } from './clinicStyle.js';
+import { findCharacter } from './roster.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -114,10 +118,6 @@ export const interactionCatalog = {
     description: 'Offer a job. Trust high, appetite higher, body already spreading. She stays to keep growing for good.',
   },
 };
-
-export function findCharacter(state, id) {
-  return [...state.staff, ...state.patients].find((character) => character.id === id);
-}
 
 export function getInteractionOptions(state, character) {
   return Object.entries(interactionCatalog)
@@ -543,6 +543,15 @@ export function endWeek(state) {
         ...record,
         text: summarizeStageChange(character, oldStage, newStage),
       });
+      if (!state.pendingRungScenes) state.pendingRungScenes = [];
+      let rungId = null;
+      if (newStage >= 10) rungId = 'rung_immobility';
+      else if (newStage >= 7) rungId = 'rung_furniture_stage7';
+      else if (newStage === 5) rungId = 'rung_wardrobe_stage5';
+      else if (newStage >= 2 && newStage <= 3) rungId = 'rung_first_softness';
+      if (rungId) {
+        state.pendingRungScenes.push({ sceneId: rungId, characterId: character.id });
+      }
     }
 
     character.weeklyMomentum = 0;
@@ -557,6 +566,48 @@ export function endWeek(state) {
   fireEarlyGainEvents(state, rng);
 
   ensureSceneState(state);
+
+  if (state.pendingRungScenes?.length && !getWeekInterrupt(state)) {
+    const rung = state.pendingRungScenes.shift();
+    setWeekInterrupt(state, rung.sceneId, rung.characterId);
+    const sceneDef = SCENE_CATALOG[rung.sceneId];
+    addWeekNote(
+      {
+        type: 'scene',
+        title: `Threshold: ${sceneDef?.title || rung.sceneId}`,
+        text: 'A body crossed a line the chart will remember.',
+      },
+      state,
+    );
+  }
+
+  for (const patient of state.patients) {
+    const tier = getPatientFramingTier(patient);
+    const prev = patient.lastFramingTier || 'clinical';
+    if (prev !== 'warming' && tier === 'warming') {
+      const already = ledgerWhere(
+        state,
+        (row) => row.id === 'framing_crossed_warming' && row.characterId === patient.id,
+      ).length;
+      if (!already && !getWeekInterrupt(state)) {
+        recordLedger(state, { id: 'framing_crossed_warming', characterId: patient.id });
+        const sceneId = dishonestChartEntries(state, patient.id).length
+          ? 'warming_confession'
+          : 'warming_confession_honest';
+        setWeekInterrupt(state, sceneId, patient.id);
+        addWeekNote(
+          {
+            type: 'scene',
+            title: `Visit needed: ${patient.name}`,
+            text: 'She arrived early with her phone open to the patient portal.',
+          },
+          state,
+        );
+      }
+    }
+    patient.lastFramingTier = tier;
+  }
+
   if (!getWeekInterrupt(state)) {
     const roster = [...state.staff, ...state.patients];
     for (let i = roster.length - 1; i > 0; i -= 1) {
@@ -580,10 +631,42 @@ export function endWeek(state) {
     }
   }
 
-  if ((state.heat || 0) > 0) {
+  if ((state.heat || 0) > 0 || state.patients?.length) {
+    let gapHeat = 0;
+    for (const patient of state.patients) {
+      gapHeat += Math.min(6, chartGap(patient) / 8);
+    }
+    if (gapHeat > 0) {
+      state.heat = Math.min(100, (state.heat || 0) + Math.floor(gapHeat));
+    }
     state.coverRating = Math.max(0, (state.coverRating ?? 100) - Math.floor(state.heat / 5));
     state.heat = Math.max(0, state.heat - 8);
     checkAuditGameOver(state);
+  }
+
+  const appetiteSum = state.patients.reduce((sum, p) => sum + (p.appetite || 0), 0);
+  state.supplyCost = Math.round(95 + appetiteSum * 12);
+
+  const dominant = getDominantStyle(state);
+  if (dominant.scores?.softness >= 65 || dominant.axis === 'softness') {
+    const softness = state.clinicStyle?.softness ?? 0;
+    if (softness >= 65) {
+      for (const patient of state.patients) {
+        patient.framingErosion = Math.min(100, (patient.framingErosion || 0) + 1);
+      }
+    }
+  }
+
+  if (!state.supplyCostChapterFired && state.supplyCost > state.rent) {
+    state.supplyCostChapterFired = true;
+    addWeekNote(
+      {
+        type: 'chapter',
+        title: 'The lease is no longer the biggest thing you feed',
+        text: 'Supply costs crossed rent this week. The kitchen runs hotter than the ledger admits.',
+      },
+      state,
+    );
   }
 
   const relationshipBeat = fireRelationshipBeat(state, rng);
@@ -651,11 +734,32 @@ export function endWeek(state) {
   const mole = state.staff.find((s) => s.isMole && !s.moleRevealed);
   if (mole && state.week >= 6 && rng.chance(14)) {
     mole.moleRevealed = true;
+    recordLedger(state, { id: 'whisper', characterId: mole.id, data: { kind: 'mole_telegraph' } });
     addWeekNote(
       {
         type: 'mole',
         title: 'Annex eyes',
         text: `${mole.name} stepped into the supply closet on a long call. ThriveWell Annex knows your suite number. Feed her well or watch what she reports.`,
+      },
+      state,
+    );
+  }
+
+  const moleStaff = state.staff.find((s) => s.isMole && s.moleRevealed);
+  if (moleStaff && (moleStaff.moleLoyalty || 0) >= 40 && getStageIndex(moleStaff) >= 4) {
+    if (!ledgerWhere(state, (r) => r.id === 'mole_flip').length && !getWeekInterrupt(state)) {
+      setWeekInterrupt(state, 'mole_flip', moleStaff.id);
+      recordLedger(state, { id: 'mole_flip', characterId: moleStaff.id });
+    }
+  }
+
+  if (moleStaff && (moleStaff.moleLoyalty || 0) < 20 && (state.heat || 0) >= 35) {
+    state.heat = Math.min(100, state.heat + 5);
+    addWeekNote(
+      {
+        type: 'mole',
+        title: 'Annex whispers',
+        text: `${moleStaff.name} was seen near the Annex lot. Cover pressure rises.`,
       },
       state,
     );

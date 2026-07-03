@@ -1,6 +1,7 @@
 import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './clinic.js';
 import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSummary, weightStageNames } from './characters.js';
-import { endWeek, findCharacter, getInteractionOptions, performInteraction } from './events.js';
+import { endWeek, getInteractionOptions, performInteraction } from './events.js';
+import { findCharacter } from './roster.js';
 import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
 import { formatArcSceneNote } from './staffArcs/index.js';
@@ -47,12 +48,17 @@ import {
   getUnvisitedPatients,
   performVisitAction,
   resolveVisitInterrupt,
+  applyWeighChartChoice,
 } from './patientVisit.js';
 import { openPatientVisitFlow, renderPatientVisitModal } from './patientVisitUi.js';
 import { rosterMobilitySummary, getMobilityLabel } from './worldImpact.js';
 import { getRecruitmentPanel, hireCandidate } from './recruitment.js';
 import { getClinicTier } from './clinicProgression.js';
 import { PUBLIC_CLINIC_TAGLINE, getCoverLabel } from './patientFraming.js';
+import { getClinicTagline, getClinicAmbientLine } from './clinicMindset.js';
+import { renderChartGapSvg } from './gameOver.js';
+import { queueModal, showNextModal, clearModalQueue } from './ui/modalQueue.js';
+import { openConfirmModal, handleConfirmYes, handleConfirmNo } from './ui/confirmModal.js';
 import { getCharacterRouteLabel, getMindset, MINDSET_LABELS } from './mindset.js';
 import { isGameOver } from './gameOver.js';
 import { getWeekInterrupt, getWeekInterruptScene, resolveWeekInterrupt } from './weekScenes.js';
@@ -192,6 +198,8 @@ function renderTopNav(state) {
             <p class="text-xs text-stone-400">Action Points</p>
             <p class="text-lg font-bold text-pink-100">${state.actionPoints}/${state.actionPointsMax}</p>
           </div>
+          <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="save">Save</button>
+          <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="load">Load</button>
           <button class="gold-button rounded-2xl px-6 py-4 font-bold transition hover:scale-[1.02]" data-action="end-week">
             End Week
           </button>
@@ -342,7 +350,7 @@ function renderRecruitmentSection(state) {
     <section class="mb-8 rounded-[2rem] border border-emerald-300/15 bg-emerald-950/15 p-6">
       <p class="text-sm uppercase tracking-[0.28em] text-emerald-200/70">Staff recruitment</p>
       <h3 class="mt-1 text-2xl font-black text-stone-50">Build the roster</h3>
-      <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Your private goal is simpler: grow them. Patients should only hear medicine until they are hooked.</p>
+      <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Hire credentialed staff for intake, vitals, and charting. A full roster keeps the schedule moving.</p>
       ${candidateHtml || '<p class="mt-3 text-sm text-stone-400">No open roles this week. Grow reputation and advance the calendar to unlock hiring.</p>'}
       ${pipeline}
     </section>
@@ -419,6 +427,23 @@ function renderInteract(state) {
     ? state.patients.find((p) => p.id === state.activePatientVisit.patientId)
     : null;
   const mobility = rosterMobilitySummary(state);
+  const weekOneBanner =
+    state.week === 1 && !state.patients.length
+      ? `<div class="mt-4 rounded-2xl border border-amber-300/25 bg-amber-950/30 px-4 py-4 text-sm text-amber-100">
+          <strong>Week one setup.</strong> Your first patients arrive next week. Hire staff on Management, then spend AP on Interact when they arrive.
+          ${
+            state.gameSettings?.onboardingDismissed
+              ? ''
+              : `<ol class="mt-3 list-decimal space-y-1 pl-5 text-stone-200">
+            <li>Visit patients on Interact when they arrive.</li>
+            <li>Each visit: greet → chart → weigh → bill.</li>
+            <li>End Week when AP is spent.</li>
+          </ol>
+          <button class="mt-3 dark-button rounded-xl px-3 py-2 text-xs font-bold" data-action="dismiss-onboarding">Got it</button>`
+          }
+        </div>`
+      : '';
+  const ambient = getClinicAmbientLine(state);
   const mobilityBanner =
     mobility.outgrowing.length || mobility.immobile.length
       ? `<p class="mt-3 rounded-2xl border border-pink-300/20 bg-pink-950/25 px-4 py-3 text-sm text-pink-100"><strong>${mobility.outgrowing.length} outgrowing the furniture</strong>, ${mobility.immobile.length} too wide to walk, ${mobility.blob.length} sunk into bedbound mass.${
@@ -432,13 +457,15 @@ function renderInteract(state) {
       <div class="mb-5">
         <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient rounds</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Run the office</h2>
-        <p class="mt-2 max-w-3xl text-stone-300">To them this is a normal primary-care visit: vitals, labs, follow-ups. Your charting stays clinical while you steer each woman toward appetite. Public face: family medicine. Private work: pounds.</p>
+        <p class="mt-2 max-w-3xl text-stone-300">Run visits: vitals, chart review, prescriptions, follow-up. Deeper options unlock as patients return.</p>
+        <p class="mt-2 text-xs text-stone-500">${e(ambient)}</p>
         <p class="mt-2 text-sm text-stone-400">Minimum path: greet, chart, weigh, bill consult, end visit (around 4 AP). Staff hiring is on the Management tab.</p>
+        ${weekOneBanner}
         ${mobilityBanner}
         ${
           unvisited.length
-            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still hungry for a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
-            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">Every patient fed and seen this week.</p>`
+            ? `<p class="mt-3 rounded-2xl border border-red-300/20 bg-red-950/30 px-4 py-3 text-sm text-red-100"><strong>${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} still need a visit:</strong> ${unvisited.map((p) => e(p.name)).join(', ')}</p>`
+            : `<p class="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-950/20 px-4 py-3 text-sm text-emerald-100">All scheduled visits completed this week.</p>`
         }
         ${
           inProgress
@@ -449,15 +476,15 @@ function renderInteract(state) {
       </div>
       <div class="grid gap-6 2xl:grid-cols-2">
         <div>
-          <h3 class="mb-3 text-xl font-bold text-amber-100">Staff</h3>
-          <p class="mb-3 text-xs text-stone-400">Check-ins, catered breaks, appetite compounds. Open a profile to feed and grow them.</p>
+          <h3 class="mb-3 text-xl font-bold text-amber-100">Staff wing</h3>
+          <p class="mb-3 text-xs text-stone-400">Check-ins, catered breaks, compounds. Open a profile to feed and grow them.</p>
           <div class="grid gap-4 md:grid-cols-2">
             ${state.staff.map((member) => characterCard(member, 'standard', state)).join('')}
           </div>
         </div>
         <div>
-          <h3 class="mb-3 text-xl font-bold text-amber-100">Patients</h3>
-          <p class="mb-3 text-xs text-stone-400">Click to start or resume a feeding visit. Well-fed patients open a profile, ready to recruit once they have grown loyal.</p>
+          <h3 class="mb-3 text-xl font-bold text-amber-100">Exam floor</h3>
+          <p class="mb-3 text-xs text-stone-400">Click to start or resume an office visit.</p>
           <div class="grid gap-4 md:grid-cols-2">
             ${state.patients.map((patient) => characterCard(patient, 'standard', state)).join('')}
           </div>
@@ -924,11 +951,20 @@ function openCharacterModal(id, tab = null) {
     </div>
   `;
 
+  const chartBlock =
+    character.type === 'patient'
+      ? `<div class="mt-4 rounded-2xl border border-amber-100/10 bg-stone-950/40 p-4">
+          <p class="text-xs font-bold uppercase tracking-wide text-amber-200">Chart vs scale</p>
+          ${renderChartGapSvg(character, gameState)}
+        </div>`
+      : '';
+
   const profilePanel = `
     <div class="rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5">
       ${describeCharacter(character)}
     </div>
     ${statsBlock}
+    ${chartBlock}
     ${prefsBlock}
     <p class="rounded-2xl bg-emerald-300/10 p-3 text-xs leading-5 text-emerald-100">${e(character.consent)}</p>
   `;
@@ -1092,61 +1128,32 @@ function openGameOverModal(gameOver = gameState.gameOver) {
   `);
 }
 
-function openResolutionModal(resolution) {
-  const stageBlock =
-    resolution.stageChanges?.length > 0
-      ? `<div class="mt-4 space-y-4">${resolution.stageChanges
-          .map((c) => {
-            const char = findCharacter(gameState, c.id);
-            return `
-        <div class="stage-glow soft-card rounded-2xl p-3 text-sm">
-          <strong class="text-amber-100">${e(c.name)}</strong>
-          <span class="text-stone-400"> stage ${c.oldStage + 1} → ${c.newStage + 1}</span>
-          <p class="mt-1 text-stone-300">+${c.gain.toFixed(1)} lb this week</p>
-          ${char ? `<div class="mt-3">${renderSilhouetteCompare(char, c.oldStage, c.newStage)}</div>` : ''}
-        </div>`;
-          })
-          .join('')}</div>`
-      : '';
+function flushEndWeekModals(resolution) {
+  clearModalQueue();
+  queueModal(`<div class="resolution-html">${resolution.html}</div>`);
+  if (getPendingGroupScene(gameState)) {
+    const payload = getPendingGroupScene(gameState);
+    queueModal(`<h2 class="text-2xl font-black text-stone-50">Group scene</h2><p class="mt-4 text-stone-200">${e(payload.scene?.title || 'Staff moment')}</p>`);
+  }
+  if (resolution.ending) {
+    queueModal(`<h2 class="text-2xl font-black text-amber-100">${e(resolution.ending.title)}</h2><p class="mt-4 text-stone-200">${resolution.ending.text}</p>`);
+  }
+  if (resolution.gameOver) {
+    queueModal(`<h2 class="text-2xl font-black text-red-200">${e(resolution.gameOver.title)}</h2><p class="mt-4 text-stone-200">${e(resolution.gameOver.text)}</p>`);
+  } else if (resolution.weekInterrupt) {
+    queueModal(`<p class="text-stone-200">A weekly crisis needs resolution before you continue.</p>`);
+  }
+  showNextModal(openModal, closeModal);
+}
 
-  const achBlock =
-    resolution.newAchievements?.length > 0
-      ? `<div class="mt-4 rounded-2xl border border-amber-300/20 bg-amber-950/30 p-4">
-          <p class="text-sm font-bold text-amber-100">Achievements unlocked</p>
-          <ul class="mt-2 space-y-1 text-sm text-stone-200">
-            ${resolution.newAchievements.map((a) => `<li>${e(a.name)}: ${e(a.desc)}</li>`).join('')}
-          </ul>
-        </div>`
-      : '';
-
-  openModal(`
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">End of week resolution</p>
-        <h2 class="mt-1 text-3xl font-black text-stone-50">Week ${resolution.week} closes</h2>
-      </div>
-      <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="close-modal">Close</button>
-    </div>
-    ${achBlock}
-    ${stageBlock}
-    <div class="rich-copy mt-6 rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5 text-base">
-      ${resolution.html}
-    </div>
-    <div class="mt-6 grid gap-4 md:grid-cols-3">
-      <div class="soft-card rounded-3xl p-4">
-        <p class="text-xs text-stone-400">Staff gain</p>
-        <p class="text-2xl font-black text-pink-100">${resolution.staffGains.reduce((sum, item) => sum + item.gain, 0).toFixed(1)} lb</p>
-      </div>
-      <div class="soft-card rounded-3xl p-4">
-        <p class="text-xs text-stone-400">Patient gain</p>
-        <p class="text-2xl font-black text-pink-100">${resolution.patientGains.reduce((sum, item) => sum + item.gain, 0).toFixed(1)} lb</p>
-      </div>
-      <div class="soft-card rounded-3xl p-4">
-        <p class="text-xs text-stone-400">Stage changes</p>
-        <p class="text-2xl font-black text-amber-100">${resolution.stageChanges.length}</p>
-      </div>
-    </div>
-  `);
+function runEndWeekFlow() {
+  const resolution = endWeek(gameState);
+  playWeekEnd();
+  if (resolution.stageChanges?.length) playStageUp();
+  render();
+  gameState.pendingStageHighlights = [];
+  flushEndWeekModals(resolution);
+  saveGame(gameState);
 }
 
 function handleBuy(id) {
@@ -1295,7 +1302,16 @@ function bindEvents() {
       }
       saveGame(gameState);
       render();
-      refreshPatientVisitModal();
+      if (result.weighRitual || result.visitComplete) {
+        if (result.visitComplete) {
+          showToast(result.message, 'success');
+          closeModal();
+        } else {
+          refreshPatientVisitModal();
+        }
+      } else {
+        refreshPatientVisitModal();
+      }
       if (gameState.gameOver) openGameOverModal();
     }
     if (action === 'visit-tone-action') {
@@ -1308,7 +1324,14 @@ function bindEvents() {
       }
       saveGame(gameState);
       render();
-      refreshPatientVisitModal();
+      if (result.visitComplete) {
+        showToast(result.message, 'success');
+        closeModal();
+      } else if (result.weighRitual) {
+        refreshPatientVisitModal();
+      } else {
+        refreshPatientVisitModal();
+      }
       if (gameState.gameOver) openGameOverModal();
     }
     if (action === 'visit-scene-choice') {
@@ -1383,24 +1406,56 @@ function bindEvents() {
       if (gameState.activePatientVisit) {
         warnings.push('An in-progress visit will be abandoned.');
       }
-      if (warnings.length && !window.confirm(`${warnings.join(' ')}\n\nEnd the week anyway?`)) return;
-      const resolution = endWeek(gameState);
-      playWeekEnd();
-      if (resolution.stageChanges?.length) playStageUp();
+      const apNudge =
+        gameState.actionPoints > 0
+          ? `<p class="mt-2 text-sm text-amber-200">${gameState.actionPoints} action point${gameState.actionPoints === 1 ? '' : 's'} unspent.</p>`
+          : '';
+      const confirmMsg = `${warnings.join(' ')}${apNudge}<br><br>End the week anyway?`;
+      const proceed = () => runEndWeekFlow();
+      if (warnings.length || gameState.actionPoints > 0) {
+        openConfirmModal(confirmMsg, proceed, openModal);
+        return;
+      }
+      runEndWeekFlow();
+    }
+    if (action === 'weigh-chart') {
+      const result = applyWeighChartChoice(gameState, target.dataset.choice);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      if (result.visitComplete) {
+        showToast(result.message, 'success');
+        closeModal();
+      } else {
+        saveGame(gameState);
+        refreshPatientVisitModal();
+      }
       render();
-      openResolutionModal(resolution);
-      gameState.pendingStageHighlights = [];
-      if (getPendingGroupScene(gameState)) {
-        setTimeout(() => openGroupSceneModal(getPendingGroupScene(gameState)), 400);
+    }
+    if (action === 'dismiss-onboarding') {
+      if (!gameState.gameSettings) gameState.gameSettings = {};
+      gameState.gameSettings.onboardingDismissed = true;
+      saveGame(gameState);
+      render();
+    }
+    if (action === 'confirm-yes') {
+      handleConfirmYes();
+      closeModal();
+      render();
+    }
+    if (action === 'confirm-no') {
+      handleConfirmNo();
+      closeModal();
+    }
+    if (action === 'advance-modal-queue') {
+      closeModal();
+      if (getWeekInterrupt(gameState) && !gameState.gameOver) {
+        openWeekSceneModal();
+      } else if (getPendingGroupScene(gameState)) {
+        openGroupSceneModal(getPendingGroupScene(gameState));
       }
-      if (resolution.ending) {
-        setTimeout(() => openEndingModal(resolution.ending), 800);
-      }
-      if (resolution.gameOver) {
-        setTimeout(() => openGameOverModal(resolution.gameOver), 500);
-      } else if (resolution.weekInterrupt) {
-        setTimeout(() => openWeekSceneModal(), 600);
-      }
+      showNextModal(openModal, closeModal);
     }
     if (action === 'pick-challenge') {
       const result = pickChallengeWeek(gameState, target.dataset.challenge);
@@ -1494,13 +1549,13 @@ function bindEvents() {
       }
     }
     if (action === 'new-game') {
-      if (window.confirm('Start a fresh clinic and overwrite the current autosave?')) {
+      openConfirmModal('Start a fresh clinic and overwrite the current autosave?', () => {
         resetGame();
         activeTab = 'management';
         closeModal();
         render();
         showToast('New clinic generated.');
-      }
+      }, openModal);
     }
     if (action === 'rename-doctor') {
       const next = window.prompt('Doctor name', gameState.doctorName);
@@ -1561,6 +1616,9 @@ export function initUI() {
   }
   initAudio(gameState);
   bindEvents();
+  if (gameState.week === 1 && !gameState.patients.length) {
+    activeTab = 'interact';
+  }
   render();
   if (gameState.activePatientVisit) {
     activeTab = 'interact';

@@ -7,7 +7,7 @@ import { SCENE_CATALOG } from '../scenes/catalog.js';
 export { gainFromBaseline };
 
 export function checkVisitInterrupt(state, patient, actionId) {
-  if (actionId === 'weigh_patient' || actionId === 'note_symptoms') {
+  if (actionId === 'weigh_patient' || actionId === 'review_symptoms') {
     const gain = gainFromBaseline(patient);
     if (gain >= 14 && gain <= 45 && !sceneResolved(state, patient, 'exam_button_pop')) {
       return { sceneId: 'exam_button_pop', trigger: actionId };

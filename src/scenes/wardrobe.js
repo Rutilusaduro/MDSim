@@ -4,6 +4,7 @@ export const EXAM_BUTTON_POP = {
   id: 'exam_button_pop',
   title: 'Button Pop',
   scope: 'visit',
+  heatBand: [0, 45],
   opening: (ctx) =>
     `Mid-exam, a button on ${ctx.firstName}'s blouse pings free, rolls under the scale, and spins. She freezes. Color rises in her cheeks. The stethoscope is still cold against her skin.`,
   choices: [
@@ -31,7 +32,7 @@ export const EXAM_BUTTON_POP = {
       label: '"Sounds like you are outgrowing the wardrobe"',
       hint: '+openness · −cover',
       apCost: 0,
-      setsFlags: ['patient_button_praised'],
+      setsFlags: ['patient_button_praised', 'global:global_wardrobe_celebrated'],
       effects: { openness: 4, indulgence: 2, coverRating: -6, heat: 5, framingErosion: 18, slimMindset: false },
       outcome: (ctx) =>
         `${ctx.firstName} laughs, surprised, then does not stop you. "Maybe," she says. Pride sits plain on her face. The exam continues with one less button and one more appetite.`,
@@ -52,6 +53,7 @@ export const EARLY_JEANS_TIGHT = {
   id: 'early_jeans_tight',
   title: 'Jeans Too Tight',
   scope: 'weekly',
+  heatBand: [0, 30],
   trigger: { minGain: 6, maxGain: 22, minStage: 0 },
   opening: (ctx) =>
     `${ctx.firstName} tugged at her waistband after lunch. The button held by a thread. She blamed the dryer. The seam complained anyway.`,
@@ -71,6 +73,7 @@ export const EARLY_JEANS_TIGHT = {
       hint: 'Cruel honesty · +openness',
       apCost: 0,
       effects: { openness: 3, indulgence: 1, coverRating: -3, heat: 3, slimMindset: false },
+      setsFlags: ['global:global_jeans_admitted'],
       outcome: (ctx) =>
         `${ctx.firstName} flushes. She looks down. "Maybe," she whispers. She does not zip them up all the way. She takes the pastry anyway.`,
     },

@@ -5,6 +5,7 @@ import {
   getPatientAppearanceSummary,
 } from './patientAppearance.js';
 import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientHook } from './patientDialogue.js';
+import { getClinicalPatientLine, shouldUseClinicalPatientVoice } from './patientClinicalVoice.js';
 import { staffArchetypeLines } from './staffDialogue.js';
 import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
 
@@ -620,6 +621,8 @@ export function createPatient(rng, options = {}) {
     ? rng.int(profile.baseRange[0], thinCeiling)
     : rng.int(profile.baseRange[0], profile.baseRange[1]);
 
+  const weight = baselineWeight + rng.int(0, clinicalStart ? 3 : 6);
+
   return {
     id: makeId('patient', rng),
     type: 'patient',
@@ -639,7 +642,8 @@ export function createPatient(rng, options = {}) {
     bodyType,
     archetype,
     baselineWeight,
-    weight: baselineWeight + rng.int(0, clinicalStart ? 3 : 6),
+    weight,
+    chartedWeight: weight,
     appetite: Math.round((3 + rng.int(0, 3) + archetypes[archetype].appetiteMod) * 10) / 10,
     trust: Math.round((2 + rng.int(0, 3) + archetypes[archetype].trustMod) * 10) / 10,
     indulgence: rng.int(0, clinicalStart ? 2 : 3),
@@ -765,6 +769,9 @@ export function isEarlyPatientVoice(character) {
 export function getCharacterDialogue(character) {
   const attitude = getAttitudeKey(character);
   if (character.type === 'patient') {
+    if (shouldUseClinicalPatientVoice(character)) {
+      return getClinicalPatientLine(character);
+    }
     const patientLines =
       patientArchetypeLines[character.archetype] || patientArchetypeLines.nurturer;
     return patientLines[attitude];
