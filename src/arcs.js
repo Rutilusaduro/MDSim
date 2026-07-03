@@ -356,6 +356,7 @@ export function advanceArc(character, state, choiceId) {
     choice,
     opening: scene.opening,
     text: choice.outcome,
+    epilogue: scene.epilogue || '',
     message: choice.outcome,
   };
 }

@@ -1,4 +1,4 @@
-import { createTinyClinicStaff, defaultPreferences } from './characters.js';
+import { createTinyClinicStaff, defaultPreferences, createPatient } from './characters.js';
 import { shopItems } from './clinic.js';
 import { defaultRoomLayout } from './rooms.js';
 import { defaultRivalState } from './rival.js';
@@ -56,7 +56,7 @@ function defaultStats() {
 export function createNewGame(options = {}) {
   const rng = createRng(options.seed ?? Date.now());
   const staff = createTinyClinicStaff(rng);
-  const patients = [];
+  const patients = [createPatient(rng, { week: 1, clinicalStart: true })];
 
   const game = {
     version: GAME_VERSION,

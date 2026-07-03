@@ -428,9 +428,9 @@ function renderInteract(state) {
     : null;
   const mobility = rosterMobilitySummary(state);
   const weekOneBanner =
-    state.week === 1 && !state.patients.length
+    state.week === 1
       ? `<div class="mt-4 rounded-2xl border border-amber-300/25 bg-amber-950/30 px-4 py-4 text-sm text-amber-100">
-          <strong>Week one setup.</strong> Your first patients arrive next week. Hire staff on Management, then spend AP on Interact when they arrive.
+          <strong>Week one.</strong> Your first patient is on the schedule. Run her visit on Interact, then end the week when you are ready.
           ${
             state.gameSettings?.onboardingDismissed
               ? ''
@@ -887,8 +887,8 @@ function handleArcChoice(characterId, choiceId) {
 
   saveGame(gameState);
   render();
-  const noteText = formatArcSceneNote(result.opening, result.text);
-  openDialogueModal(noteText, `${result.beat.title}: ${character.name}`, () => {
+  const closing = [result.text, result.epilogue].filter(Boolean).join('\n\n');
+  openDialogueModal(closing, `After: ${result.beat.title}`, () => {
     openCharacterModal(characterId, 'profile');
   });
 }
@@ -1311,6 +1311,10 @@ function bindEvents() {
         }
       } else {
         refreshPatientVisitModal();
+      }
+      if (result.phase) {
+        const phaseLabels = { greeting: 'Arrival', intake: 'Intake', exam: 'Exam', services: 'Services', checkout: 'Checkout' };
+        showToast(`Now in ${phaseLabels[result.phase] || result.phase} phase.`, 'success');
       }
       if (gameState.gameOver) openGameOverModal();
     }
