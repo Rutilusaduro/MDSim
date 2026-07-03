@@ -4,6 +4,7 @@ export const WORLD_DOORWAY_WEDGE = {
   id: 'world_doorway_wedge',
   title: 'Doorway Wedge',
   scope: 'visit',
+  heatBand: [0, 65],
   opening: (ctx) => {
     const { character, firstName } = ctx;
     if (ctx.mindset === 'slim' || ctx.mindset === 'denial') {
@@ -70,6 +71,7 @@ export const WORLD_DOORWAY_ESCALATED = {
   id: 'world_doorway_escalated',
   title: 'Doorway Crisis',
   scope: 'weekly',
+  heatBand: [10, 100],
   trigger: { minStage: 4 },
   opening: (ctx) =>
     `${ctx.firstName} is stuck again, louder this time. The frame splinters. A patient in the lobby watches. You need a real answer.`,
