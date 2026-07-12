@@ -2,7 +2,7 @@
 
 **Scope:** Every change required to make the game 10x larger and better, enumerated as atomic steps an implementer (human or agent) can execute in order, commit by commit.
 **Companion doc:** `docs/QUALITY_10X_PLAN.md` is the strategy (why). This is the execution order (what, exactly, in which file). Where the two disagree, this doc wins because it is newer and more specific.
-**Ground truth:** Every count, line number, and function name below was measured against the repo at the commit this doc landed. If a referenced line has drifted, search for the symbol, not the number.
+**Ground truth:** Every count, line number, and function name below was measured against source at the commit this doc landed, then re-verified on a second pass; where a README disagreed with the code, the code won. If a referenced line has drifted by the time you read this, search for the symbol, not the number — and if a number here contradicts the source, the source wins and this doc takes a patch commit. A plan only deserves the word *bulletproof* if it names the caliber: every target in Part 1 traces to a batch budget in Part 5, and the budgets sum.
 
 ---
 
@@ -23,11 +23,11 @@ Counted from source, not from READMEs:
 | Category | Today (measured) | Target | Multiplier | Built in |
 |---|---|---|---|---|
 | Patient archetypes with line sets (`patientDialogue.js`) | 17 | 17 (deeper, not wider) | journeys ×4 | D1–D4 |
-| Interactive scenes (`scenes/catalog.js` entries) | 16 | ~120 | 7.5x | D2–D4, D6, D8, D11 |
-| Weekly events (`weeklyContent.js` 24 + `v3WeeklyContent.js` ~21) | ~45 | ~140 | 3x | D5 |
-| Seasonal week modifiers | 2 | 10 | 5x | D5 |
+| Interactive scenes (`scenes/catalog.js` entries) | 16 | ~110 | ~7x | C8, D2–D4, D7, D8, D11 |
+| Weekly events (`WEEKLY_EVENTS` 10 + `V3_WEEKLY_EVENTS` 15) | 25 | ~105 | ~4x | D5 |
+| Seasonal week modifiers (`SEASONAL_WEEKS`) | 2 | 10 | 5x | D5 |
 | Group scenes (modal, branching) | 7 | 24 | 3.4x | D6 |
-| Named staff arc beats (`arcs.js`: 26 beats / 6 tracks) | 26 | ~66 + 5 signature scenes | 2.5x | D7 |
+| Named staff arc beats (`arcs.js`: 26 beats across 5 tracks) | 26 | 46 named + 9 guest + 5 signature scenes | ~2.3x | D7 |
 | Confession scenes | 4 | 22 | 5.5x | D2 |
 | Rung/threshold ceremonies | 4 | ~30 | 7.5x | D4 |
 | Departure letters / shadow-life content | 0 | ~40 | new | D8 |
@@ -37,18 +37,18 @@ Counted from source, not from READMEs:
 | Wardrobe chain scenes | 2 | 20 | 10x | D11 |
 | Achievements / shop items / challenge weeks | 23 / 12 / 3 | 60 / 28 / 9 | ~2.5x | D12 |
 | Loyalty arc templates | 1 (×3 beats) | 6 family templates (×3–5 beats) | 6x | D12 |
-| Long-form narrative strings (≥60 chars, whole `src/`) | ~2,250 | ~9,000 | 4x corpus | all D |
+| Long-form narrative strings (≥60 chars, whole `src/`) | ~2,250 | ~6,200 | ~2.75x corpus | all D (budgets sum in Part 5) |
 | **Distinct lines a player actually sees in a 30-week run** | **~¼ of corpus, fixed per character** | **≥10x today's experienced variety** | **10x** | A2–A4 + D |
 | Audio | 4 oscillator beeps | ~14 recorded samples + room tone | — | B12–B13 |
 | Tests | 0 | ~40 assertions + 4-policy sim | new | E |
 
-The honest math on "10x larger": the corpus grows ~4x, but experienced content grows far more, because today a character says the *same line forever* for a given action (char-sum picking, see A3) and whole subsystems (tones × tiers, refusals, letters, epilogues) are unreachable or empty. 10x is measured at the player, by the census tool (E6), not at `wc -l`.
+The honest math on "10x larger": the corpus grows just under 3x, and that is enough, because size was never the real deficit — reachability was. Today a character says the *same line forever* for a given action (char-sum picking, see A3), and whole subsystems — tones × tiers, refusals, letters, epilogues — are unreachable or simply empty. Multiply a not-quite-3x corpus by a selection engine that actually rotates it (A2–A4) and by contexts that finally exist (D3, D8, D9), and the content a player *meets* grows an order of magnitude. That is why the headline gate in Part 9 is measured at the player, by the census tool (E6), not at `wc -l`. A bigger number here would be easy to promise and impossible to audit; these numbers sum.
 
 ---
 
 ## Part 2 — WS-A: Foundation, correctness, and the variety engine
 
-Everything here is prerequisite plumbing. No visuals, no new content.
+Everything here is prerequisite plumbing: no visuals, no new content. This is the workstream that decides whether the other five stand on rock or on sand.
 
 ### A1 — Save format v7
 
@@ -58,6 +58,7 @@ Everything here is prerequisite plumbing. No visuals, no new content.
 2. Add to `createNewGame()`: `seenLines: {}`, `history: []`, `difficulty: 'attending'`, `pendingLetters: []`, `coverOps: { activeBuffs: [] }`, `unseenWeeksById: {}` (or per-patient field, see C2).
 3. In `normaliseState()`: default each new field (`raw.seenLines || {}`, etc.).
 4. In `saveGame()`/`loadGame()`: add `-v6` to the legacy cleanup/fallback chains.
+5. Export `normaliseState` (it is currently module-private at `state.js:224`) — E2's round-trip suite needs to call it directly.
 **Accept:** a v6 save in localStorage loads, plays a week, saves as v7; a fresh game has all new fields.
 
 ### A2 — `proseSelect.js`, the seen-line ledger
@@ -100,8 +101,8 @@ Some char-sum picks are *correct* as stable traits (a patient's standing chart r
 
 ### A6 — Restore seeded-RNG discipline in event effects
 
-Today ~13 weekly-event `effect` bodies call `Math.random()`, which breaks seed-stable runs (bad for testing, replays, and the shared-seed culture the rest of the code maintains).
-**Files:** `src/weeklyContent.js` (lines ~15, 28, 80, 116, 129 and the rest), `src/v3WeeklyContent.js` (~10, 81, 168), `src/events.js:523`
+Today eight weekly-event `effect` bodies call `Math.random()` (five in `weeklyContent.js`, three in `v3WeeklyContent.js`), and two id generators in `state.js` do the same — ten sites that break seed-stable runs (bad for testing, replays, and the shared-seed discipline the rest of the code maintains).
+**Files:** `src/weeklyContent.js` (lines ~15, 28, 80, 116, 129), `src/v3WeeklyContent.js` (~10, 81, 168), `src/events.js:523`
 **Do:**
 1. Change the event contract to `effect(state, rng)`; update `endWeek` to call `weeklyEvent.effect(state, rng)`.
 2. Replace every `Math.random()` in effects with `rng.next()` / `rng.chance(...)`.
@@ -114,10 +115,10 @@ Today ~13 weekly-event `effect` bodies call `Math.random()`, which breaks seed-s
 `events.js:715`: `shouldLeave = visits > 0 && rng.chance(18 + patient.visits * 5)` — the more a patient visits, the *more* likely she quits. This is backwards for a game about regulars.
 **Files:** `src/events.js`
 **Do:**
-1. New formula: baseline 20%, minus loyalty and framing: `chance(clamp(22 - (patient.loyalty||0) * 6 - trustBonus - framingBonus, 3, 30))` where `framingBonus` = 0/4/8/12 for clinical/plus/warming/complicit.
+1. New formula: baseline 22%, minus loyalty and framing: `chance(clamp(22 - (patient.loyalty||0) * 6 - trustBonus - framingBonus, 3, 30))` where `framingBonus` = 0/4/8/12 for clinical/plus/warming/complicit.
 2. On departure: `recordLedger(state, { id: 'patient_departed', characterId: patient.id, data: { week, stage: getStageIndex(patient), mindset: getMindset(patient), tier: getPatientFramingTier(patient), exitWeight: patient.weight } })` — D8 (letters, returns) reads this.
 3. Complicit patients never leave silently: queue a one-line goodbye note into `state.pendingLetters`.
-**Accept:** sim (E3): median tenure of complicit patients ≥ 3x that of clinical patients; departures all have ledger rows.
+**Accept:** sim assertion (C6 `--assert`): median tenure of complicit patients ≥ 3x that of clinical patients; departures all have ledger rows.
 
 ### A8 — Deduplicate framing rank
 
@@ -132,14 +133,14 @@ Pure mechanical extraction — no behavior change — so WS-B can work surface-b
 **Do:** extract in this order, one sub-commit each:
 1. `src/ui/dom.js`: `e()` escaper, `app()`, `modalRoot()`, `openModal/closeModal`, toast.
 2. `src/ui/components.js`: `stageMeter`, stat chips, shared card fragments.
-3. `src/ui/tabs/management.js`, `interact.js`, `floorplan.js`, `relationships.js`, `campaign.js`, `achievements.js` (matching the `activeTab` values measured in ui.js).
+3. `src/ui/tabs/management.js`, `interact.js`, `floorplan.js`, `relationships.js`, `campaign.js`, `achievements.js`, `log.js` (the seven `activeTab` values; the log tab renders via `renderLog` at `ui.js:694`).
 4. `src/ui/characterModal.js`, `src/ui/resolutionModal.js`, `src/ui/header.js`.
 5. `ui.js` keeps: `activeTab` state, `render()` orchestration, event delegation, `initUI()`. Target ≤250 lines.
 **Accept:** `npm run build` green after each sub-commit; click-through of every tab and modal unchanged.
 
-### A10 — Bundle split for a 4x corpus
+### A10 — Bundle split for a growing corpus
 
-Build already warns >500 kB single chunk; a 4x corpus makes it worse.
+Build already warns >500 kB single chunk; a corpus headed for ~2.75x makes it worse.
 **Files:** `vite.config.js`
 **Do:** configure manual chunks: `content` (everything under `src/content/` once D0 lands, plus `patientDialogue.js`, `bodyProse.js`, `patientAppearance.js`, dialogue modules), `engine` (state/events/visit), `ui`. If rolldown options differ, use `build.rolldownOptions.output.codeSplitting` per the build warning text.
 **Accept:** initial JS request < 250 kB gzipped; content chunk lazy or parallel; game still boots on Pages (`base: '/MDSim/'` untouched).
@@ -166,7 +167,7 @@ Build already warns >500 kB single chunk; a 4x corpus makes it worse.
 
 ## Part 3 — WS-B: Presentation rebuild (the de-AI face)
 
-Design direction (from QUALITY_10X_PLAN §4): **the chart, not the nightclub.** Paper, ink, manila, one accent. Serif prose, tabular numbers. Requires A9.
+Design direction (from QUALITY_10X_PLAN §4): **the chart, not the nightclub.** Paper, ink, manila, one accent; serif for the story, tabular mono for the numbers. A clinic whose paperwork slowly stops being honest already owns a complete visual language — these sixteen steps make the interface speak it. Requires A9.
 
 ### B1 — Design tokens
 
@@ -239,7 +240,7 @@ Keep the dark `--night` shell as the app frame; chart/visit/scene surfaces go pa
 ### B9 — Resolution as the week's day sheet
 
 **Files:** `src/ui/resolutionModal.js`, `src/events.js` (`buildResolutionHtml`)
-**Do:** restructure `buildResolutionHtml` output into a paper day sheet: date line ("Week 12, Friday close"), narrative summary paragraph first (`.prose-page`), then ruled ledger lines (revenue/bills/supply) in `--font-chart`, stage changes as chart flags, achievements as a stamped footer row. The "supply beats rent" chapter beat (`supplyCostChapterFired`) renders as a underlined ledger anomaly, not a toast.
+**Do:** restructure `buildResolutionHtml` output into a paper day sheet: date line ("Week 12, Friday close"), narrative summary paragraph first (`.prose-page`), then ruled ledger lines (revenue/bills/supply) in `--font-chart`, stage changes as chart flags, achievements as a stamped footer row. The "supply beats rent" chapter beat (`supplyCostChapterFired`) renders as an underlined ledger anomaly, not a toast.
 **Accept:** the week-end read order is story → numbers → flags; export (`copyWeekSummary`) unchanged.
 
 ### B10 — Toast retirement
@@ -290,6 +291,8 @@ Keep the dark `--night` shell as the app frame; chart/visit/scene surfaces go pa
 ---
 
 ## Part 4 — WS-C: The game layer (make the decisions hurt)
+
+The fiction systems are the best-built thing in this codebase; the *game* under them is the softest. Money rarely threatens, action points spend down instead of getting planned, and heat — the central dramatic stat — accumulates without ever being confronted. These eight steps give the player something the prose already deserves: weeks that must be triaged, risks that can be worked, and losses that were visible coming.
 
 ### C1 — The day sheet (week planning surface)
 
@@ -352,7 +355,7 @@ NG+ mutators (V5 draft) fold in as toggles on this screen. All knobs read from o
 ### C7 — AP economy pass (sim-tuned)
 
 **Files:** `src/patientVisit.js`, `src/state.js`
-**Do:** current shape: 7 AP/week; a full visit checklist costs ~8+ AP, so completionism is impossible but the game never says so. Changes:
+**Do:** current shape, measured against `VISIT_ACTIONS`: the minimum billable visit costs 4 AP (`say_hi` 1 + one intake gate action 1 + `weigh_patient` 1 + `bill_consultation` 1; `schedule_followup` and `end_visit` are free), a deep visit runs 8–10, and the week holds 7. So the real budget is one deep visit *or* one standard plus one skeleton — a genuinely interesting constraint that the game currently neither states nor designs around. Changes:
 1. Visits are meant to be *partial*: surface "visit depth" — completing checkout with ≤5 AP spent grants +1 AP back ("efficient clinic day"), making breadth-vs-depth a real choice.
 2. `getVisitActions` marks the mutually exclusive clinical/indulgent clusters visually (data already in `CLINICAL_CLUSTER`/`INDULGENT_CLUSTER`); picking from one cluster locks the other for that visit (the betrayal decision from the Fable memo), with the lock shown, not silent.
 3. Tune AP max per difficulty via `DIFFICULTY_TABLE` after C6 curves are read.
@@ -368,6 +371,8 @@ NG+ mutators (V5 draft) fold in as toggles on this screen. All knobs read from o
 
 ## Part 5 — WS-D: Content scale-out to 10x
 
+Scale is where generated games go to die: ten times the content authored the same way is ten times the grid. Every batch below therefore carries a string budget — they sum to ~3,950 new long-form strings, which added to today's ~2,250 is where Part 1's ~6,200 corpus figure comes from — and every batch passes the same gates before it counts.
+
 **Standing gates for every D-step:** voice cards exist first (D0b); every scene declares `heatBand` and chains-or-cites (existing `lint:scenes`); every batch ≥20% off-template; census (E6) reruns after each batch and its report is attached to the PR; `gameSettings.heatCap` is respected — content above the player's cap must have a warm-band variant or not fire.
 
 ### D0a — Content registry and pack layout
@@ -376,7 +381,7 @@ NG+ mutators (V5 draft) fold in as toggles on this screen. All knobs read from o
 **Do:**
 1. Layout: `src/content/{scenes,events,weighIn,confessions,letters,testimony,groupScenes,epilogues}/…` — one module per family or batch, each exporting plain arrays/objects.
 2. `src/content/registry.js` merges packs into the existing consumers: `SCENE_CATALOG` spread stays the single scene source; `WEEKLY_EVENTS` gains `…PACK_EVENTS`; a dev-only `validateContent()` asserts unique ids, `heatBand` presence, effect signature `(state, rng)`, and pool keys matching `proseSelect` conventions. Run it in `initUI` when `isDebugMode()`.
-**Accept:** existing 16 scenes and ~45 events flow through the registry unchanged; `validateContent` passes; lint:scenes still green.
+**Accept:** the existing 16 scenes and every existing event pool (25 weekly, 10 wardrobe, 8 relationship beats, 2 seasonal, 8 early-game) flow through the registry unchanged; `validateContent` passes; lint:scenes still green.
 
 ### D0b — Voice cards
 
@@ -391,16 +396,18 @@ Archetype families (used by D2–D4, D8, D12):
 - **service:** foodTruckOwner, sleepClinicDefector, dreamer
 **Accept:** blind test — given 3 unlabeled lines per role, a reader matches ≥80% to cards.
 
-### D1 — The weigh-in ritual pack (~350 strings)
+### D1 — The weigh-in ritual pack
 
 **Files:** `src/content/weighIn/<family>.js`, `src/patientVisitUi.js` (B7 consumes)
 **Do:** per family × framing tier: dial-settle line, number-landing line, her reaction, and a chart-choice aside for hedge/fabricate ("She watches you write *fluid retention* and says nothing"). Full bespoke sets for the six families; the core six archetypes (nurturer, perfectionist, hedonist, scholar, rebel, dreamer) additionally get archetype-specific overrides (asymmetry budget). Pool keys: `weigh.<family>.<tier>.<slot>`.
+**Budget:** ~350 strings.
 **Accept:** census: no weigh-in line repeats within 6 consecutive weigh-ins of one patient; read-aloud pass on the core six.
 
 ### D2 — The confession matrix (4 → 22 scenes)
 
 **Files:** `src/content/confessions/<family>.js`, registry
 **Do:** per family: `warming_confession_<family>` (lied path, citing real `chart_entry` rows via the existing citation-slot pattern in `scenes/confession.js`), `warming_confession_honest_<family>`, and `complicit_crossing_<family>` (the second ceremony: she stops asking and starts telling). Existing 4 generic confessions become fallbacks. Selection in `endWeek`'s framing-crossing block keys on family.
+**Budget:** ~500 strings (ceremonies run long; that is the point of them).
 **Accept:** confession sweep test (E5) passes per family: 20 randomized lie-histories + zero-lie path, 20/20 grammatical and state-true; read-aloud: each family's confession distinguishable with names redacted.
 
 ### D3 — Refusals and her-led beats (15 scenes)
@@ -410,21 +417,24 @@ Archetype families (used by D2–D4, D8, D12):
 1. Six refusal scenes (one per family): low openness + an indulgent-cluster action attempted ⇒ she declines, in character; declining *well* (respecting it) banks trust, pushing twice costs it. Trigger via `checkVisitInterrupt` on first indulgent action when `openness < 20`.
 2. Six her-led scenes: complicit patient books her own follow-up, arrives with demands; player choice is how to *chart* what she asks for.
 3. Three devoted inversions: she runs the visit; the player's only choices are margins.
+**Budget:** ~200 strings.
 **Accept:** hostile playthrough encounters ≥2 refusals; her-led scenes fire only at complicit+ and cite ≥1 ledger row each.
 
 ### D4 — Rung ceremonies per family (4 → ~30)
 
 **Files:** `src/content/scenes/rungs/<family>.js`, `src/events.js` rung mapping (~line 551)
 **Do:** rung map gains a family dimension: `rung_first_softness`, `rung_wardrobe_stage5`, `rung_furniture_stage7`, new `rung_last_walk` (stage 9), `rung_immobility` — each with family variants (full bespoke for caregivers/strivers/sensualists; palette-varied shared spines for the rest, per asymmetry budget). Every rung writes `recordLedger({ id: 'rung', data: { stage } })` and later scenes cite the previous rung ("the chair conversation was four months ago").
+**Budget:** ~400 strings.
 **Accept:** no silent stage crossing (existing invariant) *and* no two families render the same rung text; each rung cites or is cited at least once in a full run.
 
-### D5 — Weekly event expansion (~45 → ~140)
+### D5 — Weekly event expansion (25 → ~105, plus 10 seasonal weeks)
 
 **Files:** `src/content/events/{early,mid,late,eraComplicit,seasonal,oneShots}.js`
 **Do:**
-1. +60 pool events tagged by era (gate on week + clinic tier from `clinicProgression.js`), all `effect(state, rng)`, ≥15 with **no mechanical effect** (pure texture — the asymmetry flagship).
+1. +68 pool events tagged by era (gate on week + clinic tier from `clinicProgression.js`), all `effect(state, rng)`, ≥15 with **no mechanical effect** (pure texture — the asymmetry flagship).
 2. Seasonal calendar: 10 in-world weeks (heat wave, county fair, flu season, holiday potluck…), replacing the 2 in `SEASONAL_WEEKS`, each with a start note, a modifier, and a closing echo the following week.
 3. Twelve one-shots with unique triggers and hand-built consequences: the health inspector who is a former patient (reads `archivedPatients`); the week the scale breaks (every weigh-in estimates; dual ledger wobbles); a patient's sister books in to find out what changed; the Annex poaches your supplier; a food critic's review quotes your tagline (`getClinicTagline`).
+**Budget:** ~350 strings.
 **Accept:** census: in a 52-week run <10% event repeats; every one-shot fires exactly once across the 20-seed sim batch; texture events render without a ledger/effect footprint.
 
 ### D6 — Group scenes and whispers (7 → 24)
@@ -434,15 +444,17 @@ Archetype families (used by D2–D4, D8, D12):
 1. Fifteen mindset-pair templates (5 pair classes × 3 each: slim×complicit, denial×devoted, curiosity×curiosity, complicit×complicit, staff×patient) rendered with the pair's names and one ledger citation each.
 2. Waiting-room whisper notes: authored prose keyed to the mindset pair, written to the ledger (`id: 'whisper'`), surfaced as a day-sheet line and as edges on the relationship SVG (patient nodes join the staff graph).
 3. Complicit recruitment: whisper note names the recruiter in the same sentence as the effect ("her friend Renata swears by the meal plans"); referral arrives `clinicalStart: false`, pre-warmed one tier.
+**Budget:** ~300 strings.
 **Accept:** persona attribution holds in group scenes (no interchangeable speakers); every referral's cause is readable in its whisper note.
 
-### D7 — Staff depth (26 beats → ~66 + 5 signature scenes)
+### D7 — Staff depth (26 beats → 46 named + 9 guest beats + 5 signature scenes)
 
 **Files:** `src/staffArcs/<name>.js`, `src/arcs.js`, new structures where noted
 **Do:**
 1. Each named staffer (Maya, Elena, Priya, Nadia, Jasmine) gets +4 beats extending her existing track past the current finale — the post-arc era where her choice settles in.
 2. Five signature scenes, one per staffer, each structurally unique in the whole game: **Maya** — a three-week scene (three consecutive week-start pages, one choice each, outcome compounds); **Elena** — happens entirely in the log tab as entries that answer the player's actions; **Priya** — one page, no choices, the only scene where reading *is* the interaction; **Nadia** — the player is silent; every "choice" is which of *her* lines you let stand in the record; **Jasmine** — she reads your ledger aloud (cites 5 real rows) and asks one question.
 3. Procedural hires (from `recruitment.js`): three guest-arc templates (×3 beats) keyed to role slot, replacing the single `PROCEDURAL_ARC`.
+**Budget:** ~450 strings.
 **Accept:** each signature scene's structure exists exactly once (lint: scene ids tagged `structure:` unique); staff census shows no beat text reuse across staffers.
 
 ### D8 — Letters and shadow lives (~40 items)
@@ -452,6 +464,7 @@ Archetype families (used by D2–D4, D8, D12):
 1. Departure letters: family × exit-mindset templates (6 × 5, some cells merged ⇒ ~24 letters) with slots citing her ledger (last weigh-in, a scene she remembers). Delivered 1–3 weeks after departure into `state.pendingLetters`, read from a small mailbox panel; unread badge, no toast.
 2. Six scripted returns: `weeks-away × rival gain rate` computes her new weight; the scene writes against it (she comes back changed and says how). Trigger: archived patient with `patient_departed` row, week gap 6–14, 20% per week window.
 3. Rival cameos: two events where a defector is seen at the Annex; epilogue rows for never-returned patients (D9 consumes).
+**Budget:** ~200 strings.
 **Accept:** every letter renders with valid citations across 20 randomized departure states; returns recompute weight correctly at the boundaries (6 and 14 weeks).
 
 ### D9 — Chapters 4–5 and the epilogue matrix
@@ -461,18 +474,21 @@ Archetype families (used by D2–D4, D8, D12):
 1. Chapter 4 "Temple of Appetite" (V5 draft) and Chapter 5 "The Quiet Audit" — goals computable from existing stats (roster mindset mix, chart-gap sum, cover ops used).
 2. Epilogue matrix: key = stage band (4) × mindset (5) × chart-gap band (honest / hedged / fabricated) = 60 cells. Author 24 flagship cells (all cells where mindset ∈ {complicity, devoted} or gap = fabricated); remaining cells compose from family spine + two slot sentences; every epilogue cites ≥1 ledger row ("Week 9. Fluid retention. You both kept the joke").
 3. Clinic epilogue keyed on `clinicMindset` tier (4 variants), shown last.
+**Budget:** ~300 strings.
 **Accept:** finishing a run renders one epilogue per surviving patient with zero empty slots; the 24 flagship cells pass read-aloud; matrix coverage test renders all 60 keys without error.
 
 ### D10 — Census-driven pool deepening
 
 **Files:** `src/patientVisitDialogue.js` pools, `src/content/` overrides
 **Do:** run census after D1–D6; for every pool in the top-100 exposure list with <6 lines, deepen to 6–10 lines *unevenly* (per voice cards; some pools get 3 sharp lines instead — asymmetry). Complete the tone grid: 4 tones × 3 tone-enabled actions × 4 tiers narrative coverage (currently replies only, 3 entries).
+**Budget:** ~450 strings.
 **Accept:** census re-run: no top-100 pool below 6 effective variants (or flagged as intentionally sharp); tone play never falls back to toneless narrative.
 
 ### D11 — Wardrobe chains (2 → 20 scenes)
 
 **Files:** `src/content/scenes/wardrobe/<bodyType>.js`
 **Do:** per body type (6), a three-scene chain riding the existing appearance system (`patientAppearance.js` presets/behaviors): the garment that stops closing → the replacement shopping decision (chart it or don't) → the old garment resurfacing (cites chain start). Two extra chains for staff uniforms. Chains use `enqueueScene` (the existing scene-graph rule) rather than new machinery.
+**Budget:** ~250 strings.
 **Accept:** each chain completes across ≥3 weeks in sim; step 3 correctly quotes step 1's garment via ledger.
 
 ### D12 — Systems content rounding
@@ -483,11 +499,14 @@ Archetype families (used by D2–D4, D8, D12):
 2. Shop 12 → 28: three reputation tiers of furniture/compounds/marketing + room *sets* (owning a set adds a named room bonus via `rooms.js` affinities).
 3. Challenges 3 → 9 (each with a named reward line, not just a modifier).
 4. Loyalty arcs: 1 generic template → 6 family templates × 3–5 beats, using the D0b families.
+**Budget:** ~200 strings (loyalty beats carry most of it; achievement copy is short by design).
 **Accept:** all new checks fire in the 20-seed sim batch ≥ once except deliberately-rare ones (list them in the PR); shop tiers respect `reputation.js` gates.
 
 ---
 
 ## Part 6 — WS-E: Tests, lints, tooling
+
+None of this ships to a player, and all of it decides what a player gets to trust. The suites below are thin on purpose: they test invariants, not implementations, so a thousand content commits can land without a test ever needing to know what the prose says — only that it renders, cites truly, and never repeats when it shouldn't.
 
 ### E1 — Vitest scaffold
 
@@ -498,14 +517,16 @@ Archetype families (used by D2–D4, D8, D12):
 ### E2 — Core invariants suite
 
 **Files:** `tests/state.test.js`, `tests/proseSelect.test.js`
-**Do:** save round-trip identity on all three fixtures (`normaliseState(JSON.parse(JSON.stringify(s)))` deep-equals); v6→v7 migration; proseSelect full-rotation property (A2); rng determinism (A6): two 12-week sims same seed ⇒ identical JSON.
-**Accept:** suite fails if anyone reintroduces `Math.random` into an effect (determinism test catches it).
+**Do:** save round-trip identity on all three fixtures (`normaliseState(JSON.parse(JSON.stringify(s)))` deep-equals, using the export added in A1); v6→v7 migration; proseSelect full-rotation property (A2).
+**Accept:** suite green in S0, before any behavior change lands on top of it.
 
-### E3 — Render sweep
+### E3 — Render sweep and determinism
 
-**Files:** `tests/render.test.js`
-**Do:** `describeCharacter` across 6 body types × 12 stages × staff/patient; visit narrative for all 23 `VISIT_ACTIONS` × 4 framing tiers × 5 attitude tiers (skip empty-by-design cells listed explicitly); every `SCENE_CATALOG` scene resolves with a synthetic context (no `undefined`, no empty opening, no unresolved `{slot}`).
-**Accept:** sweep green; the explicit skip-list is the only place empties are allowed.
+**Files:** `tests/render.test.js`, `tests/determinism.test.js`
+**Do:**
+1. `describeCharacter` across 6 body types × 12 stages × staff/patient; visit narrative for all 22 `VISIT_ACTIONS` × 4 framing tiers × 5 attitude tiers (skip empty-by-design cells listed explicitly); every `SCENE_CATALOG` scene resolves with a synthetic context (no `undefined`, no empty opening, no unresolved `{slot}`).
+2. Determinism twin-run (lands here, in S1, because it needs both A6 and C6): two 12-week sim runs on the same seed ⇒ byte-identical state JSON.
+**Accept:** sweep green with the explicit skip-list as the only allowed empties; the twin-run test fails if anyone reintroduces `Math.random` into an effect.
 
 ### E4 — Scene and content lints extended
 
@@ -525,11 +546,14 @@ Archetype families (used by D2–D4, D8, D12):
 **Do:** instrument `proseSelect.pickSeen` (env flag `CENSUS=1`) to tally `(scopeId, poolId, index)`; run the sim's balanced policy 20 seeds × 30 weeks; report: top-100 most-rendered strings, pools never fired (dead content), repetition debt (fire rate ÷ pool size), distinct-lines-per-run. Output `docs/census/latest.md` (gitignored except when a D-batch PR attaches it).
 **Accept:** census runs end-to-end in <60s; D-batch PRs include its delta.
 
-### E7 — Prose lint → AI-tell lint
+### E7 — Prose lint → AI-tell lint (and a scope fix that matters)
 
 **Files:** `scripts/lint-prose.mjs`
-**Do:** add detectors: rule-of-three chains above threshold (>2 per 40 lines per file); cross-pool 5-gram duplicates (whole `src/content` + dialogue files); banned list (`palpable`, `testament`, `tapestry`, `myriad`, `a sense of`, `couldn't help but`, `found herself`, `something shifted`, `if she was being honest`); sentence-length variance floor per pool (flag pools where every line is within ±15% of mean length). Grandfather existing files via a checked-in baseline file; new/changed lines gate hard.
-**Accept:** lint passes on baseline, fails on a seeded fixture containing each tell.
+**Do:**
+1. **Fix the scope first.** The linter currently checks a hardcoded list of exactly 23 files (`targets` array at the top of the script) — meaning every content pack this blueprint adds under `src/content/` would silently escape the game's only prose gate. Replace the list with a recursive scan of `src/` (`.js` files), with a short exclusion list for non-narrative modules (`prose.js` itself, `proseSelect.js`, `state.js` internals if noisy). A gate that doesn't see the new content isn't a gate; this one line-item protects everything Part 5 builds.
+2. Add detectors: rule-of-three chains above threshold (>2 per 40 lines per file); cross-pool 5-gram duplicates (whole `src/content` + dialogue files); banned list (`palpable`, `testament`, `tapestry`, `myriad`, `a sense of`, `couldn't help but`, `found herself`, `something shifted`, `if she was being honest`); sentence-length variance floor per pool (flag pools where every line is within ±15% of mean length).
+3. Grandfather existing files via a checked-in baseline file; new/changed lines gate hard.
+**Accept:** lint reports a file count matching the full `src/` scan (not 23); passes on baseline; fails on a seeded fixture containing each tell.
 
 ### E8 — CI workflow
 
@@ -549,6 +573,8 @@ Archetype families (used by D2–D4, D8, D12):
 ---
 
 ## Part 7 — WS-F: Ship posture
+
+The last mile is mostly subtraction: fewer documents, one name, one screenshot that tells the truth, and consent surfaces a stranger can understand before the first scene fires.
 
 ### F1 — Docs consolidation
 
@@ -609,15 +635,30 @@ Estimated shape (single implementer, focused): S0–S2 ≈ a week; S3 ≈ a week
 
 ---
 
+## Part 8.5 — Risk register
+
+A plan is bulletproof only if it knows where it would bleed. Six ways this one fails, with the early symptom and the containment already built in:
+
+| Risk | You'll know because | Containment |
+|---|---|---|
+| **Migration eats a long-running save** | a v6 save loads with missing roster fields or resets | E2 runs the three fixtures on every commit; amend A1 so legacy keys are deleted only *after* a successful v7 write + reload round-trip, never in the same breath as the read |
+| **Quality dilutes at scale** — the 10x becomes slop | census deltas look fine but read-alouds start getting rubber-stamped | budgets are ceilings, not quotas — a batch may ship under budget, never over the gate; a second reader read-alouds a 10% sample of every batch; the asymmetry quota is checked by a human, not a script |
+| **CI slows until people stop reading it** | pipeline > 5 minutes; sim job gets skipped "just this once" | CI runs the short sim (5 seeds × 20 weeks); the full 20 × 52 batch runs nightly and pre-release; census is capped at 60s by its own Accept line (E6) |
+| **The presentation rebuild never ends** | B-steps start spawning sub-steps; S3 becomes a taste debate | WS-B has exactly sixteen steps; new visual ideas go to a post-ship list; the exit is the screenshot test, not consensus |
+| **Save bloat** from seenLines + ledger growth | save JSON > 400 kB before week 52 | A2's per-pool cap (64), the ledger cap (400) with F5's keep-priority (drop whispers before chart entries), and a size assertion on the endgame fixture |
+| **Voice drift under parallel authoring** | two families start sounding like each other in S5–S8 | voice cards are the contract quoted at the top of every content PR; E7's cross-pool 5-gram detector runs cross-family; attribution spot-checks at every stage gate |
+
+---
+
 ## Part 9 — Definition of done (the numbers)
 
 The build is 10x when all of these hold, measured, not vibed:
 
-1. **Variety:** census distinct-lines-per-30-week-run ≥ 10× the pre-A3 baseline (record the baseline number in the S1 PR before fixing it).
-2. **Scale:** scene catalog ≥ 110 entries; events ≥ 130; corpus ≥ 8,500 long strings; every category in Part 1's table at or past target.
+1. **Variety:** census distinct-lines-per-30-week-run ≥ 10× the pre-A3 baseline (record the baseline number in the S1 PR *before* fixing the picker, so the claim is checkable forever).
+2. **Scale:** scene catalog ≥ 100 entries; weekly events ≥ 100; corpus ≥ 5,800 long strings with every Part 5 batch budget met; every category in Part 1's table at or past target.
 3. **Determinism:** same seed ⇒ identical 52-week state hash, twice, in CI.
 4. **Balance:** all four sim policies produce distinct money/heat curves; no policy exceeds $50k by week 52; neglect on audit-season dies with ≥2 weeks of visible warning; every death cites only numbers previously shown.
 5. **Feel:** initial payload <250 kB gz; endWeek <16 ms at endgame; Lighthouse a11y ≥95; zero toasts; zero oscillator tones; zero raw palette classes outside `styles.css`.
 6. **The six exit tests** from `QUALITY_10X_PLAN.md` §9 — repeat, screenshot, read-aloud, lumpiness, memory, instrument — all pass with a second reader.
 
-When the last row checks, the game is not a bigger prototype. It is a small, obsessive, hand-made machine, ten times the game, with no grid showing.
+When the last row checks, the game is not a bigger prototype. It is a small, obsessive, hand-made machine: every line reachable, every number witnessed, every ceremony earned. Ten times the game — and nowhere, in any of it, the grid showing through.
