@@ -8,6 +8,7 @@ import { patientArchetypeLines, getPatientEarlyBodyLine, getPatientHook } from '
 import { getClinicalPatientLine, shouldUseClinicalPatientVoice } from './patientClinicalVoice.js';
 import { staffArchetypeLines } from './staffDialogue.js';
 import { staffBodyDescriptions, patientBodyDescriptions } from './bodyProse.js';
+import { PUBLIC_VISIT_REASONS } from './patientFraming.js';
 
 export { getPatientAppearanceSummary };
 
@@ -659,7 +660,7 @@ export function createPatient(rng, options = {}) {
     slimMindset: clinicalStart,
     consent: 'Adult patient, 21+. Intake forms list routine primary-care services.',
     lastStage: 0,
-    publicReason: null,
+    publicReason: rng.pick(PUBLIC_VISIT_REASONS),
   };
 }
 

@@ -97,7 +97,7 @@
    "slimMindset": true,
    "consent": "Adult patient, 21+. Intake forms list routine primary-care services.",
    "lastStage": 0,
-   "publicReason": null,
+   "publicReason": "sick visit",
    "arc": {
     "completedBeats": []
    },
@@ -139,7 +139,7 @@
  "thisWeek": [],
  "lastResolution": null,
  "pendingStageHighlights": [],
- "rngSeed": 515150720,
+ "rngSeed": 1127256507,
  "rooms": {
   "waiting": [],
   "break": [],

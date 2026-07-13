@@ -21,19 +21,22 @@ export function getPatientFramingTier(patient) {
   return 'clinical';
 }
 
+export const PUBLIC_VISIT_REASONS = [
+  'annual physical',
+  'blood pressure follow-up',
+  'refill visit',
+  'lab review',
+  'sick visit',
+  'diabetes screening',
+  'thyroid panel',
+  'routine wellness exam',
+];
+
 export function getPatientPublicReason(patient) {
-  const reasons = [
-    'annual physical',
-    'blood pressure follow-up',
-    'refill visit',
-    'lab review',
-    'sick visit',
-    'diabetes screening',
-    'thyroid panel',
-    'routine wellness exam',
-  ];
+  if (patient.publicReason) return patient.publicReason;
+  // Legacy saves: patients created before v7 carry no stored reason.
   const seed = (patient.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  return reasons[seed % reasons.length];
+  return PUBLIC_VISIT_REASONS[seed % PUBLIC_VISIT_REASONS.length];
 }
 
 export function getPatientFramingNote(patient) {
