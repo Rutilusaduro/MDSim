@@ -33,6 +33,7 @@ import { recordLedger } from './memoryLedger.js';
 import { chartGap, getPatientFramingTier } from './patientFraming.js';
 
 export { getPatientVisitFraming, isClinicalVisit, getVisitActionGate, getFramingChipLabel } from './visitClinical.js';
+import { framingRank } from './visitClinical.js';
 
 export const VISIT_PHASES = ['greeting', 'intake', 'exam', 'services', 'checkout'];
 export const TONE_ENABLED_ACTIONS = ['say_hi', 'offer_water', 'weigh_patient'];
@@ -498,11 +499,6 @@ export function applyWeighChartChoice(state, choiceId) {
   const result = finishWeighAction(state, visit, patient, tone);
   syncVisitPhase(visit);
   return result;
-}
-
-function framingRank(tier) {
-  const ranks = { clinical: 0, clinical_plus: 1, warming: 2, complicit: 3 };
-  return ranks[tier] ?? 0;
 }
 
 function finishWeighAction(state, visit, patient, toneId) {

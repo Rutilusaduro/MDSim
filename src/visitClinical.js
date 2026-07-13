@@ -185,7 +185,7 @@ export function isClinicalVisit(patient) {
   return tier === 'clinical' || tier === 'clinical_plus';
 }
 
-function framingRank(tier) {
+export function framingRank(tier) {
   return FRAMING_RANK[tier] ?? 0;
 }
 
