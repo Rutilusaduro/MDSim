@@ -535,7 +535,278 @@
    ]
   }
  },
- "history": [],
+ "history": [
+  {
+   "week": 1,
+   "money": 1526,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 6,
+   "patientCount": 1,
+   "summary": "Holiday Feast Tray"
+  },
+  {
+   "week": 2,
+   "money": 652,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 4,
+   "patientCount": 1,
+   "summary": "Holiday Feast Tray"
+  },
+  {
+   "week": 3,
+   "money": -222,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 4,
+   "patientCount": 1,
+   "summary": "Word of Mouth"
+  },
+  {
+   "week": 4,
+   "money": -1096,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Button Crisis Monday"
+  },
+  {
+   "week": 5,
+   "money": -1970,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Midnight Delivery"
+  },
+  {
+   "week": 6,
+   "money": -2844,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Word of Mouth"
+  },
+  {
+   "week": 7,
+   "money": -3718,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Ice Cream Truck"
+  },
+  {
+   "week": 8,
+   "money": -4592,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Ice Cream Truck"
+  },
+  {
+   "week": 9,
+   "money": -5466,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Break Room Scale"
+  },
+  {
+   "week": 10,
+   "money": -6340,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Caterer Convention"
+  },
+  {
+   "week": 11,
+   "money": -7214,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Compliment at the Desk"
+  },
+  {
+   "week": 12,
+   "money": -8088,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 1,
+   "patientCount": 1,
+   "summary": "Pastry Wall Install; 1 stage change"
+  },
+  {
+   "week": 13,
+   "money": -8962,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 2,
+   "patientCount": 1,
+   "summary": "Pastry Wall Install"
+  },
+  {
+   "week": 14,
+   "money": -9836,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Break Room Scale"
+  },
+  {
+   "week": 15,
+   "money": -10710,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Hunger Spiral"
+  },
+  {
+   "week": 16,
+   "money": -11584,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Hunger Spiral"
+  },
+  {
+   "week": 17,
+   "money": -12458,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Midnight Delivery"
+  },
+  {
+   "week": 18,
+   "money": -13332,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Ice Cream Truck"
+  },
+  {
+   "week": 19,
+   "money": -14206,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Holiday Feast Tray"
+  },
+  {
+   "week": 20,
+   "money": -15080,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Staff Bake-Off"
+  },
+  {
+   "week": 21,
+   "money": -15954,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Staff Bake-Off"
+  },
+  {
+   "week": 22,
+   "money": -16628,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Donor Brunch"
+  },
+  {
+   "week": 23,
+   "money": -17502,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Late Supply Delivery"
+  },
+  {
+   "week": 24,
+   "money": -18376,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Button Crisis Monday"
+  },
+  {
+   "week": 25,
+   "money": -19250,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 2,
+   "patientCount": 1,
+   "summary": "Blogger Visit; 1 stage change"
+  },
+  {
+   "week": 26,
+   "money": -20124,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Caterer Convention"
+  },
+  {
+   "week": 27,
+   "money": -20998,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Word of Mouth"
+  },
+  {
+   "week": 28,
+   "money": -21872,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Mole Defection"
+  },
+  {
+   "week": 29,
+   "money": -22746,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Scale Removed"
+  },
+  {
+   "week": 30,
+   "money": -23620,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Break Room Feast; 1 stage change"
+  }
+ ],
  "difficulty": "attending",
  "pendingLetters": [],
  "coverOps": {

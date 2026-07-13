@@ -348,7 +348,98 @@
    ]
   }
  },
- "history": [],
+ "history": [
+  {
+   "week": 1,
+   "money": 1526,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 6,
+   "patientCount": 1,
+   "summary": "Holiday Feast Tray"
+  },
+  {
+   "week": 2,
+   "money": 652,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 4,
+   "patientCount": 1,
+   "summary": "Holiday Feast Tray"
+  },
+  {
+   "week": 3,
+   "money": -222,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 4,
+   "patientCount": 1,
+   "summary": "Word of Mouth"
+  },
+  {
+   "week": 4,
+   "money": -1096,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Button Crisis Monday"
+  },
+  {
+   "week": 5,
+   "money": -1970,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Midnight Delivery"
+  },
+  {
+   "week": 6,
+   "money": -2844,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Word of Mouth"
+  },
+  {
+   "week": 7,
+   "money": -3718,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Ice Cream Truck"
+  },
+  {
+   "week": 8,
+   "money": -4592,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Ice Cream Truck"
+  },
+  {
+   "week": 9,
+   "money": -5466,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Break Room Scale"
+  },
+  {
+   "week": 10,
+   "money": -6340,
+   "heat": 0,
+   "cover": 100,
+   "reputation": 0,
+   "patientCount": 1,
+   "summary": "Caterer Convention"
+  }
+ ],
  "difficulty": "attending",
  "pendingLetters": [],
  "coverOps": {

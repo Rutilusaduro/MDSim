@@ -862,6 +862,25 @@ export function endWeek(state) {
   }, state);
 
   state.lastResolution = resolution;
+
+  if (!state.history) state.history = [];
+  const summaryBits = [
+    weeklyEvent ? weeklyEvent.title : null,
+    stageChanges.length ? `${stageChanges.length} stage change${stageChanges.length > 1 ? 's' : ''}` : null,
+    newPatients.length ? `${newPatients.length} new patient${newPatients.length > 1 ? 's' : ''}` : null,
+    leaving.length ? `${leaving.length} departed` : null,
+  ].filter(Boolean);
+  state.history.push({
+    week: state.week,
+    money: state.money,
+    heat: state.heat || 0,
+    cover: state.coverRating ?? 100,
+    reputation: state.reputation,
+    patientCount: state.patients.length,
+    summary: summaryBits.join('; ') || 'Quiet week.',
+  });
+  if (state.history.length > 200) state.history.splice(0, state.history.length - 200);
+
   state.week += 1;
   state.actionPoints = state.actionPointsMax;
   state.apSpentThisWeek = 0;
