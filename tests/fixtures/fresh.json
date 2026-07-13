@@ -97,7 +97,11 @@
    "slimMindset": true,
    "consent": "Adult patient, 21+. Intake forms list routine primary-care services.",
    "lastStage": 0,
-   "publicReason": null
+   "publicReason": null,
+   "arc": {
+    "completedBeats": []
+   },
+   "lastFramingTier": "clinical"
   }
  ],
  "archivedPatients": [],

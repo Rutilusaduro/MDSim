@@ -29,7 +29,7 @@
    "bodyType": "willowy",
    "archetype": "rivalDoctor",
    "baselineWeight": 128,
-   "weight": 158.3,
+   "weight": 158.5,
    "appetite": 7.35,
    "trust": 6.1,
    "indulgence": 20.615000000000002,
@@ -114,7 +114,10 @@
     "resolved": []
    },
    "framingErosion": 0,
-   "earlyEventsFired": []
+   "earlyEventsFired": [],
+   "arc": {
+    "completedBeats": []
+   }
   }
  ],
  "archivedPatients": [],
@@ -144,70 +147,70 @@
  "weekConsultIncome": 0,
  "log": [
   {
-   "id": "1783908902809-6124982599c4e",
+   "id": "1783908998510-eadcb21136cb9",
    "week": 10,
    "type": "resolution",
    "title": "Week 10 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902809-fc5afbec31f2d",
+   "id": "1783908998510-06cbc74c5790a",
    "week": 9,
    "type": "resolution",
    "title": "Week 9 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Late Supply Delivery:</strong> A supply crate arrives with bonus sample packs. Rich. Dense. Mislabeled as \"fiber trial.\" Gone by morning.</p>\n    \n    \n    \n    \n    <p>Week 9 closes. <strong>Daphne Novak</strong> adds 2.7 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902808-6f98c1e27de48",
+   "id": "1783908998509-3be122361e31b",
    "week": 8,
    "type": "resolution",
    "title": "Week 8 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n    \n    \n    \n    <p>Week 8 closes. <strong>Daphne Novak</strong> adds 4.2 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902807-47575750edf3f",
+   "id": "1783908998508-ae1598257eccb",
    "week": 7,
    "type": "resolution",
    "title": "Week 7 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n    <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n    \n    \n    \n    <p>Week 7 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902807-8b0cdac2bd975",
+   "id": "1783908998508-b2c11bf78b8e9",
    "week": 6,
    "type": "resolution",
    "title": "Week 6 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Staff Lunch Run:</strong> Two staff go out for \"salads.\" They return with bags that smell like fried oil. No salads visible.</p>\n    \n    \n    \n    \n    <p>Week 6 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902806-13de512324462",
+   "id": "1783908998507-e3bfbc0f51a4f",
    "week": 5,
    "type": "resolution",
    "title": "Week 5 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Wellness Retreat Flyer:</strong> A corporate wellness retreat flyer lands on your desk. \"Detox weekend.\" Staff use it as a placemat for pizza.</p>\n    <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n    \n    \n    \n    <p>Week 5 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902805-968ce00abea47",
+   "id": "1783908998506-104b040a458e3",
    "week": 4,
    "type": "resolution",
    "title": "Week 4 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 4 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783908902804-4229c395f8a85",
+   "id": "1783908998505-3279c5c5ab44b",
    "week": 3,
    "type": "resolution",
    "title": "Week 3 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Donor Brunch:</strong> A donor hosts brunch in your lobby. Quiche. Pastries. Patients arrive early and stay late.</p>\n    \n    \n    \n    \n    <p>Week 3 closes. <strong>Daphne Novak</strong> adds 1.7 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
   },
   {
-   "id": "1783908902803-985dec8fa0585",
+   "id": "1783908998505-f3544cbe4cdf5",
    "week": 2,
    "type": "resolution",
    "title": "Week 2 resolution",
    "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n    \n    \n    \n    \n    <p>Week 2 closes. <strong>Daphne Novak</strong> adds 2.5 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
   },
   {
-   "id": "1783908902802-d1b25ad3665a7",
+   "id": "1783908998504-75deb596ffd09",
    "week": 1,
    "type": "resolution",
    "title": "Week 1 resolution",

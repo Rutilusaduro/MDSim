@@ -11,7 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fixturesDir = join(root, 'tests', 'fixtures');
 mkdirSync(fixturesDir, { recursive: true });
 
-const { createNewGame } = await import('../src/state.js');
+const { createNewGame, normaliseState } = await import('../src/state.js');
 const { endWeek } = await import('../src/events.js');
 
 const FIXED_SEED = 1234567;
@@ -19,7 +19,9 @@ const FIXED_SEED = 1234567;
 function build(weeks) {
   const state = createNewGame({ seed: FIXED_SEED });
   for (let i = 0; i < weeks; i += 1) endWeek(state);
-  return state;
+  // Canonical form: fixtures are fixed points of migration, so the
+  // round-trip suite can assert strict identity.
+  return normaliseState(JSON.parse(JSON.stringify(state)));
 }
 
 const fixtures = { fresh: build(0), mid: build(10), endgame: build(30) };
