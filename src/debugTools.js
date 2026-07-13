@@ -62,10 +62,14 @@ export function renderCharacterDebugControls(characterId) {
   `;
 }
 
-export function renderRosterDebugPanel() {
+export function renderRosterDebugPanel(state = null) {
+  const seedRow = state
+    ? `<p class="mt-1 text-xs text-stone-400">Run seed <span class="font-mono text-stone-200">${state.rngSeed}</span>
+        <button class="dark-button ml-2 rounded-xl px-2 py-1 text-xs font-bold" data-action="debug-copy-seed">Copy seed link</button></p>`
+    : '';
   return `
     <div class="soft-card mt-8 rounded-3xl border border-pink-400/25 p-5">
-      <p class="text-sm font-bold text-pink-100">Debug body cheats</p>
+      <p class="text-sm font-bold text-pink-100">Debug body cheats</p>${seedRow}
       <p class="mt-1 text-xs text-stone-400">Instant weight for testing prose and silhouettes. Does not spend AP.</p>
       <div class="mt-4 grid gap-3 sm:grid-cols-2">
         <button class="dark-button rounded-2xl px-4 py-3 text-left text-sm font-bold" data-action="debug-fatten" data-filter="staff" data-mode="plus_one_stage">All staff +1 stage</button>

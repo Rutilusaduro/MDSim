@@ -1276,6 +1276,12 @@ function bindEvents() {
       render();
       showToast(`Debug: updated ${count} characters.`);
     }
+    if (action === 'debug-copy-seed') {
+      if (!isDebugMode()) return;
+      const url = `${window.location.origin}${window.location.pathname}?debug=1&seed=${gameState.rngSeed}`;
+      navigator.clipboard?.writeText(url);
+      showToast('Seed link copied.');
+    }
     if (action === 'tab') {
       playUiClick();
       activeTab = target.dataset.tab;
@@ -1613,10 +1619,15 @@ function bindEvents() {
 
 export function initUI() {
   initDebugModeFromUrl();
+  let loaded = null;
   try {
-    loadGame();
+    loaded = loadGame();
   } catch (error) {
     console.warn('Save could not be loaded, starting fresh.', error);
+  }
+  const urlSeed = Number(new URLSearchParams(window.location.search).get('seed'));
+  if (!loaded && Number.isFinite(urlSeed) && urlSeed > 0) {
+    resetGame({ seed: urlSeed });
   }
   initAudio(gameState);
   bindEvents();
