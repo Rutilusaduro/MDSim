@@ -85,10 +85,5 @@ export function hireCandidate(state, candidateId) {
   return { ok: true, message: text, staff };
 }
 
-export function dismissRecruitment(state) {
-  ensureRecruitmentState(state);
-  state.recruitment.openSlotId = null;
-  state.recruitment.candidates = [];
-}
 
 export { STAFF_ROLE_SLOTS, CANDIDATES_PER_SLOT };

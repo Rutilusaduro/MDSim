@@ -330,16 +330,12 @@ export const patientHooks = {
 };
 
 /** @deprecated use patientHooks */
-export const patientEarlyHooks = patientHooks;
 
 export function getPatientHook(archetype) {
   return patientHooks[archetype] || patientHooks.nurturer;
 }
 
 /** @deprecated use getPatientHook */
-export function getPatientEarlyHook(archetype) {
-  return getPatientHook(archetype);
-}
 export const patientEarlyBody = {
     hourglass: {
       professional:

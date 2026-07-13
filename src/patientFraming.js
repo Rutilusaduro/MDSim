@@ -89,6 +89,3 @@ export function getCoverLabel(state) {
   return 'Imminent shutdown';
 }
 
-export function staffPublicFraming() {
-  return 'Scrubs and smiles. The lobby looks like any busy primary-care office, if you ignore how tight the uniforms run.';
-}

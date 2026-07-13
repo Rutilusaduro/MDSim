@@ -770,17 +770,3 @@ export function getPatientAppearanceSummary(character) {
 }
 
 /** For prose authors: list all fragment keys in the manifest doc. */
-export function listProseManifest() {
-  return {
-    stageBands: STAGE_BANDS.map((b) => b.id),
-    tops: Object.keys(TOPS),
-    bottoms: Object.keys(BOTTOMS),
-    behaviors: Object.keys(BEHAVIORS),
-    presets: Object.keys(WARDROBE_PRESETS),
-    hairColors: hairColorKeys,
-    hairStyles: hairStyleKeys,
-    strain: Object.keys(STRAIN),
-    midriff: Object.keys(MIDRIFF),
-    hemLength: Object.keys(HEM_LENGTH),
-  };
-}

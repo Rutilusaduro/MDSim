@@ -369,10 +369,3 @@ export function getArcSceneForCharacter(character) {
   return { ok: true, beat: check.beat, scene, progress: getArcProgress(character) };
 }
 
-export function getArcScenePreview(character) {
-  const progress = getArcProgress(character);
-  if (!progress?.nextBeat) return '';
-  const scene = getStaffArcScene(character, progress.nextBeat);
-  if (!scene?.opening) return progress.nextBeat.title;
-  return scene.opening.slice(0, 140) + '…';
-}
