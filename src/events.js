@@ -186,9 +186,9 @@ export function getInteractionOptions(state, character) {
     });
 }
 
-function actionFlavor(character, actionId) {
+function actionFlavor(state, character, actionId, opts) {
   const name = character.name;
-  const banter = getInteractionBanter(character, actionId);
+  const banter = getInteractionBanter(state, character, actionId, opts);
   const preference = character.preference;
   const attitude = getAttitudeKey(character);
   const early = attitude === 'professional' || attitude === 'noticing';
@@ -289,7 +289,7 @@ function actionFlavor(character, actionId) {
 }
 
 export function previewInteractionFlavor(character, actionId) {
-  return actionFlavor(character, actionId) || `No flavor for action "${actionId}".`;
+  return actionFlavor(null, character, actionId, { peek: true }) || `No flavor for action "${actionId}".`;
 }
 
 export function performInteraction(state, characterId, actionId) {
@@ -384,7 +384,7 @@ export function performInteraction(state, characterId, actionId) {
       state.salaries += 280;
       state.reputation += 3;
       if (state.stats) state.stats.patientsRecruited = (state.stats.patientsRecruited || 0) + 1;
-      const hireText = actionFlavor(character, actionId);
+      const hireText = actionFlavor(state, character, actionId);
       addWeekNote({ type: 'recruit', title: `Hired: ${character.name}`, text: hireText }, state);
       return { ok: true, message: hireText };
     }
@@ -395,7 +395,7 @@ export function performInteraction(state, characterId, actionId) {
   const text =
     actionId === 'personalTalk' && character.type === 'staff'
       ? formatStaffCheckInDialogue(character, getStaffCheckInBeat(character, state))
-      : actionFlavor(character, actionId);
+      : actionFlavor(state, character, actionId);
   let message = text;
   if (actionId === 'consult' && action.money) {
     message = `${text} Billed ${formatMoney(action.money)}.`;

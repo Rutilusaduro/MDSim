@@ -1,11 +1,10 @@
 import { getAttitudeKey } from './characters.js';
 import { tierFromAttitude } from './mechanics/attitudeTier.js';
 import { getStageIndex } from './characters.js';
+import { pickSeen } from './proseSelect.js';
 
-function pickLine(character, pool) {
-  if (!pool?.length) return null;
-  const seed = (character.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  return pool[seed % pool.length];
+function pickLine(state, character, poolId, pool) {
+  return pickSeen(state, character?.id || 'world', poolId, pool) || null;
 }
 
 const STAFF_CHECK_IN = {
@@ -77,15 +76,21 @@ const MOLE_CHECK_IN = [
 
 export function getStaffCheckInBeat(character, state = null) {
   if (character.isMole && character.moleRevealed) {
-    return pickLine(character, MOLE_CHECK_IN);
+    return pickLine(state, character, 'staff.checkin.mole', MOLE_CHECK_IN);
   }
   const attitude = getAttitudeKey(character);
   const tier = tierFromAttitude(attitude);
   const stage = getStageIndex(character);
   let pool = STAFF_CHECK_IN.early;
-  if (tier === 'late' || stage >= 6) pool = STAFF_CHECK_IN.late;
-  else if (tier === 'mid' || stage >= 3) pool = STAFF_CHECK_IN.mid;
-  return pickLine(character, pool);
+  let poolId = 'staff.checkin.early';
+  if (tier === 'late' || stage >= 6) {
+    pool = STAFF_CHECK_IN.late;
+    poolId = 'staff.checkin.late';
+  } else if (tier === 'mid' || stage >= 3) {
+    pool = STAFF_CHECK_IN.mid;
+    poolId = 'staff.checkin.mid';
+  }
+  return pickLine(state, character, poolId, pool);
 }
 
 export function formatStaffCheckInDialogue(character, beat) {

@@ -3,10 +3,10 @@
  * Used for clinical / warming tiers before legacy pools.
  */
 
-function pickBeat(character, pool) {
-  if (!pool?.length) return null;
-  const seed = (character.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  return pool[seed % pool.length];
+import { pickSeen } from './proseSelect.js';
+
+function pickBeat(state, character, poolId, pool) {
+  return pickSeen(state, character?.id || 'world', poolId, pool) || null;
 }
 
 const CLINICAL_BEATS = {
@@ -235,13 +235,13 @@ const WARMING_BEATS = {
   ],
 };
 
-export function getVisitBeat(actionId, patient, resolvedTier) {
+export function getVisitBeat(state, actionId, patient, resolvedTier) {
   if (resolvedTier === 'clinical' || resolvedTier === 'clinical_plus') {
-    const beat = pickBeat(patient, CLINICAL_BEATS[actionId]);
+    const beat = pickBeat(state, patient, `beat.${actionId}.clinical`, CLINICAL_BEATS[actionId]);
     if (beat) return { narrative: beat.doctor, reply: beat.patient };
   }
   if (resolvedTier === 'warming') {
-    const beat = pickBeat(patient, WARMING_BEATS[actionId]);
+    const beat = pickBeat(state, patient, `beat.${actionId}.warming`, WARMING_BEATS[actionId]);
     if (beat) return { narrative: beat.doctor, reply: beat.patient };
   }
   return null;

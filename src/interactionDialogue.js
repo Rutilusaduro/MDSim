@@ -1,11 +1,10 @@
 import { getAttitudeKey } from './characters.js';
 
 import { tierFromAttitude } from './mechanics/attitudeTier.js';
+import { pickSeen } from './proseSelect.js';
 
-function pickLine(character, pool) {
-  if (!pool?.length) return '';
-  const seed = (character.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  return pool[seed % pool.length];
+function pickLine(state, character, poolId, pool, opts) {
+  return pickSeen(state, character?.id || 'world', poolId, pool, opts);
 }
 
 const BANTER = {
@@ -227,12 +226,15 @@ const BANTER = {
   },
 };
 
-export function getInteractionBanter(character, actionId) {
+export function getInteractionBanter(state, character, actionId, opts) {
   const attitude = getAttitudeKey(character);
   const tier = tierFromAttitude(attitude);
   const type = character.type === 'patient' ? 'patient' : 'staff';
   const actionPool = BANTER[type]?.[actionId];
   if (!actionPool) return '';
-  if (Array.isArray(actionPool)) return pickLine(character, actionPool);
-  return pickLine(character, actionPool[tier] || actionPool.late || actionPool.mid || actionPool.early || []);
+  if (Array.isArray(actionPool)) {
+    return pickLine(state, character, `banter.${type}.${actionId}`, actionPool, opts);
+  }
+  const pool = actionPool[tier] || actionPool.late || actionPool.mid || actionPool.early || [];
+  return pickLine(state, character, `banter.${type}.${actionId}.${tier}`, pool, opts);
 }

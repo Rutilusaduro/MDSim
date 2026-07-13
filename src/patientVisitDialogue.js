@@ -892,7 +892,7 @@ export function getVisitNarrative(state, actionId, patient, tier) {
   const attitudeTier = tier || tierFromAttitude(getAttitudeKey(patient));
   const resolvedTier = visitDialogueTier(patient, attitudeTier);
 
-  const beat = getVisitBeat(actionId, patient, resolvedTier);
+  const beat = getVisitBeat(state, actionId, patient, resolvedTier);
   if (beat) return beat;
 
   if (!actionPool) return { narrative: '', reply: '' };
