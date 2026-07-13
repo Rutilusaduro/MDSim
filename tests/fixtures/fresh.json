@@ -1,0 +1,202 @@
+{
+ "version": 7,
+ "clinicName": "Vale Family Medicine",
+ "doctorName": "Dr. Vale",
+ "week": 1,
+ "money": 2400,
+ "reputation": 8,
+ "actionPointsMax": 7,
+ "actionPoints": 7,
+ "rent": 420,
+ "salaries": 280,
+ "supplyCost": 95,
+ "ownedUpgrades": [],
+ "pendingInstallations": [],
+ "inventory": {
+  "comfortBlend": 0,
+  "appetiteTonic": 0,
+  "recoveryShake": 0
+ },
+ "staff": [
+  {
+   "id": "staff-6195e",
+   "type": "staff",
+   "name": "Daphne Novak",
+   "role": "Front Desk Coordinator",
+   "arcSlot": "elena",
+   "age": 24,
+   "ethnicity": "Ukrainian",
+   "bodyType": "willowy",
+   "archetype": "rivalDoctor",
+   "baselineWeight": 128,
+   "weight": 128,
+   "appetite": 7.1,
+   "trust": 6,
+   "indulgence": 2,
+   "openness": 14,
+   "weeklyMomentum": 0,
+   "preference": "buttery breads",
+   "preferences": {
+    "pace": "gradual",
+    "focus": "comfort",
+    "public": "private"
+   },
+   "slimMindset": true,
+   "consent": "Standard clinic employment, 21+. HR file lists primary-care duties only.",
+   "lastStage": 0,
+   "arc": {
+    "completedBeats": [],
+    "choices": {},
+    "flags": []
+   }
+  }
+ ],
+ "patients": [
+  {
+   "id": "patient-474ca",
+   "type": "patient",
+   "name": "Celeste Mori",
+   "role": "architect",
+   "age": 24,
+   "ethnicity": "Latina",
+   "bodyType": "pear",
+   "archetype": "perfectionist",
+   "baselineWeight": 148,
+   "weight": 150,
+   "chartedWeight": 150,
+   "appetite": 6.6,
+   "trust": 3.8,
+   "indulgence": 2,
+   "openness": 8,
+   "weeklyMomentum": 0,
+   "preference": "rich soups",
+   "preferences": {
+    "pace": "gradual",
+    "focus": "comfort",
+    "public": "private"
+   },
+   "seenThisWeek": false,
+   "visits": 0,
+   "loyalty": 0,
+   "loyaltyArc": {
+    "completedBeats": []
+   },
+   "appearance": {
+    "heightInches": 71,
+    "hairColor": "rose_gold",
+    "hairStyle": "braided",
+    "topColor": "white",
+    "bottomColor": "white",
+    "preset": "leggings_forever",
+    "wardrobe": {
+     "top": "tank",
+     "bottom": "leggings",
+     "behavior": "leggings_layer"
+    }
+   },
+   "slimMindset": true,
+   "consent": "Adult patient, 21+. Intake forms list routine primary-care services.",
+   "lastStage": 0,
+   "publicReason": null
+  }
+ ],
+ "archivedPatients": [],
+ "achievements": {
+  "unlocked": []
+ },
+ "stats": {
+  "arcBeatsCompleted": 0,
+  "patientsRecruited": 0,
+  "compoundsUsed": 0,
+  "wardrobeEvents": 0,
+  "relationshipBeats": 0,
+  "allInstallablesOwned": false,
+  "groupScenesPlayed": 0,
+  "chaptersCompleted": 0,
+  "loyaltyArcBeats": 0,
+  "rivalOpsActions": 0,
+  "earlyGainEvents": 0,
+  "visitCount": 0,
+  "scenesResolved": 0,
+  "interruptsHandled": 0
+ },
+ "firedEvents": [],
+ "apSpentThisWeek": 0,
+ "weekConsultIncome": 0,
+ "log": [
+  {
+   "id": "welcome",
+   "week": 1,
+   "type": "system",
+   "title": "Lease signed",
+   "text": "Strip-mall suite. One reception desk. Fluorescents hum. Your sign says primary care. Week one."
+  }
+ ],
+ "thisWeek": [],
+ "lastResolution": null,
+ "pendingStageHighlights": [],
+ "rngSeed": 515150720,
+ "rooms": {
+  "waiting": [],
+  "break": [],
+  "exam": [],
+  "lobby": []
+ },
+ "rivalState": {
+  "name": "ThriveWell Annex",
+  "reputation": 14,
+  "phase": 0,
+  "eventsFired": [],
+  "active": false,
+  "defeated": false,
+  "weekStarted": 1
+ },
+ "chapter": 1,
+ "chapterGoalsMet": [],
+ "clinicStyle": {
+  "softness": 50,
+  "speed": 50,
+  "spectacle": 50
+ },
+ "relationshipHistory": [],
+ "pendingGroupScene": null,
+ "ngPlus": 0,
+ "ngPlusGain": 0,
+ "needsChallengePick": true,
+ "challengeWeek": null,
+ "audioMuted": false,
+ "rivalClinic": {
+  "phase": 0,
+  "maxPhase": 4,
+  "patientsRecovered": 0,
+  "actionsTaken": 0,
+  "complete": false
+ },
+ "recruitment": {
+  "openSlotId": null,
+  "candidates": [],
+  "filledSlots": []
+ },
+ "coverRating": 100,
+ "heat": 0,
+ "sceneState": {
+  "resolved": [],
+  "weekInterrupt": null
+ },
+ "globalFlags": [],
+ "gameOver": null,
+ "ledger": [],
+ "gameSettings": {
+  "heatCap": "charged",
+  "onboardingDismissed": false
+ },
+ "pendingRungScenes": [],
+ "supplyCostChapterFired": false,
+ "seenLines": {},
+ "history": [],
+ "difficulty": "attending",
+ "pendingLetters": [],
+ "coverOps": {
+  "activeBuffs": []
+ }
+}

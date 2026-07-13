@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint:prose": "node scripts/lint-prose.mjs",
-    "lint:scenes": "node scripts/lint-scenes.mjs"
+    "lint:scenes": "node scripts/lint-scenes.mjs",
+    "test": "vitest run",
+    "fixtures": "node scripts/make-fixtures.mjs"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.2",
     "tailwindcss": "^4.3.2",
-    "vite": "^8.1.2"
+    "vite": "^8.1.2",
+    "vitest": "^4.1.10"
   }
 }

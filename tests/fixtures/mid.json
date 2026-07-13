@@ -1,0 +1,338 @@
+{
+ "version": 7,
+ "clinicName": "Vale Family Medicine",
+ "doctorName": "Dr. Vale",
+ "week": 11,
+ "money": -6140,
+ "reputation": 0,
+ "actionPointsMax": 7,
+ "actionPoints": 7,
+ "rent": 420,
+ "salaries": 280,
+ "supplyCost": 174,
+ "ownedUpgrades": [],
+ "pendingInstallations": [],
+ "inventory": {
+  "comfortBlend": 0,
+  "appetiteTonic": 0,
+  "recoveryShake": 0
+ },
+ "staff": [
+  {
+   "id": "staff-6195e",
+   "type": "staff",
+   "name": "Daphne Novak",
+   "role": "Front Desk Coordinator",
+   "arcSlot": "elena",
+   "age": 24,
+   "ethnicity": "Ukrainian",
+   "bodyType": "willowy",
+   "archetype": "rivalDoctor",
+   "baselineWeight": 128,
+   "weight": 158.3,
+   "appetite": 7.35,
+   "trust": 6.1,
+   "indulgence": 20.615000000000002,
+   "openness": 33.195,
+   "weeklyMomentum": 0,
+   "preference": "buttery breads",
+   "preferences": {
+    "pace": "gradual",
+    "focus": "comfort",
+    "public": "private"
+   },
+   "slimMindset": true,
+   "consent": "Standard clinic employment, 21+. HR file lists primary-care duties only.",
+   "lastStage": 0,
+   "arc": {
+    "completedBeats": [],
+    "choices": {},
+    "flags": []
+   },
+   "scenes": {
+    "flags": [],
+    "choices": {},
+    "resolved": []
+   },
+   "framingErosion": 0,
+   "earlyEventsFired": [
+    "jeans_tight"
+   ]
+  }
+ ],
+ "patients": [
+  {
+   "id": "patient-474ca",
+   "type": "patient",
+   "name": "Celeste Mori",
+   "role": "architect",
+   "age": 24,
+   "ethnicity": "Latina",
+   "bodyType": "pear",
+   "archetype": "perfectionist",
+   "baselineWeight": 148,
+   "weight": 156.9,
+   "chartedWeight": 150,
+   "appetite": 6.6,
+   "trust": 2,
+   "indulgence": 6.029999999999999,
+   "openness": 10.789999999999996,
+   "weeklyMomentum": 0,
+   "preference": "rich soups",
+   "preferences": {
+    "pace": "gradual",
+    "focus": "comfort",
+    "public": "private"
+   },
+   "seenThisWeek": false,
+   "visits": 0,
+   "loyalty": 0,
+   "loyaltyArc": {
+    "completedBeats": []
+   },
+   "appearance": {
+    "heightInches": 71,
+    "hairColor": "rose_gold",
+    "hairStyle": "braided",
+    "topColor": "white",
+    "bottomColor": "white",
+    "preset": "leggings_forever",
+    "wardrobe": {
+     "top": "tank",
+     "bottom": "leggings",
+     "behavior": "leggings_layer"
+    }
+   },
+   "slimMindset": true,
+   "consent": "Adult patient, 21+. Intake forms list routine primary-care services.",
+   "lastStage": 0,
+   "publicReason": null,
+   "lastFramingTier": "clinical",
+   "scenes": {
+    "flags": [],
+    "choices": {},
+    "resolved": []
+   },
+   "framingErosion": 0,
+   "earlyEventsFired": []
+  }
+ ],
+ "archivedPatients": [],
+ "achievements": {
+  "unlocked": [
+   "first_week"
+  ]
+ },
+ "stats": {
+  "arcBeatsCompleted": 0,
+  "patientsRecruited": 0,
+  "compoundsUsed": 0,
+  "wardrobeEvents": 0,
+  "relationshipBeats": 0,
+  "allInstallablesOwned": false,
+  "groupScenesPlayed": 0,
+  "chaptersCompleted": 0,
+  "loyaltyArcBeats": 0,
+  "rivalOpsActions": 0,
+  "earlyGainEvents": 1,
+  "visitCount": 0,
+  "scenesResolved": 0,
+  "interruptsHandled": 0
+ },
+ "firedEvents": [],
+ "apSpentThisWeek": 0,
+ "weekConsultIncome": 0,
+ "log": [
+  {
+   "id": "1783908902809-6124982599c4e",
+   "week": 10,
+   "type": "resolution",
+   "title": "Week 10 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902809-fc5afbec31f2d",
+   "week": 9,
+   "type": "resolution",
+   "title": "Week 9 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Late Supply Delivery:</strong> A supply crate arrives with bonus sample packs. Rich. Dense. Mislabeled as \"fiber trial.\" Gone by morning.</p>\n    \n    \n    \n    \n    <p>Week 9 closes. <strong>Daphne Novak</strong> adds 2.7 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902808-6f98c1e27de48",
+   "week": 8,
+   "type": "resolution",
+   "title": "Week 8 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n    \n    \n    \n    <p>Week 8 closes. <strong>Daphne Novak</strong> adds 4.2 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902807-47575750edf3f",
+   "week": 7,
+   "type": "resolution",
+   "title": "Week 7 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n    <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n    \n    \n    \n    <p>Week 7 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902807-8b0cdac2bd975",
+   "week": 6,
+   "type": "resolution",
+   "title": "Week 6 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Staff Lunch Run:</strong> Two staff go out for \"salads.\" They return with bags that smell like fried oil. No salads visible.</p>\n    \n    \n    \n    \n    <p>Week 6 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902806-13de512324462",
+   "week": 5,
+   "type": "resolution",
+   "title": "Week 5 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Wellness Retreat Flyer:</strong> A corporate wellness retreat flyer lands on your desk. \"Detox weekend.\" Staff use it as a placemat for pizza.</p>\n    <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n    \n    \n    \n    <p>Week 5 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902805-968ce00abea47",
+   "week": 4,
+   "type": "resolution",
+   "title": "Week 4 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 4 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+  },
+  {
+   "id": "1783908902804-4229c395f8a85",
+   "week": 3,
+   "type": "resolution",
+   "title": "Week 3 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Donor Brunch:</strong> A donor hosts brunch in your lobby. Quiche. Pastries. Patients arrive early and stay late.</p>\n    \n    \n    \n    \n    <p>Week 3 closes. <strong>Daphne Novak</strong> adds 1.7 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+  },
+  {
+   "id": "1783908902803-985dec8fa0585",
+   "week": 2,
+   "type": "resolution",
+   "title": "Week 2 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n    \n    \n    \n    \n    <p>Week 2 closes. <strong>Daphne Novak</strong> adds 2.5 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+  },
+  {
+   "id": "1783908902802-d1b25ad3665a7",
+   "week": 1,
+   "type": "resolution",
+   "title": "Week 1 resolution",
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Wellness Retreat Flyer:</strong> A corporate wellness retreat flyer lands on your desk. \"Detox weekend.\" Staff use it as a placemat for pizza.</p>\n    \n    \n    \n    \n    <p>Week 1 closes. <strong>Daphne Novak</strong> adds 2.2 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+  },
+  {
+   "id": "welcome",
+   "week": 1,
+   "type": "system",
+   "title": "Lease signed",
+   "text": "Strip-mall suite. One reception desk. Fluorescents hum. Your sign says primary care. Week one."
+  }
+ ],
+ "thisWeek": [],
+ "lastResolution": {
+  "week": 10,
+  "challengeWeek": null,
+  "installed": [],
+  "staffGains": [
+   {
+    "id": "staff-6195e",
+    "name": "Daphne Novak",
+    "gain": 2.4,
+    "oldStage": 0,
+    "newStage": 0
+   }
+  ],
+  "patientGains": [
+   {
+    "id": "patient-474ca",
+    "name": "Celeste Mori",
+    "gain": 0.4,
+    "oldStage": 0,
+    "newStage": 0
+   }
+  ],
+  "stageChanges": [],
+  "bills": 874,
+  "clinicRevenue": 0,
+  "newPatients": [],
+  "weeklyEvent": {
+   "id": "caterer_convention",
+   "title": "Caterer Convention",
+   "weight": 0.85,
+   "text": "A caterer convention books the block. Sample trays flood the break room. Nobody skips."
+  },
+  "wardrobeFired": [],
+  "relationshipBeat": null,
+  "rivalEvent": null,
+  "chapterAdvance": null,
+  "seasonal": null,
+  "ending": null,
+  "newAchievements": [],
+  "html": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  ",
+  "weekInterrupt": null,
+  "gameOver": null
+ },
+ "pendingStageHighlights": [],
+ "rngSeed": 142281449,
+ "rooms": {
+  "waiting": [],
+  "break": [],
+  "exam": [],
+  "lobby": []
+ },
+ "rivalState": {
+  "name": "ThriveWell Annex",
+  "reputation": 27,
+  "phase": 3,
+  "eventsFired": [
+   "juice_bar",
+   "poach_attempt",
+   "stolen_poster"
+  ],
+  "active": true,
+  "defeated": false,
+  "weekStarted": 1
+ },
+ "chapter": 1,
+ "chapterGoalsMet": [],
+ "clinicStyle": {
+  "softness": 50,
+  "speed": 50,
+  "spectacle": 50
+ },
+ "relationshipHistory": [],
+ "pendingGroupScene": null,
+ "ngPlus": 0,
+ "ngPlusGain": 0,
+ "needsChallengePick": true,
+ "challengeWeek": null,
+ "audioMuted": false,
+ "rivalClinic": {
+  "phase": 0,
+  "maxPhase": 4,
+  "patientsRecovered": 0,
+  "actionsTaken": 0,
+  "complete": false
+ },
+ "recruitment": {
+  "openSlotId": null,
+  "candidates": [],
+  "filledSlots": []
+ },
+ "coverRating": 100,
+ "heat": 0,
+ "sceneState": {
+  "resolved": [],
+  "weekInterrupt": null
+ },
+ "globalFlags": [],
+ "gameOver": null,
+ "ledger": [],
+ "gameSettings": {
+  "heatCap": "charged",
+  "onboardingDismissed": false
+ },
+ "pendingRungScenes": [],
+ "supplyCostChapterFired": false,
+ "seenLines": {},
+ "history": [],
+ "difficulty": "attending",
+ "pendingLetters": [],
+ "coverOps": {
+  "activeBuffs": []
+ },
+ "campaignBoost": null
+}
