@@ -47,6 +47,7 @@ import { setWeekInterrupt, getWeekInterrupt } from './weekScenes.js';
 import { SCENE_CATALOG } from './scenes/catalog.js';
 import { checkAuditGameOver } from './gameOver.js';
 import { chartGap, getPatientFramingTier } from './patientFraming.js';
+import { getMindset } from './mindset.js';
 import { recordLedger, dishonestChartEntries, ledgerWhere } from './memoryLedger.js';
 import { getDominantStyle } from './clinicStyle.js';
 import { findCharacter } from './roster.js';
@@ -711,14 +712,44 @@ export function endWeek(state) {
   state.reputation = Math.max(0, state.reputation);
 
   const leaving = [];
+  const FRAMING_STAY_BONUS = { clinical: 0, clinical_plus: 4, warming: 8, complicit: 12 };
   state.patients = state.patients.filter((patient) => {
-    const shouldLeave = patient.visits > 0 && rng.chance(18 + patient.visits * 5);
-    if (shouldLeave) {
+    if (!(patient.visits > 0)) return true;
+    const tier = getPatientFramingTier(patient);
+    const trustBonus = Math.min(6, patient.trust || 0);
+    const leaveChance = Math.min(
+      30,
+      Math.max(3, 22 - (patient.loyalty || 0) * 6 - trustBonus - (FRAMING_STAY_BONUS[tier] || 0)),
+    );
+    if (rng.chance(leaveChance)) {
       leaving.push(patient);
       return false;
     }
     return true;
   });
+  for (const patient of leaving) {
+    recordLedger(state, {
+      id: 'patient_departed',
+      characterId: patient.id,
+      data: {
+        week: state.week,
+        stage: getStageIndex(patient),
+        mindset: getMindset(patient),
+        tier: getPatientFramingTier(patient),
+        exitWeight: patient.weight,
+      },
+    });
+    if (getPatientFramingTier(patient) === 'complicit') {
+      if (!state.pendingLetters) state.pendingLetters = [];
+      state.pendingLetters.push({
+        id: `goodbye-${patient.id}`,
+        week: state.week,
+        characterId: patient.id,
+        from: patient.name,
+        text: `A note left at the front desk in ${patient.name.split(' ')[0]}'s hand: "Moving closer to my sister. Keep my chart the way we kept it. You know which numbers were ours."`,
+      });
+    }
+  }
   state.archivedPatients.push(...leaving);
 
   const newPatientCount = weeklyNewPatientCount(state, rng, effects);
