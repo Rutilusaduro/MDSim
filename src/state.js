@@ -7,8 +7,8 @@ import { defaultRivalClinicState } from './rivalClinic.js';
 import { ensurePatientAppearance } from './patientAppearance.js';
 import { refreshRecruitmentOffers } from './recruitment.js';
 
-export const SAVE_KEY = 'indulgecare-clinic-save-v6';
-export const GAME_VERSION = 6;
+export const SAVE_KEY = 'indulgecare-clinic-save-v7';
+export const GAME_VERSION = 7;
 
 export function createRng(seed = Date.now()) {
   let value = Math.abs(Math.floor(seed)) % 2147483647;
@@ -121,6 +121,11 @@ export function createNewGame(options = {}) {
     gameSettings: { heatCap: 'charged', onboardingDismissed: false },
     pendingRungScenes: [],
     supplyCostChapterFired: false,
+    seenLines: {},
+    history: [],
+    difficulty: 'attending',
+    pendingLetters: [],
+    coverOps: { activeBuffs: [] },
   };
 
   refreshRecruitmentOffers(game, rng);
@@ -190,11 +195,13 @@ export function formatMoney(value) {
 
 export function saveGame(state = gameState) {
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  if (!localStorage.getItem(SAVE_KEY)) return;
   localStorage.removeItem('indulgecare-clinic-save-v1');
   localStorage.removeItem('indulgecare-clinic-save-v2');
   localStorage.removeItem('indulgecare-clinic-save-v3');
   localStorage.removeItem('indulgecare-clinic-save-v4');
   localStorage.removeItem('indulgecare-clinic-save-v5');
+  localStorage.removeItem('indulgecare-clinic-save-v6');
 }
 
 function migrateCharacter(c) {
@@ -268,11 +275,19 @@ function normaliseState(raw) {
   merged.gameSettings = { heatCap: 'charged', onboardingDismissed: false, ...(raw.gameSettings || {}) };
   merged.pendingRungScenes = raw.pendingRungScenes || [];
   merged.supplyCostChapterFired = raw.supplyCostChapterFired || false;
+  merged.seenLines = raw.seenLines || {};
+  merged.history = raw.history || [];
+  merged.difficulty = raw.difficulty || 'attending';
+  merged.pendingLetters = raw.pendingLetters || [];
+  merged.coverOps = raw.coverOps || { activeBuffs: [] };
   return merged;
 }
 
+export { normaliseState };
+
 export function loadGame() {
   let saved = localStorage.getItem(SAVE_KEY);
+  if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v6');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v5');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v4');
   if (!saved) saved = localStorage.getItem('indulgecare-clinic-save-v3');
