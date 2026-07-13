@@ -1,4 +1,4 @@
-import { rngForState } from './state.js';
+import { createRng, rngForState } from './state.js';
 
 /**
  * Seen-line selection: every pool rotates fully before any line repeats.
@@ -37,7 +37,9 @@ export function pickSeen(state, scopeId, poolId, pool, { peek = false } = {}) {
     candidates = pool.map((_, i) => i);
   }
 
-  const rng = rngForState(state);
+  // Peek must leave the state untouched, including rngSeed, so a
+  // re-render never changes what the player is about to see.
+  const rng = peek ? createRng(state.rngSeed) : rngForState(state);
   const choice = candidates[rng.int(0, candidates.length - 1)];
 
   if (!peek) {

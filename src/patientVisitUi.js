@@ -9,7 +9,6 @@ import {
   startVisit,
   applyWeighChartChoice,
 } from './patientVisit.js';
-import { getVisitOpeningWithEcho } from './patientVisitDialogue.js';
 import { VISIT_TONES } from './scenes/catalog.js';
 import { renderSilhouette } from './silhouettes.js';
 import { visitMobilityWarning } from './worldImpact.js';
@@ -179,7 +178,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
     (a) => VISIT_PHASES.indexOf(a.phase) <= VISIT_PHASES.indexOf(visit.phase),
   );
   const phaseIdx = VISIT_PHASES.indexOf(visit.phase);
-  const opening = visit.visitLog?.length ? '' : getVisitOpeningWithEcho(state, patient);
+  const opening = visit.visitLog?.length ? '' : visit.opening || '';
   const framingTier = getPatientFramingTier(patient);
   const framingChip = getFramingChipLabel(framingTier);
   const framingNote = getPatientFramingNote(patient);

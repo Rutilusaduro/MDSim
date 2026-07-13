@@ -4,11 +4,10 @@ import { visitDialogueTier, getPatientFramingNote, getPatientFramingTier, getPat
 import { tierFromAttitude } from './mechanics/attitudeTier.js';
 import { getVisitBeat } from './visitDialogueBeats.js';
 import { worldEcho } from './worldEcho.js';
+import { pickSeen } from './proseSelect.js';
 
-function pickLine(character, pool) {
-  if (!pool?.length) return '';
-  const seed = (character.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
-  return pool[seed % pool.length];
+function pickLine(state, character, poolId, pool) {
+  return pickSeen(state, character?.id || 'world', poolId, pool);
 }
 
 function getVisitReply(actionId, resolvedTier, attitudeTier) {
@@ -888,7 +887,7 @@ export const MISSED_VISIT_WEEK_LINES = [
   'She skipped without rescheduling. Trust thinned. The next opening went to someone hungrier.',
 ];
 
-export function getVisitNarrative(actionId, patient, tier) {
+export function getVisitNarrative(state, actionId, patient, tier) {
   const actionPool = VISIT_NARRATIVE[actionId];
   const attitudeTier = tier || tierFromAttitude(getAttitudeKey(patient));
   const resolvedTier = visitDialogueTier(patient, attitudeTier);
@@ -909,7 +908,7 @@ export function getVisitNarrative(actionId, patient, tier) {
       [];
   }
 
-  const line = pickLine(patient, pool);
+  const line = pickLine(state, patient, `visit.${actionId}.${resolvedTier}`, pool);
   if (!line) return { narrative: '', reply: '' };
 
   const reply = getVisitReply(actionId, resolvedTier, attitudeTier);
@@ -925,7 +924,7 @@ export function getVisitNarrative(actionId, patient, tier) {
   return { narrative: line, reply: '' };
 }
 
-export function getVisitOpening(patient) {
+export function getVisitOpening(state, patient) {
   const attitudeTier = tierFromAttitude(getAttitudeKey(patient));
   const tier = visitDialogueTier(patient, attitudeTier);
   if (tier === 'clinical') {
@@ -936,12 +935,12 @@ export function getVisitOpening(patient) {
       `She arrived on time for a ${reason}, phone silenced, refill questions folded in her purse.`,
       `The chart lists ${reason}. She confirms her pharmacy and asks whether labs from the last draw posted.`,
     ];
-    return pickLine(patient, reasonOpenings);
+    return pickLine(state, patient, 'visit.opening.clinical', reasonOpenings);
   }
-  return pickLine(patient, VISIT_OPENING[tier] || VISIT_OPENING.early);
+  return pickLine(state, patient, `visit.opening.${tier}`, VISIT_OPENING[tier] || VISIT_OPENING.early);
 }
 
-export function getVisitClosing(patient, visitSummary = {}) {
+export function getVisitClosing(state, patient, visitSummary = {}) {
   const attitudeTier = tierFromAttitude(getAttitudeKey(patient));
   const tier = visitDialogueTier(patient, attitudeTier);
   let pool = VISIT_CLOSING[tier] || VISIT_CLOSING.early || VISIT_CLOSING.mid;
@@ -983,7 +982,7 @@ export function getVisitClosing(patient, visitSummary = {}) {
     ];
   }
 
-  return pickLine(patient, pool);
+  return pickLine(state, patient, `visit.closing.${tier}`, pool);
 }
 
 const WEIGH_RITUAL = {
@@ -1013,19 +1012,19 @@ const WEIGH_RITUAL = {
   ],
 };
 
-export function getWeighRitualReaction(patient) {
+export function getWeighRitualReaction(state, patient) {
   const framing = getPatientFramingTier(patient);
   const pool = WEIGH_RITUAL[framing] || WEIGH_RITUAL.clinical;
-  return pickLine(patient, pool);
+  return pickLine(state, patient, `weigh.reaction.${framing}`, pool);
 }
 
 export function getVisitOpeningWithEcho(state, patient) {
-  const base = getVisitOpening(patient);
+  const base = getVisitOpening(state, patient);
   const echo = worldEcho(state, patient);
   if (!echo) return base;
   return `${base} ${echo}`;
 }
 
-export function getMissedVisitPenalty(patient) {
-  return pickLine(patient, MISSED_VISIT_WEEK_LINES);
+export function getMissedVisitPenalty(state, patient) {
+  return pickLine(state, patient, 'visit.missed', MISSED_VISIT_WEEK_LINES);
 }

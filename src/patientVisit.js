@@ -13,6 +13,7 @@ import { computeClinicEffects } from './clinic.js';
 import {
   getVisitClosing,
   getVisitNarrative,
+  getVisitOpeningWithEcho,
   getMissedVisitPenalty,
   getWeighRitualReaction,
 } from './patientVisitDialogue.js';
@@ -515,9 +516,9 @@ function finishWeighAction(state, visit, patient, toneId) {
   let reply;
   if (toneId && actionSupportsTone(action.id)) {
     const tier = tierFromAttitude(getAttitudeKey(patient));
-    ({ narrative, reply } = buildToneNarrative(patient, action.id, tier, toneId));
+    ({ narrative, reply } = buildToneNarrative(state, patient, action.id, tier, toneId));
   } else {
-    ({ narrative, reply } = visitDialogue(patient, action.id));
+    ({ narrative, reply } = visitDialogue(state, patient, action.id));
   }
 
   if (!visit.visitLog) visit.visitLog = [];
@@ -567,11 +568,12 @@ export function beginWeighRitual(state, toneId = null) {
   applyVisitEffects(state, patient, action);
   patient.weight = Math.round(patient.weight * 10) / 10;
 
+  const reaction = getWeighRitualReaction(state, patient);
   visit.pendingWeigh = {
     weight: patient.weight,
     step: 'landing',
     toneId,
-    reaction: getWeighRitualReaction(patient),
+    reaction,
   };
   visit.pendingWeighAction = targetId;
   visit.pendingWeighTone = toneId;
@@ -580,7 +582,7 @@ export function beginWeighRitual(state, toneId = null) {
     ok: true,
     weighRitual: true,
     weight: patient.weight,
-    reaction: getWeighRitualReaction(patient),
+    reaction,
   };
 }
 
@@ -591,10 +593,10 @@ function consumeInventory(state, action) {
   if (state.stats) state.stats.compoundsUsed = (state.stats.compoundsUsed || 0) + 1;
 }
 
-function visitDialogue(patient, actionId) {
+function visitDialogue(state, patient, actionId) {
   const tier = tierFromAttitude(getAttitudeKey(patient));
   const resolvedId = actionId === 'upsell_wellness_kit' ? 'upsell_package' : actionId;
-  return getVisitNarrative(resolvedId, patient, tier);
+  return getVisitNarrative(state, resolvedId, patient, tier);
 }
 
 function visitSummaryFromActions(visit) {
@@ -625,6 +627,7 @@ export function startVisit(state, patientId) {
     completedActions: [],
     visitLog: [],
     startedWeek: state.week,
+    opening: getVisitOpeningWithEcho(state, patient),
   };
 
   return { ok: true, message: `Visit started for ${patient.name}.` };
@@ -769,9 +772,9 @@ export function performVisitAction(state, actionId, toneId = null) {
   let reply;
   if (toneId && actionSupportsTone(actionId)) {
     const tier = tierFromAttitude(getAttitudeKey(patient));
-    ({ narrative, reply } = buildToneNarrative(patient, actionId, tier, toneId));
+    ({ narrative, reply } = buildToneNarrative(state, patient, actionId, tier, toneId));
   } else {
-    ({ narrative, reply } = visitDialogue(patient, actionId));
+    ({ narrative, reply } = visitDialogue(state, patient, actionId));
   }
 
   if (!narrative) {
@@ -853,7 +856,7 @@ export function completeVisit(state) {
     );
   }
 
-  const summary = getVisitClosing(patient, visitSummaryFromActions(visit));
+  const summary = getVisitClosing(state, patient, visitSummaryFromActions(visit));
   addWeekNote(
     {
       type: 'visit',
@@ -892,7 +895,7 @@ export function visitWeekPenalty(state) {
   const reputation = unvisited.length * 2;
   const trustLossPerPatient = 0.2;
   const names = unvisited.map((patient) => patient.name).join(', ');
-  const penaltyLine = unvisited.length ? getMissedVisitPenalty(unvisited[0]) : '';
+  const penaltyLine = unvisited.length ? getMissedVisitPenalty(state, unvisited[0]) : '';
 
   return {
     unvisited: unvisited.length,

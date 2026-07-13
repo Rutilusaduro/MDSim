@@ -86,8 +86,8 @@ export function getToneReply(actionId, toneId, tier = 'early') {
   return TONE_REPLIES[actionId]?.[toneId] || '';
 }
 
-export function buildToneNarrative(patient, actionId, tier, toneId) {
-  const base = getVisitNarrative(actionId, patient, tier);
+export function buildToneNarrative(state, patient, actionId, tier, toneId) {
+  const base = getVisitNarrative(state, actionId, patient, tier);
   const dialogueTier = visitDialogueTier(patient, tier || 'early');
   const prefix =
     dialogueTier === 'clinical' && TONE_NARRATIVE_PREFIX_CLINICAL[toneId]
