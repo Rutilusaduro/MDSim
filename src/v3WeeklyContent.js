@@ -5,9 +5,9 @@ export const V3_WEEKLY_EVENTS = [
     weight: 0.9,
     seasonal: 'winter',
     text: 'A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.',
-    effect: (state) => {
+    effect: (state, rng) => {
       [...state.staff, ...state.patients].forEach((c) => {
-        c.weight += 0.5 + Math.random() * 0.8;
+        c.weight += 0.5 + rng.next() * 0.8;
         c.indulgence += 1;
       });
     },
@@ -76,9 +76,9 @@ export const V3_WEEKLY_EVENTS = [
     title: 'Caterer Convention',
     weight: 0.85,
     text: 'A caterer convention books the block. Sample trays flood the break room. Nobody skips.',
-    effect: (state) => {
+    effect: (state, rng) => {
       state.staff.forEach((s) => {
-        s.weight += 1.0 + Math.random() * 0.5;
+        s.weight += 1.0 + rng.next() * 0.5;
       });
     },
   },
@@ -163,9 +163,9 @@ export const V3_WEEKLY_EVENTS = [
     title: 'Food Truck Friday',
     weight: 0.85,
     text: 'You invite a food truck for Friday lunch. The line wraps into the exam hall.',
-    effect: (state) => {
+    effect: (state, rng) => {
       [...state.staff, ...state.patients].forEach((c) => {
-        if (Math.random() > 0.3) c.weight += 0.65;
+        if (rng.next() > 0.3) c.weight += 0.65;
       });
       state.money -= 80;
     },

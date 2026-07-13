@@ -3,8 +3,8 @@
  "clinicName": "Vale Family Medicine",
  "doctorName": "Dr. Vale",
  "week": 31,
- "money": -23780,
- "reputation": 2,
+ "money": -23620,
+ "reputation": 0,
  "actionPointsMax": 7,
  "actionPoints": 7,
  "rent": 420,
@@ -29,11 +29,11 @@
    "bodyType": "willowy",
    "archetype": "rivalDoctor",
    "baselineWeight": 128,
-   "weight": 262.6,
-   "appetite": 7.550000000000001,
-   "trust": 6.25,
-   "indulgence": 96.59,
-   "openness": 87.87000000000002,
+   "weight": 272.6,
+   "appetite": 7.6,
+   "trust": 6.300000000000001,
+   "indulgence": 100,
+   "openness": 92.38499999999999,
    "weeklyMomentum": 0,
    "preference": "buttery breads",
    "preferences": {
@@ -56,12 +56,11 @@
    },
    "framingErosion": 0,
    "earlyEventsFired": [
-    "button_pop",
-    "bra_strap",
-    "old_photo",
-    "diet_talk",
     "chair_pinch",
-    "zipper_stuck"
+    "scale_wince",
+    "old_photo",
+    "zipper_stuck",
+    "diet_talk"
    ]
   }
  ],
@@ -76,12 +75,12 @@
    "bodyType": "pear",
    "archetype": "perfectionist",
    "baselineWeight": 148,
-   "weight": 174.5,
+   "weight": 173.4,
    "chartedWeight": 150,
    "appetite": 6.6,
    "trust": 0,
-   "indulgence": 19.74,
-   "openness": 22.820000000000004,
+   "indulgence": 18.285,
+   "openness": 18.004999999999992,
    "weeklyMomentum": 0,
    "preference": "rich soups",
    "preferences": {
@@ -120,9 +119,6 @@
    },
    "framingErosion": 0,
    "earlyEventsFired": [
-    "jeans_tight",
-    "bra_strap",
-    "old_photo",
     "button_pop"
    ],
    "arc": {
@@ -134,7 +130,8 @@
  "achievements": {
   "unlocked": [
    "first_week",
-   "wardrobe_crisis"
+   "wardrobe_crisis",
+   "first_stage"
   ]
  },
  "stats": {
@@ -148,226 +145,224 @@
   "chaptersCompleted": 0,
   "loyaltyArcBeats": 0,
   "rivalOpsActions": 0,
-  "earlyGainEvents": 10,
+  "earlyGainEvents": 6,
   "visitCount": 0,
   "scenesResolved": 0,
   "interruptsHandled": 0
  },
- "firedEvents": [
-  "wardrobe_button_strain_staff-6195e"
- ],
+ "firedEvents": [],
  "apSpentThisWeek": 0,
  "weekConsultIncome": 0,
  "log": [
   {
-   "id": "1783909400550-ab8e733301c3d",
+   "id": "note-30-100",
    "week": 30,
    "type": "resolution",
    "title": "Week 30 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 30 closes. <strong>Daphne Novak</strong> adds 8.9 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Break Room Feast:</strong> Someone brings a casserole chain to the break room. Staff stay an extra twenty minutes. Plates empty. Belts suffer.</p>\n    \n    \n    \n    \n    <p>Week 30 closes. <strong>Daphne Novak</strong> adds 7.8 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches Shameless Glutton. Every pound reads clearly on a tall frame with so little padding in its history. The scrub top strains at the shoulder and chest and falls more generously below. Her thighs touch at mid-stride now, a friction her long step once precluded. She is still tall, still long-limbed. Every other measurement has grown into the space those long limbs provide, filling it with thoroughness that shows from the end of any hall. The body changed. So did the appetite. Both follow her down the hall.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400550-34e1ccb183c2",
+   "id": "note-29-97",
    "week": 29,
    "type": "resolution",
    "title": "Week 29 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 29 closes. <strong>Daphne Novak</strong> adds 8.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Scale Removed:</strong> Someone removes the break room scale. Morale rises. Snack runs rise faster.</p>\n    \n    \n    \n    \n    <p>Week 29 closes. <strong>Daphne Novak</strong> adds 8.3 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400550-87f0974a6bc4a",
+   "id": "note-28-94",
    "week": 28,
    "type": "resolution",
    "title": "Week 28 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Mole Defection:</strong> A patient admits she was sent from ThriveWell. She stayed for the vending wall. She wants an appointment card.</p>\n    \n    \n    \n    \n    <p>Week 28 closes. <strong>Daphne Novak</strong> adds 7.7 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Mole Defection:</strong> A patient admits she was sent from ThriveWell. She stayed for the vending wall. She wants an appointment card.</p>\n    \n    \n    \n    \n    <p>Week 28 closes. <strong>Daphne Novak</strong> adds 7.5 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400549-c33c4727a5ecb",
+   "id": "note-27-91",
    "week": 27,
    "type": "resolution",
    "title": "Week 27 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Staff Bake-Off:</strong> Nadia declares a staff bake-off. Nobody wins. Everyone eats. The couch suffers.</p>\n    \n    <p><strong>Daphne Novak:</strong> A button holds on by a single thread during rounds, then surrenders with a soft pop against her swelling middle. She pins it shut, laughs it off, and orders lunch anyway.</p>\n    \n    \n    <p>Week 27 closes. <strong>Daphne Novak</strong> adds 5.7 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 27 closes. <strong>Daphne Novak</strong> adds 6.6 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400549-49656df4fc963",
+   "id": "note-26-88",
    "week": 26,
    "type": "resolution",
    "title": "Week 26 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Compliment at the Desk:</strong> A patient tells Elena she looks \"healthy and happy.\" Elena repeats the line twice. She orders lunch with extra sides.</p>\n    \n    \n    \n    \n    <p>Week 26 closes. <strong>Daphne Novak</strong> adds 6.7 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches Heavy Habit. Weight hangs on her long bones and shows in the way she lowers herself into seats and lifts herself back out of them. Her belly is round and warm beneath the scrub top. Her arms have filled in at the upper curve. She drapes into clinic chairs with the leisure of a body that has grown accustomed to taking its time, long legs folded and flesh settling where it finds room. The body changed. So did the appetite. Both follow her down the hall.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 26 closes. <strong>Daphne Novak</strong> adds 8.0 lb. <strong>Celeste Mori</strong> leaves 0.3 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400549-8a95502e2d624",
+   "id": "note-25-85",
    "week": 25,
    "type": "resolution",
    "title": "Week 25 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Food Truck Friday:</strong> You invite a food truck for Friday lunch. The line wraps into the exam hall.</p>\n    \n    \n    \n    \n    <p>Week 25 closes. <strong>Daphne Novak</strong> adds 5.5 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 25 closes. <strong>Daphne Novak</strong> adds 6.6 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches Heavy Habit. Weight hangs on her long bones and shows in the way she lowers herself into seats and lifts herself back out of them. Her belly is round and warm beneath the scrub top. Her arms have filled in at the upper curve. She drapes into clinic chairs with the leisure of a body that has grown accustomed to taking its time, long legs folded and flesh settling where it finds room. The body changed. So did the appetite. Both follow her down the hall.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400548-665f372340e9d",
+   "id": "note-24-82",
    "week": 24,
    "type": "resolution",
    "title": "Week 24 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Break Room Feast:</strong> Someone brings a casserole chain to the break room. Staff stay an extra twenty minutes. Plates empty. Belts suffer.</p>\n    \n    \n    \n    \n    <p>Week 24 closes. <strong>Daphne Novak</strong> adds 5.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Button Crisis Monday:</strong> Three staff report button failures before nine a.m. Safety pins sell out at the corner store.</p>\n    \n    \n    \n    \n    <p>Week 24 closes. <strong>Daphne Novak</strong> adds 7.2 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400548-006ff031b9531",
+   "id": "note-23-79",
    "week": 23,
    "type": "resolution",
    "title": "Week 23 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 23 closes. <strong>Daphne Novak</strong> adds 3.6 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Late Supply Delivery:</strong> A supply crate arrives with bonus sample packs. Rich. Dense. Mislabeled as \"fiber trial.\" Gone by morning.</p>\n    \n    \n    \n    \n    <p>Week 23 closes. <strong>Daphne Novak</strong> adds 5.5 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400548-c8e522836e14a",
+   "id": "note-22-75",
    "week": 22,
    "type": "resolution",
    "title": "Week 22 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 22 closes. <strong>Daphne Novak</strong> adds 5.5 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Donor Brunch:</strong> A donor hosts brunch in your lobby. Quiche. Pastries. Patients arrive early and stay late.</p>\n    \n    \n    \n    \n    <p>Week 22 closes. <strong>Daphne Novak</strong> adds 3.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400547-78a8c1e2aa7c6",
+   "id": "note-21-72",
    "week": 21,
    "type": "resolution",
    "title": "Week 21 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Staff Lunch Run:</strong> Two staff go out for \"salads.\" They return with bags that smell like fried oil. No salads visible.</p>\n    \n    \n    \n    \n    <p>Week 21 closes. <strong>Daphne Novak</strong> adds 5.6 lb. <strong>Celeste Mori</strong> leaves 0.3 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Staff Bake-Off:</strong> Nadia declares a staff bake-off. Nobody wins. Everyone eats. The couch suffers.</p>\n    \n    \n    \n    \n    <p>Week 21 closes. <strong>Daphne Novak</strong> adds 5.5 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400547-66b1e33a0d96e",
+   "id": "note-20-69",
    "week": 20,
    "type": "resolution",
    "title": "Week 20 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 20 closes. <strong>Daphne Novak</strong> adds 5.4 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches Growing Appetite. Her limbs are still long, still the first thing a person notices about her. They carry more now, soft filling-out along the thigh and inner arm that registers in the way fabric drapes when she stands still. Her movement has grown more deliberate, slowed by a degree she can feel. A slender woman with new weight is still slender, briefly, and the clock on that reading has started. Something shifted. She has not named it yet.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Staff Bake-Off:</strong> Nadia declares a staff bake-off. Nobody wins. Everyone eats. The couch suffers.</p>\n    \n    \n    \n    \n    <p>Week 20 closes. <strong>Daphne Novak</strong> adds 3.7 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400547-287053c11ae5b",
+   "id": "note-19-66",
    "week": 19,
    "type": "resolution",
    "title": "Week 19 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Scale Removed:</strong> Someone removes the break room scale. Morale rises. Snack runs rise faster.</p>\n    \n    \n    \n    \n    <p>Week 19 closes. <strong>Daphne Novak</strong> adds 5.0 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 19 closes. <strong>Daphne Novak</strong> adds 3.4 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400546-0f56fd86d10d2",
+   "id": "note-18-63",
    "week": 18,
    "type": "resolution",
    "title": "Week 18 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Food Truck Friday:</strong> You invite a food truck for Friday lunch. The line wraps into the exam hall.</p>\n    \n    \n    \n    \n    <p>Week 18 closes. <strong>Daphne Novak</strong> adds 5.2 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p><strong>Celeste Mori</strong>: Celeste Mori reaches First Bites. Her hips and thighs feel fuller in the jeans she wears most often and she keeps coming back to that sensation when she sits down in the waiting room. She tells herself it is the laundry, though she knows it is the second dinners she no longer skips. The fit at the seat is tighter than it was at the start of the year in a way she can no longer explain away. She has been eating more and paying more attention to the waistband because of it. She wears a white tank with thin straps with a white leggings with a rolling waistband. Tee hem rides up a finger width when she sits. Waistband leaves a pink line. Buttons stay closed. Thigh fabric pulls when she kneels. Something shifted. She has not named it yet.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 18 closes. <strong>Daphne Novak</strong> adds 4.1 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400545-8c7339ce2bf1d",
+   "id": "note-17-60",
    "week": 17,
    "type": "resolution",
    "title": "Week 17 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 17 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n    \n    \n    \n    \n    <p>Week 17 closes. <strong>Daphne Novak</strong> adds 4.5 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400544-d25a6a3545045",
+   "id": "note-16-56",
    "week": 16,
    "type": "resolution",
    "title": "Week 16 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    \n    \n    \n    \n    <p>Week 16 closes. <strong>Daphne Novak</strong> adds 3.7 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    \n    \n    \n    \n    <p>Week 16 closes. <strong>Daphne Novak</strong> adds 5.9 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400544-10acf8bf03bb3",
+   "id": "note-15-52",
    "week": 15,
    "type": "resolution",
    "title": "Week 15 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 15 closes. <strong>Daphne Novak</strong> adds 4.8 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    \n    \n    \n    \n    <p>Week 15 closes. <strong>Daphne Novak</strong> adds 4.9 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400544-1534d476db324",
+   "id": "note-14-48",
    "week": 14,
    "type": "resolution",
    "title": "Week 14 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Late Supply Delivery:</strong> A supply crate arrives with bonus sample packs. Rich. Dense. Mislabeled as \"fiber trial.\" Gone by morning.</p>\n    \n    \n    \n    \n    <p>Week 14 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches First Bites. A softness has appeared at her hip and lower belly that her slim frame makes obvious even at modest levels. She presses at it in the break room bathroom, more curious than anything else. Her scrubs still hang freely from her shoulders, fabric moving with her long stride without impediment. The change is small, and on a slender body, small changes speak before they are ready. Something shifted. She has not named it yet.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n    \n    \n    \n    \n    <p>Week 14 closes. <strong>Daphne Novak</strong> adds 5.0 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400543-3cffca75063bf",
+   "id": "note-13-44",
    "week": 13,
    "type": "resolution",
    "title": "Week 13 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 13 closes. <strong>Daphne Novak</strong> adds 2.5 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Pastry Wall Install:</strong> You commission a pastry wall for the lobby. ThriveWell Annex goes quiet for a day.</p>\n    \n    \n    \n    \n    <p>Week 13 closes. <strong>Daphne Novak</strong> adds 3.7 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400543-aa9eec1b1c3f9",
+   "id": "note-12-41",
    "week": 12,
    "type": "resolution",
    "title": "Week 12 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    \n    \n    \n    \n    <p>Week 12 closes. <strong>Daphne Novak</strong> adds 3.3 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Pastry Wall Install:</strong> You commission a pastry wall for the lobby. ThriveWell Annex goes quiet for a day.</p>\n    \n    \n    \n    \n    <p>Week 12 closes. <strong>Daphne Novak</strong> adds 3.7 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches First Bites. A softness has appeared at her hip and lower belly that her slim frame makes obvious even at modest levels. She presses at it in the break room bathroom, more curious than anything else. Her scrubs still hang freely from her shoulders, fabric moving with her long stride without impediment. The change is small, and on a slender body, small changes speak before they are ready. Something shifted. She has not named it yet.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400542-f9354654a617d",
+   "id": "note-11-38",
    "week": 11,
    "type": "resolution",
    "title": "Week 11 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>VIP Waiting Upgrade:</strong> You rope off a VIP waiting corner with heated seats and a private snack cabinet. Regulars pretend not to notice. They notice.</p>\n    \n    \n    \n    \n    <p>Week 11 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Compliment at the Desk:</strong> A patient tells Elena she looks \"healthy and happy.\" Elena repeats the line twice. She orders lunch with extra sides.</p>\n    \n    \n    \n    \n    <p>Week 11 closes. <strong>Daphne Novak</strong> adds 2.2 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400542-d3942c7d6423a",
+   "id": "note-10-35",
    "week": 10,
    "type": "resolution",
    "title": "Week 10 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Pastry Wall Install:</strong> You commission a pastry wall for the lobby. ThriveWell Annex goes quiet for a day.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 3.0 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400542-1931f2056915b",
+   "id": "note-9-32",
    "week": 9,
    "type": "resolution",
    "title": "Week 9 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Button Crisis Monday:</strong> Three staff report button failures before nine a.m. Safety pins sell out at the corner store.</p>\n    \n    \n    \n    \n    <p>Week 9 closes. <strong>Daphne Novak</strong> adds 4.0 lb. <strong>Celeste Mori</strong> leaves 0.4 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n    \n    \n    \n    \n    <p>Week 9 closes. <strong>Daphne Novak</strong> adds 3.6 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400542-6f4a7909b3137",
+   "id": "note-8-28",
    "week": 8,
    "type": "resolution",
    "title": "Week 8 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 8 closes. <strong>Daphne Novak</strong> adds 2.6 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 8 closes. <strong>Daphne Novak</strong> adds 3.5 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400541-8f37517a60102",
+   "id": "note-7-25",
    "week": 7,
    "type": "resolution",
    "title": "Week 7 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Mole Defection:</strong> A patient admits she was sent from ThriveWell. She stayed for the vending wall. She wants an appointment card.</p>\n    <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n    \n    \n    \n    <p>Week 7 closes. <strong>Daphne Novak</strong> adds 2.1 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n    \n    \n    \n    <p>Week 7 closes. <strong>Daphne Novak</strong> adds 2.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400541-2f326753d1719",
+   "id": "note-6-21",
    "week": 6,
    "type": "resolution",
    "title": "Week 6 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Annex Rumor Mill:</strong> Rumor: ThriveWell patients sneak over for your vending wall. Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 6 closes. <strong>Daphne Novak</strong> adds 3.4 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 6 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400541-39fe5dff0b85d",
+   "id": "note-5-17",
    "week": 5,
    "type": "resolution",
    "title": "Week 5 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Donor Brunch:</strong> A donor hosts brunch in your lobby. Quiche. Pastries. Patients arrive early and stay late.</p>\n    <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n    \n    \n    \n    <p>Week 5 closes. <strong>Daphne Novak</strong> adds 2.1 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n    <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n    \n    \n    \n    <p>Week 5 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400540-1d8937422217",
+   "id": "note-4-13",
    "week": 4,
    "type": "resolution",
    "title": "Week 4 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Hunger Spiral:</strong> Half the roster reports \"weird hunger\" by midweek. Snack drawers empty. The clinic smells like bread.</p>\n    <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n    \n    \n    \n    <p>Week 4 closes. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Button Crisis Monday:</strong> Three staff report button failures before nine a.m. Safety pins sell out at the corner store.</p>\n    <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n    \n    \n    \n    <p>Week 4 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
   },
   {
-   "id": "1783909400540-cf8bf0ac24776",
+   "id": "note-3-9",
    "week": 3,
    "type": "resolution",
    "title": "Week 3 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Late Supply Delivery:</strong> A supply crate arrives with bonus sample packs. Rich. Dense. Mislabeled as \"fiber trial.\" Gone by morning.</p>\n    \n    \n    \n    \n    <p>Week 3 closes. <strong>Daphne Novak</strong> adds 1.9 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 3 closes. <strong>Daphne Novak</strong> adds 2.7 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
   },
   {
-   "id": "1783909400540-848ab227a776d",
+   "id": "note-2-6",
    "week": 2,
    "type": "resolution",
    "title": "Week 2 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 2 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 2 closes. <strong>Daphne Novak</strong> adds 1.8 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
   },
   {
-   "id": "1783909400539-f6c353196239f",
+   "id": "note-1-3",
    "week": 1,
    "type": "resolution",
    "title": "Week 1 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 1 closes. <strong>Daphne Novak</strong> adds 2.5 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 1 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
   },
   {
    "id": "welcome",
@@ -386,29 +381,39 @@
    {
     "id": "staff-6195e",
     "name": "Daphne Novak",
-    "gain": 8.9,
+    "gain": 7.8,
     "oldStage": 3,
-    "newStage": 3
+    "newStage": 4
    }
   ],
   "patientGains": [
    {
     "id": "patient-474ca",
     "name": "Celeste Mori",
-    "gain": 0.7,
+    "gain": 1,
     "oldStage": 1,
     "newStage": 1
    }
   ],
-  "stageChanges": [],
+  "stageChanges": [
+   {
+    "id": "staff-6195e",
+    "name": "Daphne Novak",
+    "gain": 7.8,
+    "oldStage": 3,
+    "newStage": 4,
+    "text": "Daphne Novak reaches Shameless Glutton. Every pound reads clearly on a tall frame with so little padding in its history. The scrub top strains at the shoulder and chest and falls more generously below. Her thighs touch at mid-stride now, a friction her long step once precluded. She is still tall, still long-limbed. Every other measurement has grown into the space those long limbs provide, filling it with thoroughness that shows from the end of any hall. The body changed. So did the appetite. Both follow her down the hall."
+   }
+  ],
   "bills": 874,
   "clinicRevenue": 0,
   "newPatients": [],
   "weeklyEvent": {
-   "id": "blogger_visit",
-   "title": "Blogger Visit",
-   "weight": 0.75,
-   "text": "A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch."
+   "id": "break_feast",
+   "title": "Break Room Feast",
+   "weight": 1,
+   "minUpgrades": 0,
+   "text": "Someone brings a casserole chain to the break room. Staff stay an extra twenty minutes. Plates empty. Belts suffer."
   },
   "wardrobeFired": [],
   "relationshipBeat": null,
@@ -426,16 +431,31 @@
    "modifier": "Patient trust gains +15% from events."
   },
   "ending": null,
-  "newAchievements": [],
-  "html": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Blogger Visit:</strong> A food blogger films in the waiting lounge. Your chairs trend. Three new patients call before lunch.</p>\n    \n    \n    \n    \n    <p>Week 30 closes. <strong>Daphne Novak</strong> adds 8.9 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  ",
+  "newAchievements": [
+   {
+    "id": "first_stage",
+    "name": "First Bloom",
+    "desc": "Any character reaches stage 5+."
+   }
+  ],
+  "html": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Break Room Feast:</strong> Someone brings a casserole chain to the break room. Staff stay an extra twenty minutes. Plates empty. Belts suffer.</p>\n    \n    \n    \n    \n    <p>Week 30 closes. <strong>Daphne Novak</strong> adds 7.8 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier.</p>\n    <p><strong>Daphne Novak</strong>: Daphne Novak reaches Shameless Glutton. Every pound reads clearly on a tall frame with so little padding in its history. The scrub top strains at the shoulder and chest and falls more generously below. Her thighs touch at mid-stride now, a friction her long step once precluded. She is still tall, still long-limbed. Every other measurement has grown into the space those long limbs provide, filling it with thoroughness that shows from the end of any hall. The body changed. So did the appetite. Both follow her down the hall.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  ",
   "weekInterrupt": {
    "sceneId": "early_jeans_tight",
    "characterId": "staff-6195e"
   },
   "gameOver": null
  },
- "pendingStageHighlights": [],
- "rngSeed": 724035179,
+ "pendingStageHighlights": [
+  {
+   "id": "staff-6195e",
+   "name": "Daphne Novak",
+   "gain": 7.8,
+   "oldStage": 3,
+   "newStage": 4,
+   "text": "Daphne Novak reaches Shameless Glutton. Every pound reads clearly on a tall frame with so little padding in its history. The scrub top strains at the shoulder and chest and falls more generously below. Her thighs touch at mid-stride now, a friction her long step once precluded. She is still tall, still long-limbed. Every other measurement has grown into the space those long limbs provide, filling it with thoroughness that shows from the end of any hall. The body changed. So did the appetite. Both follow her down the hall."
+  }
+ ],
+ "rngSeed": 2015467140,
  "rooms": {
   "waiting": [],
   "break": [],
@@ -444,7 +464,7 @@
  },
  "rivalState": {
   "name": "ThriveWell Annex",
-  "reputation": 56,
+  "reputation": 62,
   "phase": 3,
   "eventsFired": [
    "juice_bar",
@@ -477,93 +497,8 @@
   "complete": false
  },
  "recruitment": {
-  "openSlotId": "head_nurse",
-  "candidates": [
-   {
-    "id": "cand-a0780",
-    "candidateId": true,
-    "type": "staff",
-    "name": "Noelle Kim",
-    "role": "Head Nurse",
-    "arcSlot": "maya",
-    "age": 36,
-    "ethnicity": "Filipino-American",
-    "bodyType": "willowy",
-    "archetype": "dreamer",
-    "baselineWeight": 135,
-    "weight": 138,
-    "appetite": 5.1,
-    "trust": 7.1,
-    "indulgence": 1,
-    "openness": 8,
-    "weeklyMomentum": 0,
-    "preference": "late-night desserts",
-    "preferences": {
-     "pace": "gradual",
-     "focus": "comfort",
-     "public": "private"
-    },
-    "slimMindset": true,
-    "consent": "Standard clinic employment, 21+. HR file lists primary-care duties only.",
-    "lastStage": 0
-   },
-   {
-    "id": "cand-d2492",
-    "candidateId": true,
-    "type": "staff",
-    "name": "Isabel Quinn",
-    "role": "Head Nurse",
-    "arcSlot": "maya",
-    "age": 29,
-    "ethnicity": "Irish-American",
-    "bodyType": "compact",
-    "archetype": "scholar",
-    "baselineWeight": 140,
-    "weight": 143,
-    "appetite": 5.7,
-    "trust": 5.1,
-    "indulgence": 1,
-    "openness": 14,
-    "weeklyMomentum": 0,
-    "preference": "chocolate drinks",
-    "preferences": {
-     "pace": "gradual",
-     "focus": "comfort",
-     "public": "private"
-    },
-    "slimMindset": true,
-    "consent": "Standard clinic employment, 21+. HR file lists primary-care duties only.",
-    "lastStage": 0
-   },
-   {
-    "id": "cand-3b7d8",
-    "candidateId": true,
-    "type": "staff",
-    "name": "Isabel Mori",
-    "role": "Head Nurse",
-    "arcSlot": "maya",
-    "age": 30,
-    "ethnicity": "Ukrainian",
-    "bodyType": "willowy",
-    "archetype": "athlete",
-    "baselineWeight": 128,
-    "weight": 131,
-    "appetite": 5.2,
-    "trust": 6.9,
-    "indulgence": 1,
-    "openness": 13,
-    "weeklyMomentum": 0,
-    "preference": "rich soups",
-    "preferences": {
-     "pace": "gradual",
-     "focus": "comfort",
-     "public": "private"
-    },
-    "slimMindset": true,
-    "consent": "Standard clinic employment, 21+. HR file lists primary-care duties only.",
-    "lastStage": 0
-   }
-  ],
+  "openSlotId": null,
+  "candidates": [],
   "filledSlots": []
  },
  "coverRating": 100,
@@ -586,21 +521,17 @@
   {
    "sceneId": "rung_first_softness",
    "characterId": "staff-6195e"
-  },
-  {
-   "sceneId": "rung_first_softness",
-   "characterId": "staff-6195e"
   }
  ],
  "supplyCostChapterFired": false,
  "seenLines": {
   "patient-474ca": {
    "visit.missed": [
-    2,
+    1,
     0,
+    2,
     4,
-    3,
-    1
+    3
    ]
   }
  },
@@ -610,5 +541,6 @@
  "coverOps": {
   "activeBuffs": []
  },
+ "noteSeq": 100,
  "campaignBoost": null
 }

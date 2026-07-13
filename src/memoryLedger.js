@@ -11,7 +11,6 @@ export function recordLedger(state, { id, characterId = null, data = {} }) {
     week: state.week,
     characterId,
     data: { ...data },
-    ts: Date.now(),
   });
   trimLedger(state);
 }

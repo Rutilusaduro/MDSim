@@ -10,9 +10,9 @@ export const WEEKLY_EVENTS = [
     weight: 1,
     minUpgrades: 0,
     text: 'Someone brings a casserole chain to the break room. Staff stay an extra twenty minutes. Plates empty. Belts suffer.',
-    effect: (state) => {
+    effect: (state, rng) => {
       state.staff.forEach((s) => {
-        s.weight += 0.4 + Math.random() * 0.6;
+        s.weight += 0.4 + rng.next() * 0.6;
         s.weeklyMomentum += 0.3;
       });
     },
@@ -23,9 +23,9 @@ export const WEEKLY_EVENTS = [
     weight: 1,
     requiresUpgrade: 'wellness-vending-wall',
     text: 'The vending wall sells out by two p.m. Shakes and bars. Nobody admits who bought the last row.',
-    effect: (state) => {
+    effect: (state, rng) => {
       [...state.staff, ...state.patients].forEach((c) => {
-        c.weight += 0.2 + Math.random() * 0.4;
+        c.weight += 0.2 + rng.next() * 0.4;
       });
     },
   },
@@ -75,9 +75,9 @@ export const WEEKLY_EVENTS = [
     weight: 1,
     minUpgrades: 0,
     text: 'Two staff go out for "salads." They return with bags that smell like fried oil. No salads visible.',
-    effect: (state) => {
+    effect: (state, rng) => {
       state.staff.forEach((s) => {
-        s.weight += 0.3 + Math.random() * 0.5;
+        s.weight += 0.3 + rng.next() * 0.5;
         s.trust += 0.1;
       });
     },
@@ -111,9 +111,9 @@ export const WEEKLY_EVENTS = [
     weight: 1,
     requiresUpgrade: 'plush-breakroom-couch',
     text: 'Staff pile onto the plush couch with a shared tray. Laughter. Crumbs. Nobody leaves until the tray is clean.',
-    effect: (state) => {
+    effect: (state, rng) => {
       state.staff.forEach((s) => {
-        s.weight += 0.7 + Math.random() * 0.4;
+        s.weight += 0.7 + rng.next() * 0.4;
         s.indulgence += 1;
       });
     },
@@ -124,9 +124,9 @@ export const WEEKLY_EVENTS = [
     weight: 0.9,
     requiresUpgrade: 'private-recovery-nook',
     text: 'The recovery nook stays booked. Dim lights. Warm cabinets. Consults run long. Waistbands pay the price.',
-    effect: (state) => {
+    effect: (state, rng) => {
       [...state.staff, ...state.patients].forEach((c) => {
-        if (Math.random() > 0.4) c.weight += 0.35;
+        if (rng.next() > 0.4) c.weight += 0.35;
       });
     },
   },

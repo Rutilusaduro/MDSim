@@ -202,5 +202,6 @@
  "pendingLetters": [],
  "coverOps": {
   "activeBuffs": []
- }
+ },
+ "noteSeq": 0
 }

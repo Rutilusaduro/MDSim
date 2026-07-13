@@ -520,7 +520,7 @@ export function endWeek(state) {
 
   const weeklyEvent = pickWeeklyEvent(state, rng);
   if (weeklyEvent) {
-    weeklyEvent.effect(state);
+    weeklyEvent.effect(state, rng);
     addWeekNote({ type: 'event', title: weeklyEvent.title, text: weeklyEvent.text }, state);
   }
 

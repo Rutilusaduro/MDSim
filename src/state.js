@@ -126,6 +126,7 @@ export function createNewGame(options = {}) {
     difficulty: 'attending',
     pendingLetters: [],
     coverOps: { activeBuffs: [] },
+    noteSeq: 0,
   };
 
   refreshRecruitmentOffers(game, rng);
@@ -158,9 +159,14 @@ export function rngForState(state = gameState) {
   return wrap;
 }
 
+function nextNoteId(state) {
+  state.noteSeq = (state.noteSeq || 0) + 1;
+  return `note-${state.week}-${state.noteSeq}`;
+}
+
 export function addLog(entry, state = gameState) {
   state.log.unshift({
-    id: entry.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: entry.id || nextNoteId(state),
     week: state.week,
     type: entry.type || 'note',
     title: entry.title,
@@ -171,7 +177,7 @@ export function addLog(entry, state = gameState) {
 
 export function addWeekNote(entry, state = gameState) {
   state.thisWeek.unshift({
-    id: entry.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: entry.id || nextNoteId(state),
     type: entry.type || 'action',
     title: entry.title,
     text: entry.text,
@@ -280,6 +286,7 @@ function normaliseState(raw) {
   merged.difficulty = raw.difficulty || 'attending';
   merged.pendingLetters = raw.pendingLetters || [];
   merged.coverOps = raw.coverOps || { activeBuffs: [] };
+  merged.noteSeq = raw.noteSeq || 0;
   return merged;
 }
 
