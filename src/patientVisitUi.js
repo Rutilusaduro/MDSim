@@ -1,4 +1,5 @@
 import { getStageIndex, getStageInfo, getPatientAppearanceSummary } from './characters.js';
+import { FABRICATION_EXCUSES } from './patientVisit.js';
 import { formatMoney } from './state.js';
 import {
   VISIT_PHASES,
@@ -122,24 +123,26 @@ function renderWeighRitualPanel(state, visit, patient) {
   const framing = getPatientFramingTier(patient);
   const reaction = visit.pendingWeigh.reaction || '';
   const canFabricate = framing === 'clinical_plus' || framing === 'warming' || framing === 'complicit';
+  const prevCharted = Math.round(patient.chartedWeight ?? weight);
+  const excuse = FABRICATION_EXCUSES[state.week % FABRICATION_EXCUSES.length];
   return `
-    <div class="rounded-3xl border border-sky-300/30 bg-sky-950/25 p-5 weigh-ritual-panel">
-      <p class="text-xs font-bold uppercase tracking-wide text-sky-200">Vitals: weight</p>
-      <p class="mt-3 text-4xl font-black text-stone-50 weigh-number" data-weight="${weight}">${weight} lb</p>
-      ${reaction ? `<p class="mt-3 text-sm italic text-pink-100">"${esc(reaction)}"</p>` : ''}
-      <p class="mt-4 text-sm text-stone-200">What do you chart?</p>
-      <div class="mt-3 grid gap-2 sm:grid-cols-3">
-        <button class="soft-card rounded-2xl p-3 text-left" data-action="weigh-chart" data-choice="chart_true">
-          <strong class="text-sm text-stone-50">Chart it true</strong>
-          <p class="mt-1 text-xs text-stone-400">Real weight on record. +trust.</p>
+    <div class="weigh-panel paper-surface p-5">
+      <p class="ui-label" style="color: var(--ink-soft)">Vitals · weight</p>
+      <p class="dial-number chart-num" data-weight="${weight}">${weight}<span class="text-xl"> lb</span></p>
+      ${reaction ? `<p class="reaction-line prose-page mt-2 text-sm italic">"${esc(reaction)}"</p>` : ''}
+      <p class="mt-4 text-sm font-bold text-[color:var(--ink)]">The chart is open. You write:</p>
+      <div class="mt-2 grid gap-1">
+        <button class="chart-entry" data-action="weigh-chart" data-choice="chart_true">
+          <span class="chart-num">${weight} lb</span> — recorded as read.
+          <span class="chart-entry-hint">+trust</span>
         </button>
-        <button class="soft-card rounded-2xl p-3 text-left" data-action="weigh-chart" data-choice="chart_hedge">
-          <strong class="text-sm text-stone-50">Hedge</strong>
-          <p class="mt-1 text-xs text-stone-400">"Weight stable." +cover.</p>
+        <button class="chart-entry" data-action="weigh-chart" data-choice="chart_hedge">
+          <span class="chart-num">${prevCharted} lb</span> — <em>weight stable since last visit.</em>
+          <span class="chart-entry-hint">+cover</span>
         </button>
-        <button class="soft-card rounded-2xl p-3 text-left ${canFabricate ? '' : 'opacity-40'}" data-action="weigh-chart" data-choice="chart_fabricate" ${canFabricate ? '' : 'disabled'}>
-          <strong class="text-sm text-stone-50">Fabricate</strong>
-          <p class="mt-1 text-xs text-stone-400">Fluid retention note. +cover, +erosion.</p>
+        <button class="chart-entry ${canFabricate ? '' : 'chart-entry-locked'}" data-action="weigh-chart" data-choice="chart_fabricate" ${canFabricate ? '' : 'disabled'}>
+          <span class="chart-num">${prevCharted} lb</span> — <em>${esc(excuse)}. Recheck next visit.</em>
+          <span class="chart-entry-hint">${canFabricate ? '+cover, +erosion' : 'she would notice; needs familiarity'}</span>
         </button>
       </div>
     </div>`;

@@ -56,7 +56,7 @@ const INDULGENT_CLUSTER = new Set([
   'offer_snack_menu',
 ]);
 
-const FABRICATION_EXCUSES = [
+export const FABRICATION_EXCUSES = [
   'fluid retention',
   'dryer shrinkage note',
   'scale recalibration',

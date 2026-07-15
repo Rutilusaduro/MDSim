@@ -252,6 +252,65 @@ input {
   color: #8a3a2d;
 }
 
+/* The weigh-in: dial settles, number lands, then the pen decision. */
+.dial-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ink);
+  animation: dial-settle 400ms var(--ease);
+}
+
+.reaction-line {
+  animation: fade-in var(--t-slow) var(--ease) 450ms backwards;
+}
+
+@keyframes dial-settle {
+  0% {
+    opacity: 0.15;
+    filter: blur(3px);
+    transform: translateY(4px);
+  }
+  60% {
+    opacity: 0.7;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* Chart entries: each option is the line you would sign. */
+.chart-entry {
+  text-align: left;
+  font-family: var(--font-prose);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #c9b686;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease);
+}
+
+.chart-entry:hover {
+  background: rgba(138, 75, 45, 0.08);
+}
+
+.chart-entry-hint {
+  float: right;
+  font-family: var(--font-chrome);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.chart-entry-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* Rubber stamp: the game's one decorative flourish. */
 .stamp {
   display: inline-block;
