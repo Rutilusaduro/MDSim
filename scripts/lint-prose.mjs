@@ -53,7 +53,9 @@ for (const file of files) {
   for (const hit of lintSourceStrings(file.source, file.rel)) {
     for (const violation of hit.violations) {
       lineFindings.push({
-        key: `${hit.file}|${violation.rule}|${sha(hit.text)}`,
+        // Keyed on rule + text, not file: debt is the sentence, not its
+        // address, so pure-move refactors don't resurface old findings.
+        key: `${violation.rule}|${sha(hit.text)}`,
         display: `${hit.file}:${hit.line}\n  "${hit.text}"\n  x [${violation.rule}] ${violation.detail}`,
       });
     }
@@ -82,8 +84,12 @@ const gramIndex = new Map();
 for (const file of files) {
   let match;
   while ((match = STRING_LITERAL.exec(file.source)) !== null) {
-    const text = (match[1] || match[2] || match[3]).toLowerCase();
+    const raw = match[1] || match[2] || match[3];
+    // Prose only: markup templates share class soup by design.
+    if (raw.includes('<') || raw.includes('class=') || raw.includes('${')) continue;
+    const text = raw.toLowerCase();
     const words = text.replace(/[^a-z' ]+/g, ' ').split(/\s+/).filter(Boolean);
+    if (words.length < 8) continue;
     const seen = new Set();
     for (let i = 0; i + 5 <= words.length; i += 1) {
       const gram = words.slice(i, i + 5).join(' ');
