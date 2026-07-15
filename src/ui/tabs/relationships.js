@@ -6,7 +6,7 @@ export function renderRelationships(state) {
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Staff dynamics</p>
+        <p class="text-sm text-amber-200/70">Staff dynamics</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Relationship web</h2>
         <p class="mt-2 text-stone-300">${edges.length} active edges. Green = admires, pink = envies.</p>
       </div>

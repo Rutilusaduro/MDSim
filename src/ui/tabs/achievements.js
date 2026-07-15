@@ -6,7 +6,7 @@ export function renderAchievements(state) {
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Milestones</p>
+        <p class="text-sm text-amber-200/70">Milestones</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Achievements</h2>
         <p class="mt-2 text-stone-300">${progress.unlocked} / ${progress.total} unlocked</p>
       </div>

@@ -125,6 +125,40 @@ input {
   transition: width 320ms var(--ease);
 }
 
+/* Typography split: story in serif on paper, numbers in chart mono,
+   chrome in the interface face. */
+
+.prose-page {
+  font-family: var(--font-prose);
+  max-width: var(--measure);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.prose-page p + p {
+  margin-top: 0.85em;
+}
+
+.paper-surface {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius);
+  border: 1px solid var(--paper-dim);
+}
+
+.chart-num {
+  font-family: var(--font-chart);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quiet section label; replaces the tracked-uppercase chips. */
+.ui-label {
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: #b8a893;
+}
+
 .rich-copy p {
   margin-bottom: 0.85rem;
   color: #f5e8da;

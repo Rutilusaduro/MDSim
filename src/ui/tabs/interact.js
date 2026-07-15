@@ -39,7 +39,7 @@ export function renderInteract(state) {
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Patient rounds</p>
+        <p class="text-sm text-amber-200/70">Patient rounds</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Run the office</h2>
         <p class="mt-2 max-w-3xl text-stone-300">Run visits: vitals, chart review, prescriptions, follow-up. Deeper options unlock as patients return.</p>
         <p class="mt-2 text-xs text-stone-500">${e(ambient)}</p>

@@ -29,7 +29,7 @@ export function renderCampaign(state) {
     <section>
       ${challengeBanner}
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Story mode</p>
+        <p class="text-sm text-amber-200/70">Story mode</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">${info.allDone ? 'Campaign complete' : info.chapter.name}</h2>
         <p class="mt-2 text-stone-300">${info.allDone ? 'Ending available after week 20.' : e(info.chapter.tagline)}</p>
       </div>

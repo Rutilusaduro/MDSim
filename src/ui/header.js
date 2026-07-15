@@ -17,7 +17,7 @@ export function renderTopNav(state) {
       <div class="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-5 py-4">
         <div>
           <button class="text-left" data-action="rename-clinic">
-            <p class="text-xs uppercase tracking-[0.32em] text-amber-200/70">Primary care on the surface</p>
+            <p class="ui-label">Primary care on the surface</p>
             <h1 class="text-2xl font-black tracking-tight text-stone-50 md:text-3xl">${e(state.clinicName)}</h1>
           </button>
           <p class="text-sm text-stone-300">Owned by <button class="text-amber-200 underline decoration-amber-200/30" data-action="rename-doctor">${e(state.doctorName)}</button> · ${e(getClinicTier(state).label)}</p>

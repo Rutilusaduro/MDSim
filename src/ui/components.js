@@ -50,7 +50,7 @@ export function characterCard(character, variant = 'standard', state = gameState
     <article class="soft-card cursor-pointer rounded-3xl p-4 transition duration-200" data-action="${openAction}" data-id="${e(character.id)}">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-xs uppercase tracking-[0.22em] text-amber-200/70">${isPatient ? 'Patient' : e(character.role)}</p>
+          <p class="ui-label">${isPatient ? 'Patient' : e(character.role)}</p>
           <h3 class="mt-1 text-lg font-semibold text-stone-50">${e(character.name)}</h3>
           <p class="text-sm text-stone-300">${e(stage.bodyType)} - ${Math.round(character.weight)} lb${isPatient && character.loyalty ? ` - Loyalty ${character.loyalty}` : ''}</p>
           ${isPatient ? `<p class="mt-1 text-xs text-stone-400">${e(getPatientAppearanceSummary(character))}</p>` : ''}

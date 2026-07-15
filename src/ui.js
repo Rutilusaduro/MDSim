@@ -84,7 +84,7 @@ function openDialogueModal(message, title = 'Outcome', onClose = null) {
   dialogueCloseCallback = onClose;
   openModal(`
     <div class="flex min-h-[12rem] flex-col items-center justify-center text-center">
-      <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(title)}</p>
+      <p class="ui-label">${e(title)}</p>
       <p class="mt-6 max-w-2xl text-base leading-8 text-stone-100 md:text-lg">${e(message)}</p>
       <button class="gold-button mt-8 rounded-2xl px-8 py-3 font-bold" data-action="close-dialogue">Close</button>
     </div>
@@ -168,7 +168,7 @@ function openStaffArcModal(characterId) {
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Staff arc · ${progress.completed + 1} / ${progress.total}</p>
+        <p class="ui-label">Staff arc · ${progress.completed + 1} / ${progress.total}</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(beat.title)}</h2>
         <p class="mt-1 text-stone-400">${e(progress.track.title)} · ${e(character.name)}${route ? ` · <span class="text-pink-200">${e(route)}</span>` : ''}</p>
       </div>
@@ -337,7 +337,7 @@ function openCharacterModal(id, tab = null) {
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">${e(character.type)} profile</p>
+        <p class="ui-label">${e(character.type)} profile</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(character.name)}</h2>
         <p class="mt-1 text-stone-300">${e(character.role)} - ${e(stage.bodyType)} - ${Math.round(character.weight)} lb</p>
         ${routeLabel ? `<p class="mt-1 text-sm text-pink-200">${e(routeLabel)}</p>` : ''}
@@ -372,7 +372,7 @@ function openGroupSceneModal(payload) {
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Group scene</p>
+        <p class="ui-label">Group scene</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(scene.title)}</h2>
       </div>
     </div>
@@ -397,7 +397,7 @@ function openGroupSceneModal(payload) {
 function openEndingModal(ending) {
   openModal(`
     <div>
-      <p class="text-xs uppercase tracking-[0.28em] text-amber-200/70">Campaign ending</p>
+      <p class="ui-label">Campaign ending</p>
       <h2 class="mt-2 text-3xl font-black text-stone-50">${e(ending.card.name)}</h2>
       <p class="mt-4 text-lg text-stone-300">${e(ending.card.blurb)}</p>
       <ul class="mt-6 space-y-2 text-sm text-stone-400">
@@ -422,7 +422,7 @@ function openWeekSceneModal() {
   openModal(`
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-red-200/70">Weekly crisis</p>
+        <p class="ui-label">Weekly crisis</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${e(scene.title)}</h2>
         <p class="mt-1 text-stone-400">${e(character.name)} · ${gameState.actionPoints} AP remaining</p>
       </div>
@@ -449,7 +449,7 @@ function openGameOverModal(gameOver = gameState.gameOver) {
   if (!gameOver) return;
   openModal(`
     <div>
-      <p class="text-xs uppercase tracking-[0.28em] text-red-200/70">Game over</p>
+      <p class="ui-label">Game over</p>
       <h2 class="mt-2 text-3xl font-black text-stone-50">${e(gameOver.title)}</h2>
       <p class="mt-4 text-lg leading-8 text-stone-300">${e(gameOver.text)}</p>
       <p class="mt-4 text-sm text-stone-500">Week ${gameOver.week || gameState.week}</p>

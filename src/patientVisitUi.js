@@ -235,7 +235,7 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   return `
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Patient visit</p>
+        <p class="ui-label">Patient visit</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${esc(patient.name)}</h2>
         <p class="mt-1 text-stone-300">${esc(patient.role)} · ${esc(stage.bodyType)} · ${Math.round(patient.weight)} lb</p>
         <p class="mt-2 flex flex-wrap items-center gap-2">

@@ -396,7 +396,7 @@ export function renderProseLabPanel() {
     <section>
       <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p class="text-xs uppercase tracking-[0.28em] text-pink-200/70">Debug tool</p>
+          <p class="ui-label">Debug tool</p>
           <h2 class="mt-1 text-3xl font-black text-stone-50">Prose Lab</h2>
           <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-400">
             Pick a text type, tune or randomize variables, preview output, then flag an issue and send it to Cursor Agent.

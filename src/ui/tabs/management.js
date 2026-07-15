@@ -43,7 +43,7 @@ function renderRecruitmentSection(state) {
 
   return `
     <section class="mb-8 rounded-[2rem] border border-emerald-300/15 bg-emerald-950/15 p-6">
-      <p class="text-sm uppercase tracking-[0.28em] text-emerald-200/70">Staff recruitment</p>
+      <p class="text-sm text-emerald-200/70">Staff recruitment</p>
       <h3 class="mt-1 text-2xl font-black text-stone-50">Build the roster</h3>
       <p class="mt-2 max-w-3xl text-sm text-stone-300">${e(PUBLIC_CLINIC_TAGLINE)} Hire credentialed staff for intake, vitals, and charting. A full roster keeps the schedule moving.</p>
       ${candidateHtml || '<p class="mt-3 text-sm text-stone-400">No open roles this week. Grow reputation and advance the calendar to unlock hiring.</p>'}
@@ -59,7 +59,7 @@ export function renderManagement(state) {
     <section>
       ${renderRecruitmentSection(state)}
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Management phase</p>
+        <p class="text-sm text-amber-200/70">Management phase</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Buy before the week turns</h2>
         <p class="mt-2 max-w-3xl text-stone-300">Money only. No AP. Furniture lands end of week. Stock and campaigns apply now.</p>
       </div>
@@ -99,7 +99,7 @@ function renderShopCard(state, item) {
     <article class="soft-card flex min-h-72 flex-col rounded-3xl p-5 transition duration-200">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-xs uppercase tracking-[0.22em] text-pink-200/70">${e(item.category)}</p>
+          <p class="ui-label">${e(item.category)}</p>
           <h4 class="mt-1 text-xl font-black text-stone-50">${e(item.name)}</h4>
         </div>
         <span class="rounded-full bg-amber-300/12 px-3 py-1 text-sm font-bold text-amber-100">${status}</span>

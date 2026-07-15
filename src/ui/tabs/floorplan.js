@@ -8,7 +8,7 @@ export function renderFloorPlan(state) {
   return `
     <section>
       <div class="mb-5">
-        <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Clinic layout</p>
+        <p class="text-sm text-amber-200/70">Clinic layout</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Floor plan</h2>
         <p class="mt-2 max-w-3xl text-stone-300">Assign owned furniture to rooms for stacked bonuses (~35% of item effects per placement).</p>
       </div>

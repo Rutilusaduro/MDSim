@@ -8,7 +8,7 @@ export function renderLog(state) {
     <section>
       <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-sm uppercase tracking-[0.28em] text-amber-200/70">Narrative feed</p>
+          <p class="text-sm text-amber-200/70">Narrative feed</p>
           <h2 class="mt-2 text-3xl font-black text-stone-50">This Week</h2>
         </div>
         <div class="flex gap-3">
@@ -41,7 +41,7 @@ export function renderLog(state) {
               .map(
                 (entry) => `
                   <article class="soft-card rounded-3xl p-4">
-                    <p class="text-xs uppercase tracking-[0.2em] text-stone-400">Week ${entry.week} - ${e(entry.type)}</p>
+                    <p class="ui-label">Week ${entry.week} - ${e(entry.type)}</p>
                     <h4 class="mt-1 font-bold text-stone-50">${e(entry.title)}</h4>
                     <div class="rich-copy mt-2 text-sm">${entry.type === 'resolution' ? entry.text : `<p>${e(entry.text)}</p>`}</div>
                   </article>
