@@ -33,8 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Unit and invariant tests
+        run: npm test
+
       - name: Lint narrative prose
         run: npm run lint:prose
+
+      - name: Lint scenes
+        run: npm run lint:scenes
 
       - name: Build with Vite
         run: npm run build

@@ -1,0 +1,44 @@
+# Gates every push and PR: tests, lints, short balance sim, build.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit and invariant tests
+        run: npm test
+
+      - name: Prose lint
+        run: npm run lint:prose
+
+      - name: Scene lint
+        run: npm run lint:scenes
+
+      - name: Determinism grep gate (no Math.random in src)
+        run: |
+          if grep -rn "Math.random" src --include=*.js; then
+            echo "Math.random is banned in src/ (seeded rng only; see TENX_BLUEPRINT A6)."
+            exit 1
+          fi
+
+      - name: Balance sim (short mode)
+        run: node scripts/simulate.mjs --weeks 20 --seeds 5 --assert
+
+      - name: Build
+        run: npm run build
