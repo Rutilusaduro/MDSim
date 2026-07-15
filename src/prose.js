@@ -45,6 +45,20 @@ const REVERSAL_PATTERNS = [
   /not .+? but .+/i,
 ];
 
+/** Machine-prose tells: abstract intensifiers and stock constructions. */
+const BANNED_AI_TELLS = [
+  'palpable',
+  'testament to',
+  'tapestry',
+  'myriad',
+  'a sense of',
+  "couldn't help but",
+  'could not help but',
+  'found herself',
+  'something shifted',
+  'if she was being honest',
+];
+
 /**
  * @param {string} text
  * @returns {{ rule: string; detail: string }[]}
@@ -80,6 +94,12 @@ export function lintProse(text) {
   for (const pattern of REVERSAL_PATTERNS) {
     if (pattern.test(text)) {
       violations.push({ rule: 'reversal-pivot', detail: 'Banned "not X, Y" reversal pattern.' });
+    }
+  }
+
+  for (const phrase of BANNED_AI_TELLS) {
+    if (lower.includes(phrase)) {
+      violations.push({ rule: 'ai-tell', detail: `Machine-prose tell: "${phrase}"` });
     }
   }
 

@@ -1,55 +1,159 @@
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+/**
+ * Prose lint: Beautiful Prose rules plus machine-tell detectors,
+ * over EVERY .js file under src/ (a gate that cannot see new content
+ * packs is not a gate).
+ *
+ * Detectors beyond the per-string rules in src/prose.js:
+ *   - rule-of-three density per file ("x, y, and z" autopilot rhythm)
+ *   - cross-file 5-gram duplicates in long narrative strings
+ *
+ * Existing debt is grandfathered in scripts/prose-baseline.json;
+ * new or changed lines gate hard.
+ *
+ * Usage:
+ *   node scripts/lint-prose.mjs
+ *   node scripts/lint-prose.mjs --update-baseline
+ */
+
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { lintSourceStrings } from '../src/prose.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const targets = [
-  'src/characters.js',
-  'src/events.js',
-  'src/state.js',
-  'src/clinic.js',
-  'src/patientDialogue.js',
-  'src/staffDialogue.js',
-  'src/bodyProse.js',
-  'src/patientAppearance.js',
-  'src/interactionDialogue.js',
-  'src/patientVisitDialogue.js',
-  'src/patientVisit.js',
-  'src/worldImpact.js',
-  'src/clinicProgression.js',
-  'src/recruitment.js',
-  'src/earlyGameEvents.js',
-  'src/patientFraming.js',
-  'src/arcs.js',
-  'src/staffArcs/maya.js',
-  'src/staffArcs/elena.js',
-  'src/staffArcs/priya.js',
-  'src/staffArcs/nadia.js',
-  'src/staffArcs/jasmine.js',
-  'src/staffArcs/procedural.js',
-];
+const srcDir = join(root, 'src');
+const baselinePath = join(root, 'scripts', 'prose-baseline.json');
+const UPDATE = process.argv.includes('--update-baseline');
 
-let failed = false;
+/** Non-narrative modules: rule definitions and the tools that quote them. */
+const EXCLUDE = new Set(['prose.js', 'proseSelect.js', 'proseLab.js']);
 
-for (const rel of targets) {
-  const file = join(root, rel);
-  const source = readFileSync(file, 'utf8');
-  const hits = lintSourceStrings(source, rel);
+function collectFiles(dir) {
+  const files = [];
+  for (const entry of readdirSync(dir)) {
+    const abs = join(dir, entry);
+    if (statSync(abs).isDirectory()) files.push(...collectFiles(abs));
+    else if (entry.endsWith('.js') && !EXCLUDE.has(entry)) files.push(abs);
+  }
+  return files;
+}
 
-  for (const hit of hits) {
-    failed = true;
-    console.error(`\n${hit.file}:${hit.line}`);
-    console.error(`  "${hit.text}"`);
-    for (const v of hit.violations) {
-      console.error(`  ✗ [${v.rule}] ${v.detail}`);
+const sha = (text) => createHash('sha1').update(text).digest('hex').slice(0, 12);
+
+const files = collectFiles(srcDir).map((abs) => ({
+  abs,
+  rel: relative(root, abs).replaceAll('\\', '/'),
+  source: readFileSync(abs, 'utf8'),
+}));
+
+// ---- per-string rules (src/prose.js) ---------------------------------------
+const lineFindings = [];
+for (const file of files) {
+  for (const hit of lintSourceStrings(file.source, file.rel)) {
+    for (const violation of hit.violations) {
+      lineFindings.push({
+        key: `${hit.file}|${violation.rule}|${sha(hit.text)}`,
+        display: `${hit.file}:${hit.line}\n  "${hit.text}"\n  x [${violation.rule}] ${violation.detail}`,
+      });
     }
   }
 }
 
+// ---- rule-of-three density --------------------------------------------------
+const TRIAD = /\b[\w']+, [\w']+, (?:and|or) [\w']+\b/g;
+const fileFindings = [];
+for (const file of files) {
+  const lineCount = file.source.split('\n').length;
+  const count = (file.source.match(TRIAD) || []).length;
+  const allowed = Math.max(2, Math.ceil(lineCount / 40));
+  if (count > allowed) {
+    fileFindings.push({
+      key: `${file.rel}|triad`,
+      count,
+      display: `${file.rel}\n  x [triad-density] ${count} "x, y, and z" chains (allowed ${allowed}). Break the rhythm.`,
+    });
+  }
+}
+
+// ---- cross-file 5-gram duplicates --------------------------------------------
+const STRING_LITERAL = /'((?:[^'\\]|\\.){40,})'|"((?:[^"\\]|\\.){40,})"|`((?:[^`\\]|\\.){40,})`/g;
+const gramIndex = new Map();
+for (const file of files) {
+  let match;
+  while ((match = STRING_LITERAL.exec(file.source)) !== null) {
+    const text = (match[1] || match[2] || match[3]).toLowerCase();
+    const words = text.replace(/[^a-z' ]+/g, ' ').split(/\s+/).filter(Boolean);
+    const seen = new Set();
+    for (let i = 0; i + 5 <= words.length; i += 1) {
+      const gram = words.slice(i, i + 5).join(' ');
+      if (seen.has(gram)) continue;
+      seen.add(gram);
+      if (!gramIndex.has(gram)) gramIndex.set(gram, new Set());
+      gramIndex.get(gram).add(file.rel);
+    }
+  }
+}
+const gramFindings = [];
+for (const [gram, fileSet] of gramIndex) {
+  if (fileSet.size >= 2) {
+    gramFindings.push({
+      key: `gram|${sha(gram)}`,
+      display: `x [5-gram-dupe] "${gram}" appears in: ${[...fileSet].join(', ')}`,
+    });
+  }
+}
+
+// ---- baseline gate ------------------------------------------------------------
+const baseline = existsSync(baselinePath)
+  ? JSON.parse(readFileSync(baselinePath, 'utf8'))
+  : { lines: [], filesCounts: {}, grams: [] };
+
+if (UPDATE) {
+  writeFileSync(
+    baselinePath,
+    JSON.stringify(
+      {
+        lines: lineFindings.map((f) => f.key).sort(),
+        filesCounts: Object.fromEntries(fileFindings.map((f) => [f.key, f.count])),
+        grams: gramFindings.map((f) => f.key).sort(),
+      },
+      null,
+      1,
+    ),
+  );
+  console.log(
+    `Baseline updated: ${lineFindings.length} line findings, ${fileFindings.length} file findings, ${gramFindings.length} gram findings grandfathered across ${files.length} files.`,
+  );
+  process.exit(0);
+}
+
+const baselineLines = new Set(baseline.lines);
+const baselineGrams = new Set(baseline.grams);
+let failed = false;
+
+for (const finding of lineFindings) {
+  if (baselineLines.has(finding.key)) continue;
+  failed = true;
+  console.error(`\n${finding.display}`);
+}
+for (const finding of fileFindings) {
+  const allowedCount = baseline.filesCounts?.[finding.key] ?? 0;
+  if (finding.count <= allowedCount) continue;
+  failed = true;
+  console.error(`\n${finding.display} (baseline ${allowedCount})`);
+}
+for (const finding of gramFindings) {
+  if (baselineGrams.has(finding.key)) continue;
+  failed = true;
+  console.error(`\n${finding.display}`);
+}
+
 if (failed) {
-  console.error('\nProse lint failed. Apply the Beautiful Prose skill (.cursor/skills/beautiful-prose/SKILL.md).');
+  console.error(
+    '\nProse lint failed. Apply the Beautiful Prose skill (.cursor/skills/beautiful-prose/SKILL.md). Fix the lines; only regenerate the baseline for deliberate grandfathering.',
+  );
   process.exit(1);
 }
 
-console.log('Prose lint passed.');
+console.log(`Prose lint passed. Scanned ${files.length} files under src/.`);
