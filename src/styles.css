@@ -190,6 +190,68 @@ input {
   color: var(--paper-dim);
 }
 
+/* Manila chart card: the roster as a shelf of patient folders. */
+.chart-card {
+  background: var(--manila);
+  color: var(--ink);
+  border: 1px solid #d9c795;
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--t-fast) var(--ease);
+}
+
+.chart-card:hover {
+  border-color: var(--accent);
+}
+
+.chart-card-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.45rem 1rem;
+  background: var(--paper-dim);
+  border-bottom: 1px solid #d9c795;
+}
+
+.chart-card .stage-bar {
+  background: #d8c9a4;
+  border-color: #c9b686;
+}
+
+.note-clip {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  color: var(--ink-soft);
+  background: var(--paper);
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+}
+
+.badge-active {
+  color: var(--accent);
+}
+
+.badge-done {
+  color: #5a6b4a;
+}
+
+.badge-due {
+  color: #8a3a2d;
+}
+
 /* Rubber stamp: the game's one decorative flourish. */
 .stamp {
   display: inline-block;
