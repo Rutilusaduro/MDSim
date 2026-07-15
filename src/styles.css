@@ -32,10 +32,7 @@
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(251, 146, 60, 0.22), transparent 28rem),
-    radial-gradient(circle at 80% 20%, rgba(244, 114, 182, 0.2), transparent 32rem),
-    linear-gradient(135deg, #120e0c 0%, #201510 42%, #110f10 100%);
+  background: var(--night);
 }
 
 button,
@@ -44,67 +41,88 @@ input {
   font: inherit;
 }
 
+/* Legacy class names kept so feature code migrates surface by surface. */
+
 .glass-panel {
-  border: 1px solid rgba(255, 237, 213, 0.12);
-  background:
-    linear-gradient(135deg, rgba(68, 48, 36, 0.78), rgba(32, 24, 22, 0.86)),
-    rgba(28, 25, 23, 0.88);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px);
+  border: 1px solid var(--night-line);
+  background: var(--night-panel);
+  border-radius: var(--radius);
 }
 
 .soft-card {
-  border: 1px solid rgba(255, 237, 213, 0.1);
-  background: rgba(41, 31, 27, 0.76);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--night-line);
+  background: #2b2119;
+  border-radius: var(--radius);
 }
 
 .soft-card:hover {
-  border-color: rgba(251, 191, 36, 0.32);
-  transform: translateY(-1px);
+  border-color: var(--accent-soft);
 }
 
 .gold-button {
-  background: linear-gradient(135deg, #f59e0b, #fb7185 58%, #db2777);
-  color: #fff7ed;
-  box-shadow: 0 12px 28px rgba(219, 39, 119, 0.3);
+  background: var(--accent);
+  color: var(--paper);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.gold-button:hover {
+  background: #7a4227;
 }
 
 .gold-button:disabled,
 .dark-button:disabled {
   cursor: not-allowed;
-  filter: grayscale(0.7);
   opacity: 0.45;
 }
 
 .dark-button {
-  border: 1px solid rgba(255, 237, 213, 0.14);
-  background: rgba(28, 25, 23, 0.84);
+  border: 1px solid var(--night-line);
+  background: var(--night-panel);
+  border-radius: var(--radius);
+  color: var(--paper-dim);
 }
 
+.dark-button:hover {
+  border-color: var(--ink-soft);
+}
+
+/* Folder tabs: the active tab is the folder you pulled. */
 .nav-pill {
-  border: 1px solid rgba(255, 237, 213, 0.12);
-  background: rgba(28, 25, 23, 0.58);
+  border: 1px solid var(--night-line);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: transparent;
+  color: #b8a893;
 }
 
 .nav-pill.active {
-  border-color: rgba(251, 191, 36, 0.55);
-  background: linear-gradient(135deg, rgba(146, 64, 14, 0.75), rgba(157, 23, 77, 0.72));
-  color: #fff7ed;
+  border-color: var(--manila);
+  background: var(--manila);
+  color: var(--ink);
+  font-weight: 700;
 }
 
+/* Ruled gauge with a tick per stage. */
 .stage-bar {
-  height: 0.58rem;
+  height: 0.5rem;
   overflow: hidden;
-  border-radius: 999px;
-  background: rgba(87, 83, 78, 0.62);
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(100% / 12 - 1px),
+      var(--night-line) calc(100% / 12 - 1px),
+      var(--night-line) calc(100% / 12)
+    ),
+    #322820;
+  border: 1px solid var(--night-line);
 }
 
 .stage-fill {
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #fbbf24, #fb7185, #e879f9);
-  transition: width 320ms ease;
+  background: var(--accent-soft);
+  transition: width 320ms var(--ease);
 }
 
 .rich-copy p {
