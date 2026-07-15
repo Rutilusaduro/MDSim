@@ -159,6 +159,51 @@ input {
   color: #b8a893;
 }
 
+/* Letterhead */
+.wordmark {
+  font-family: var(--font-prose);
+  font-variant-caps: small-caps;
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+}
+
+.tagline {
+  font-family: var(--font-prose);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #c9b99f;
+}
+
+.day-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 0.8rem;
+  color: #b8a893;
+  border-top: 1px solid var(--night-line);
+  padding-top: 0.4rem;
+}
+
+.day-line .chart-num {
+  color: var(--paper-dim);
+}
+
+/* Rubber stamp: the game's one decorative flourish. */
+.stamp {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border: 1.5px solid var(--accent-soft);
+  border-radius: 3px;
+  color: var(--accent-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+
 .rich-copy p {
   margin-bottom: 0.85rem;
   color: #f5e8da;

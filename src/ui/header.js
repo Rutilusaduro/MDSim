@@ -4,6 +4,7 @@ import { getChapterInfo } from '../chapters.js';
 import { computeClinicEffects } from '../clinic.js';
 import { getClinicTier } from '../clinicProgression.js';
 import { getDominantStyle } from '../clinicStyle.js';
+import { getClinicTagline } from '../clinicMindset.js';
 import { getCoverLabel } from '../patientFraming.js';
 import { isDebugMode } from '../proseLab.js';
 import { getReputationTier } from '../reputation.js';
@@ -12,43 +13,41 @@ import { formatMoney } from '../state.js';
 import { characterCard } from './components.js';
 
 export function renderTopNav(state) {
+  const heat = state.heat || 0;
   return `
-    <header class="sticky top-0 z-30 border-b border-orange-100/10 bg-stone-950/72 backdrop-blur-xl">
-      <div class="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-5 py-4">
+    <header class="sticky top-0 z-30 border-b border-[color:var(--night-line)] bg-[color:var(--night)]">
+      <div class="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-5 py-4">
         <div>
-          <button class="text-left" data-action="rename-clinic">
-            <p class="ui-label">Primary care on the surface</p>
-            <h1 class="text-2xl font-black tracking-tight text-stone-50 md:text-3xl">${e(state.clinicName)}</h1>
+          <button class="text-left" data-action="rename-clinic" title="Rename the practice">
+            <h1 class="wordmark">${e(state.clinicName)}</h1>
           </button>
-          <p class="text-sm text-stone-300">Owned by <button class="text-amber-200 underline decoration-amber-200/30" data-action="rename-doctor">${e(state.doctorName)}</button> · ${e(getClinicTier(state).label)}</p>
+          <p class="tagline">${e(getClinicTagline(state))}</p>
+          <p class="mt-1 text-sm text-stone-400">
+            <button class="underline decoration-[color:var(--accent-soft)] underline-offset-2" data-action="rename-doctor">${e(state.doctorName)}</button>,
+            attending · ${e(getClinicTier(state).label)}
+          </p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <div class="nav-pill rounded-2xl px-4 py-3">
-            <p class="text-xs text-stone-400">Week</p>
-            <p class="text-lg font-bold">${state.week}</p>
-          </div>
-          <div class="nav-pill rounded-2xl px-4 py-3">
-            <p class="text-xs text-stone-400">Money</p>
-            <p class="text-lg font-bold text-emerald-200">${formatMoney(state.money)}</p>
-          </div>
-          <div class="nav-pill rounded-2xl px-4 py-3">
-            <p class="text-xs text-stone-400">Action Points</p>
-            <p class="text-lg font-bold text-pink-100">${state.actionPoints}/${state.actionPointsMax}</p>
-          </div>
-          <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="save">Save</button>
-          <button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="load">Load</button>
-          <button class="gold-button rounded-2xl px-6 py-4 font-bold transition hover:scale-[1.02]" data-action="end-week">
-            End Week
-          </button>
-          <button class="dark-button rounded-2xl px-4 py-4 text-sm font-bold" data-action="toggle-audio" title="Toggle sound">
+          <span class="stamp" title="Cover rating ${state.coverRating ?? 100}">${e(getCoverLabel(state))}</span>
+          <button class="dark-button px-4 py-2 text-sm font-bold" data-action="save">Save</button>
+          <button class="dark-button px-4 py-2 text-sm font-bold" data-action="load">Load</button>
+          <button class="dark-button px-4 py-2 text-sm" data-action="toggle-audio" title="Toggle sound">
             ${isAudioMuted() ? 'Sound off' : 'Sound on'}
           </button>
           ${
             isDebugMode()
-              ? `<button class="dark-button rounded-2xl px-4 py-3 text-sm font-bold" data-action="tab" data-tab="prose-lab">Prose Lab</button>`
-              : `<button class="dark-button rounded-2xl px-4 py-3 text-xs font-bold opacity-70" data-action="toggle-debug" title="Add ?debug=1 to URL">Debug</button>`
+              ? `<button class="dark-button px-4 py-2 text-sm font-bold" data-action="tab" data-tab="prose-lab">Prose Lab</button>`
+              : `<button class="dark-button px-4 py-2 text-xs opacity-70" data-action="toggle-debug" title="Add ?debug=1 to URL">Debug</button>`
           }
+          <button class="gold-button px-6 py-3 font-bold" data-action="end-week">End Week</button>
         </div>
+      </div>
+      <div class="day-line mx-auto max-w-[1600px] px-5 pb-2">
+        <span>Week <span class="chart-num">${state.week}</span></span>
+        <span>Cash <span class="chart-num">${formatMoney(state.money)}</span></span>
+        <span>AP <span class="chart-num">${state.actionPoints}/${state.actionPointsMax}</span></span>
+        <span>Reputation <span class="chart-num">${state.reputation}</span></span>
+        <span${heat >= 35 ? ' class="text-[color:var(--accent-soft)]"' : ''}>Heat <span class="chart-num">${heat}</span></span>
       </div>
     </header>
   `;
