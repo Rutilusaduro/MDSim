@@ -7,6 +7,12 @@ import { createRng, rngForState } from './state.js';
 
 const POOL_HISTORY_CAP = 64;
 
+/** Optional census tap: set by tooling to observe every recorded pick. */
+let censusTap = null;
+export function setCensusTap(fn) {
+  censusTap = fn;
+}
+
 function historyFor(state, scopeId, poolId) {
   if (!state.seenLines) state.seenLines = {};
   if (!state.seenLines[scopeId]) state.seenLines[scopeId] = {};
@@ -47,6 +53,7 @@ export function pickSeen(state, scopeId, poolId, pool, { peek = false } = {}) {
     if (history.length > POOL_HISTORY_CAP) {
       history.splice(0, history.length - POOL_HISTORY_CAP);
     }
+    if (censusTap) censusTap(scopeId, poolId, choice, pool);
   }
   return pool[choice];
 }
