@@ -2,12 +2,6 @@
 
 IndulgeCare Clinic is a premium browser prototype for an adult, sensual, weight-gain-focused clinic management sim. You play as Dr. Vale by default, owner of a small primary care practice whose public mission is compassionate comfort care and whose private design philosophy turns the clinic into a warm engine of indulgence, softness, and growth.
 
-Alternative title directions:
-
-- **Velvet Practice**
-- **The Softness Protocol**
-- **Opulent Care Clinic**
-
 All characters in the prototype are adults 21+ and are framed as opt-in participants in comfort-forward care. The tone is celebratory, sensual, and positive: no shame, no cruelty, no degradation.
 
 ## V4 features (current)
