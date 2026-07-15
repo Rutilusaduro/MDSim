@@ -20,7 +20,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const scenesDir = join(root, 'src', 'scenes');
+/** Content-pack scene dirs join the sweep as they appear (D0a). */
+const SCENE_DIRS = [join(root, 'src', 'scenes'), join(root, 'src', 'content', 'scenes')];
 
 function readSource(absPath) {
   try {
@@ -32,10 +33,22 @@ function readSource(absPath) {
 
 function collectSceneFiles() {
   const files = [];
-  for (const entry of readdirSync(scenesDir)) {
-    const abs = join(scenesDir, entry);
-    if (statSync(abs).isFile() && entry.endsWith('.js')) {
-      files.push(abs);
+  for (const dir of SCENE_DIRS) {
+    let entries;
+    try {
+      entries = readdirSync(dir);
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const abs = join(dir, entry);
+      if (statSync(abs).isDirectory()) {
+        for (const sub of readdirSync(abs)) {
+          if (sub.endsWith('.js')) files.push(join(abs, sub));
+        }
+      } else if (entry.endsWith('.js')) {
+        files.push(abs);
+      }
     }
   }
   return files;
