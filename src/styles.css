@@ -176,11 +176,38 @@ input {
 }
 
 .modal-backdrop {
-  animation: fade-in 140ms ease-out;
+  animation: fade-in var(--t-fast) var(--ease);
 }
 
 .modal-card {
-  animation: rise-in 180ms ease-out;
+  animation: rise-in var(--t-slow) var(--ease);
+}
+
+/* Week turn: the old day sheet slides off, the new one slides in.
+   The only long animation in the game; paper, not springs. */
+.week-turn-enter {
+  animation: sheet-in 450ms var(--ease);
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .stage-glow {
