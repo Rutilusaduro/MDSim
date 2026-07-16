@@ -46,7 +46,7 @@ import { pickWeeklyInteractiveScene } from './sceneEngine/triggers.js';
 import { ensureSceneState } from './sceneEngine/flags.js';
 import { setWeekInterrupt, getWeekInterrupt } from './weekScenes.js';
 import { SCENE_CATALOG } from './scenes/catalog.js';
-import { checkAuditGameOver } from './gameOver.js';
+import { checkAuditGameOver, complicitTestimonyCount } from './gameOver.js';
 import { chartGap, getPatientFramingTier } from './patientFraming.js';
 import { getMindset } from './mindset.js';
 import { recordLedger, dishonestChartEntries, ledgerWhere } from './memoryLedger.js';
@@ -655,6 +655,8 @@ export function endWeek(state) {
       gapHeat += Math.min(6, chartGap(patient) / 8);
     }
     gapHeat *= knobs.gapHeatMult;
+    // Complicity is cover: witnesses who would never testify (D14).
+    gapHeat *= Math.max(0.5, 1 - 0.04 * complicitTestimonyCount(state));
     if (gapHeat > 0) {
       state.heat = Math.min(100, (state.heat || 0) + Math.floor(gapHeat));
     }
