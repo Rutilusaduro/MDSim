@@ -20,7 +20,20 @@ import { CHALLENGE_WEEKS, needsChallengePick, pickChallengeWeek, getChallengeLab
 import { getLoyaltyArcProgress } from './loyaltyArcs.js';
 import { canUseRivalClinic, getRivalClinicProgress, performRivalClinicAction, RIVAL_CLINIC_ACTIONS } from './rivalClinic.js';
 import { copyWeekSummary } from './export.js';
-import { initAudio, isAudioMuted, playPurchase, playStageUp, playUiClick, playWeekEnd, toggleAudioMuted } from './audio.js';
+import {
+  initAudio,
+  isAudioMuted,
+  playFolderClose,
+  playFolderOpen,
+  playPageTurn,
+  playPenScratch,
+  playPurchase,
+  playScaleClunk,
+  playStageUp,
+  playUiClick,
+  playWeekEnd,
+  toggleAudioMuted,
+} from './audio.js';
 import {
   copyAgentFixPrompt,
   downloadFixRequest,
@@ -420,6 +433,7 @@ function openWeekSceneModal() {
   if (!payload?.scene) return;
 
   const { character, scene } = payload;
+  playPageTurn();
   openModal(
     renderScenePage(scene, {
       kicker: 'Weekly crisis',
@@ -624,7 +638,7 @@ function bindEvents() {
       openCharacterModal(target.dataset.id);
     }
     if (action === 'open-visit') {
-      playUiClick();
+      playFolderOpen();
       startPatientVisit(target.dataset.id);
     }
     if (action === 'visit-action') {
@@ -637,8 +651,10 @@ function bindEvents() {
       }
       saveGame(gameState);
       render();
+      if (result.weighRitual) playScaleClunk();
       if (result.weighRitual || result.visitComplete) {
         if (result.visitComplete) {
+          playFolderClose();
           showToast(result.message, 'success');
           closeModal();
         } else {
@@ -763,6 +779,7 @@ function bindEvents() {
         showToast(result.message, 'error');
         return;
       }
+      playPenScratch();
       if (result.visitComplete) {
         showToast(result.message, 'success');
         closeModal();

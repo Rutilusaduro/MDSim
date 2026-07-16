@@ -1,5 +1,24 @@
+/**
+ * Sample-based audio: small synthesized foley WAVs in public/audio/,
+ * decoded lazily on first use. Oscillator stubs are gone.
+ */
+
 let audioCtx = null;
 let muted = false;
+const buffers = new Map();
+const pending = new Map();
+
+const VOLUME = {
+  tick: 0.5,
+  'scale-clunk': 0.9,
+  'pen-scratch': 0.7,
+  'folder-open': 0.7,
+  'folder-close': 0.7,
+  'page-turn': 0.7,
+  'week-close': 0.8,
+  stamp: 0.8,
+  'stage-swell': 0.8,
+};
 
 function ctx() {
   if (!audioCtx) {
@@ -12,19 +31,46 @@ function ctx() {
   return audioCtx;
 }
 
-function tone(freq, duration = 0.08, type = 'sine', gain = 0.04) {
+function baseUrl() {
+  try {
+    return import.meta.env?.BASE_URL || '/';
+  } catch {
+    return '/';
+  }
+}
+
+async function loadBuffer(name) {
+  if (buffers.has(name)) return buffers.get(name);
+  if (pending.has(name)) return pending.get(name);
   const ac = ctx();
-  if (!ac || muted) return;
-  const osc = ac.createOscillator();
-  const g = ac.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  g.gain.value = gain;
-  osc.connect(g);
-  g.connect(ac.destination);
-  osc.start();
-  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
-  osc.stop(ac.currentTime + duration);
+  if (!ac) return null;
+  const promise = fetch(`${baseUrl()}audio/${name}.wav`)
+    .then((res) => (res.ok ? res.arrayBuffer() : Promise.reject(new Error(`audio ${name}`))))
+    .then((data) => ac.decodeAudioData(data))
+    .then((buffer) => {
+      buffers.set(name, buffer);
+      return buffer;
+    })
+    .catch(() => null);
+  pending.set(name, promise);
+  return promise;
+}
+
+function play(name) {
+  if (muted) return;
+  const ac = ctx();
+  if (!ac) return;
+  if (ac.state === 'suspended') ac.resume().catch(() => {});
+  loadBuffer(name).then((buffer) => {
+    if (!buffer || muted) return;
+    const source = ac.createBufferSource();
+    const gain = ac.createGain();
+    gain.gain.value = VOLUME[name] ?? 0.7;
+    source.buffer = buffer;
+    source.connect(gain);
+    gain.connect(ac.destination);
+    source.start();
+  });
 }
 
 export function initAudio(state) {
@@ -46,20 +92,37 @@ export function toggleAudioMuted(state) {
 }
 
 export function playUiClick() {
-  tone(520, 0.05, 'triangle', 0.03);
+  play('tick');
 }
 
 export function playWeekEnd() {
-  tone(330, 0.12, 'sine', 0.035);
-  setTimeout(() => tone(440, 0.15, 'sine', 0.035), 80);
+  play('week-close');
 }
 
 export function playStageUp() {
-  tone(262, 0.1, 'sine', 0.04);
-  setTimeout(() => tone(392, 0.14, 'sine', 0.04), 70);
-  setTimeout(() => tone(523, 0.18, 'sine', 0.035), 150);
+  play('stage-swell');
 }
 
 export function playPurchase() {
-  tone(600, 0.06, 'square', 0.02);
+  play('stamp');
+}
+
+export function playScaleClunk() {
+  play('scale-clunk');
+}
+
+export function playPenScratch() {
+  play('pen-scratch');
+}
+
+export function playPageTurn() {
+  play('page-turn');
+}
+
+export function playFolderOpen() {
+  play('folder-open');
+}
+
+export function playFolderClose() {
+  play('folder-close');
 }
