@@ -1,3 +1,4 @@
+import { renderScenePage } from './ui/scenePage.js';
 import { getStageIndex, getStageInfo, getPatientAppearanceSummary } from './characters.js';
 import { FABRICATION_EXCUSES } from './patientVisit.js';
 import { formatMoney } from './state.js';
@@ -150,24 +151,11 @@ function renderWeighRitualPanel(state, visit, patient) {
 
 function renderInterruptPanel(state, interruptScene) {
   if (!interruptScene) return '';
-  return `
-    <div class="rounded-3xl border border-red-300/30 bg-red-950/25 p-5">
-      <p class="text-xs font-bold uppercase tracking-wide text-red-200">Crisis: resolve before continuing</p>
-      <h3 class="mt-2 text-xl font-bold text-stone-50">${esc(interruptScene.title)}</h3>
-      <p class="mt-3 text-sm leading-7 text-stone-200">${esc(interruptScene.opening)}</p>
-      <div class="mt-4 grid gap-2">
-        ${interruptScene.choices
-          .map(
-            (choice) => `
-          <button class="rounded-2xl border border-amber-100/10 bg-stone-950/50 p-3 text-left transition hover:border-amber-200/40" data-action="visit-scene-choice" data-choice="${esc(choice.id)}">
-            <strong class="text-sm text-stone-50">${esc(choice.label)}</strong>
-            ${choice.hint ? `<p class="mt-1 text-xs text-stone-400">${esc(choice.hint)}</p>` : ''}
-            ${choice.apCost ? `<p class="mt-1 text-xs text-amber-200">${choice.apCost} AP</p>` : ''}
-          </button>`,
-          )
-          .join('')}
-      </div>
-    </div>`;
+  return renderScenePage(interruptScene, {
+    kicker: 'The visit stops here until you decide',
+    choiceAction: 'visit-scene-choice',
+    tier: 'page',
+  });
 }
 
 export function renderPatientVisitModal(state, patientId, hooks = {}) {

@@ -252,6 +252,58 @@ input {
   color: #8a3a2d;
 }
 
+/* Scene pages: a scene is a page, not a dialog box. */
+.scene-title {
+  font-family: var(--font-prose);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 0.15rem;
+}
+
+.scene-choice {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-prose);
+  font-size: 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #c9b686;
+  padding: 0.55rem 0.25rem;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease);
+}
+
+.scene-choice:hover {
+  background: rgba(138, 75, 45, 0.08);
+}
+
+.scene-choice-meta {
+  font-family: var(--font-chrome);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* Ceremony: the clinic goes dark around the page. */
+.ceremony {
+  margin: -1.5rem;
+  padding: 3rem 1.5rem;
+  background: var(--night);
+  display: flex;
+  justify-content: center;
+}
+
+.ceremony .scene-page {
+  max-width: 42rem;
+  animation: rise-in var(--t-slow) var(--ease);
+}
+
 /* Desk slip: transient feedback as a paper note, bottom center. */
 .desk-slip {
   position: fixed;

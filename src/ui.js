@@ -63,6 +63,7 @@ import { getCharacterRouteLabel, getMindset, MINDSET_LABELS } from './mindset.js
 import { isGameOver } from './gameOver.js';
 import { getWeekInterrupt, getWeekInterruptScene, resolveWeekInterrupt } from './weekScenes.js';
 import { app, closeModal, e, modalRoot, openModal, showToast } from './ui/dom.js';
+import { renderScenePage } from './ui/scenePage.js';
 import { stageMeter } from './ui/components.js';
 import { renderSidebar, renderTabs, renderTopNav } from './ui/header.js';
 import { renderManagement } from './ui/tabs/management.js';
@@ -419,30 +420,13 @@ function openWeekSceneModal() {
   if (!payload?.scene) return;
 
   const { character, scene } = payload;
-  openModal(`
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <p class="ui-label">Weekly crisis</p>
-        <h2 class="mt-1 text-3xl font-black text-stone-50">${e(scene.title)}</h2>
-        <p class="mt-1 text-stone-400">${e(character.name)} · ${gameState.actionPoints} AP remaining</p>
-      </div>
-    </div>
-    <div class="mt-6 rich-copy rounded-3xl border border-amber-100/10 bg-stone-950/30 p-5 text-base leading-8 text-stone-100">
-      ${e(scene.opening)}
-    </div>
-    <div class="mt-5 grid gap-3">
-      ${scene.choices
-        .map(
-          (choice) => `
-        <button class="soft-card rounded-2xl p-4 text-left hover:border-amber-200/40" data-action="week-scene-choice" data-choice="${e(choice.id)}">
-          <strong class="text-stone-50">${e(choice.label)}</strong>
-          ${choice.hint ? `<p class="mt-1 text-xs text-stone-400">${e(choice.hint)}</p>` : ''}
-          ${choice.apCost ? `<p class="mt-1 text-xs text-amber-200">${choice.apCost} AP</p>` : ''}
-        </button>`,
-        )
-        .join('')}
-    </div>
-  `);
+  openModal(
+    renderScenePage(scene, {
+      kicker: 'Weekly crisis',
+      subline: `${character.name} · ${gameState.actionPoints} AP remaining`,
+      choiceAction: 'week-scene-choice',
+    }),
+  );
 }
 
 function openGameOverModal(gameOver = gameState.gameOver) {
