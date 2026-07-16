@@ -252,6 +252,40 @@ input {
   color: #8a3a2d;
 }
 
+/* Desk slip: transient feedback as a paper note, bottom center. */
+.desk-slip {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  max-width: 26rem;
+  padding: 0.5rem 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.85rem;
+  border: 1px solid var(--paper-dim);
+  border-left: 3px solid var(--ink-soft);
+  border-radius: 2px;
+  animation: slip-in var(--t-slow) var(--ease);
+}
+
+.desk-slip-error {
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+@keyframes slip-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
 /* Day-sheet ledger: ruled rows, tabular money, one anomaly style. */
 .ledger {
   font-size: 0.9rem;

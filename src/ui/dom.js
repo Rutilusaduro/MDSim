@@ -12,20 +12,18 @@ export function e(value) {
     .replaceAll("'", '&#039;');
 }
 
+/** A desk slip, not a toast: a paper note set down at the bottom of
+ * the desk and taken away again. Errors are written in accent ink. */
 export function showToast(message, type = 'success') {
   const existing = document.querySelector('#toast');
   if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.id = 'toast';
-  toast.className = `fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl border px-5 py-4 text-sm shadow-2xl ${
-    type === 'error'
-      ? 'border-red-300/30 bg-red-950/90 text-red-100'
-      : 'border-amber-200/25 bg-stone-950/92 text-amber-50'
-  }`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
+  const slip = document.createElement('div');
+  slip.id = 'toast';
+  slip.className = `desk-slip${type === 'error' ? ' desk-slip-error' : ''}`;
+  slip.textContent = message;
+  document.body.appendChild(slip);
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.remove(), 3200);
+  toastTimer = setTimeout(() => slip.remove(), 3200);
 }
 
 export function openModal(content) {
