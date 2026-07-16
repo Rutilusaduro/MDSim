@@ -37,6 +37,16 @@ export function buildAuditVerdict(state) {
   if (moleFlipped) lines.push('Your mole destroyed evidence before the board arrived.');
   if (moleBetrayed) lines.push('The Annex witness was thorough.');
 
+  const scrubs = (state.ledger || []).filter((row) => row.id === 'cover_scrub');
+  if (scrubs.length) {
+    const weeks = scrubs.map((row) => row.week).join(', ');
+    lines.push(`Correction patterns in ${scrubs.length} chart batch${scrubs.length === 1 ? '' : 'es'} (weeks ${weeks}) drew their own line of questioning.`);
+  }
+  const vouches = (state.ledger || []).filter((row) => row.id === 'asked_to_vouch');
+  if (vouches.length) {
+    lines.push(`${vouches.length} character call${vouches.length === 1 ? '' : 's'} arrived on your behalf before the board convened.`);
+  }
+
   return { verdict, gap, testimony, lines: lines.join(' '), cover };
 }
 

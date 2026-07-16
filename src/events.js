@@ -52,6 +52,7 @@ import { getMindset } from './mindset.js';
 import { recordLedger, dishonestChartEntries, ledgerWhere } from './memoryLedger.js';
 import { getDominantStyle } from './clinicStyle.js';
 import { findCharacter } from './roster.js';
+import { tickCoverOps } from './coverOps.js';
 
 const RECRUIT_ROLES = [
   'Patient Care Coordinator',
@@ -677,6 +678,8 @@ export function endWeek(state) {
   if (state.week >= knobs.rentGrowthFromWeek && knobs.rentGrowthPct > 0) {
     state.rent = Math.round(state.rent * (1 + knobs.rentGrowthPct / 100));
   }
+
+  tickCoverOps(state);
 
   if ((state.heat || 0) > 0 || state.patients?.length) {
     let gapHeat = 0;

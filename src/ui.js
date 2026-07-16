@@ -2,6 +2,7 @@ import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './c
 import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSummary, weightStageNames } from './characters.js';
 import { endWeek, getInteractionOptions, performInteraction } from './events.js';
 import { findCharacter } from './roster.js';
+import { performCoverOp } from './coverOps.js';
 import { DIFFICULTY_TABLE, formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
 import { formatArcSceneNote } from './staffArcs/index.js';
@@ -918,6 +919,17 @@ function bindEvents() {
       } catch (error) {
         showToast(`Could not load save: ${error.message}`, 'error');
       }
+    }
+    if (action === 'cover-op') {
+      const result = performCoverOp(gameState, target.dataset.id);
+      if (!result.ok) {
+        showToast(result.message, 'error');
+        return;
+      }
+      playPenScratch();
+      saveGame(gameState);
+      render();
+      showToast(result.message.split('.')[0] + '.');
     }
     if (action === 'new-game') {
       openModal(`

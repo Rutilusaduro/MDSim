@@ -1,4 +1,5 @@
 import { getStageIndex, staffCandidateSummary } from '../../characters.js';
+import { COVER_OPS, getCoverOpAvailability } from '../../coverOps.js';
 import { shopItems } from '../../clinic.js';
 import { PUBLIC_CLINIC_TAGLINE } from '../../patientFraming.js';
 import { getRecruitmentPanel } from '../../recruitment.js';
@@ -53,11 +54,36 @@ function renderRecruitmentSection(state) {
 }
 
 
+function renderCoverOpsPanel(state) {
+  const heat = state.heat || 0;
+  return `
+    <div class="soft-card mb-8 rounded-3xl p-5">
+      <p class="ui-label">Cover</p>
+      <h3 class="mt-1 text-xl font-bold text-stone-50">Keep the story straight</h3>
+      <p class="mt-1 text-sm text-stone-400">Heat <span class="chart-num">${heat}</span> · cover <span class="chart-num">${state.coverRating ?? 100}</span>. Every fix below leaves its own paper.</p>
+      <div class="mt-4 grid gap-3 md:grid-cols-3">
+        ${COVER_OPS.map((op) => {
+          const check = getCoverOpAvailability(state, op.id);
+          return `
+            <button class="soft-card rounded-2xl p-4 text-left ${check.ok ? '' : 'opacity-45'}" data-action="cover-op" data-id="${op.id}" ${check.ok ? '' : 'disabled'}>
+              <div class="flex items-start justify-between gap-2">
+                <strong class="text-sm text-stone-50">${e(op.label)}</strong>
+                <span class="text-xs text-amber-100">${op.apCost} AP${op.moneyCost ? ` · $${op.moneyCost}` : ''}</span>
+              </div>
+              <p class="mt-1 text-xs leading-5 text-stone-400">${e(op.description)}</p>
+              <p class="mt-2 text-xs ${check.ok ? 'text-emerald-200' : 'text-stone-500'}">${e(check.ok ? op.hint : check.reason)}</p>
+            </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
 export function renderManagement(state) {
   const categories = [...new Set(shopItems.map((item) => item.category))];
   return `
     <section>
       ${renderRecruitmentSection(state)}
+      ${renderCoverOpsPanel(state)}
       <div class="mb-5">
         <p class="text-sm text-amber-200/70">Management phase</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Buy before the week turns</h2>
