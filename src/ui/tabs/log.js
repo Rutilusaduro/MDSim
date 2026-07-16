@@ -3,7 +3,7 @@ import { e } from '../dom.js';
 export function renderLog(state) {
   const notes = state.thisWeek.length
     ? state.thisWeek
-    : [{ title: 'Quiet week', text: 'No notes yet. Spend AP or end the week.' }];
+    : [{ title: 'Quiet so far', text: 'The day sheet is blank. See a patient, buy something, or close out the week; the paper fills itself.' }];
   return `
     <section>
       <div class="mb-5 flex flex-wrap items-end justify-between gap-4">

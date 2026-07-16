@@ -9,6 +9,7 @@ export function renderAchievements(state) {
         <p class="text-sm text-amber-200/70">Milestones</p>
         <h2 class="mt-2 text-3xl font-black text-stone-50">Achievements</h2>
         <p class="mt-2 text-stone-300">${progress.unlocked} / ${progress.total} unlocked</p>
+      ${progress.unlocked === 0 ? `<p class="mt-2 text-sm text-stone-400">The wall above the filing cabinet is bare. First frame goes up when the first week closes.</p>` : ''}
       </div>
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         ${progress.list

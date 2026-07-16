@@ -10,7 +10,11 @@ export function renderRelationships(state) {
         <h2 class="mt-2 text-3xl font-black text-stone-50">Relationship web</h2>
         <p class="mt-2 text-stone-300">${edges.length} active edges. Green = admires, pink = envies.</p>
       </div>
-      <div class="soft-card mb-6 rounded-3xl p-4">${renderRelationshipGraphSvg(state)}</div>
+      ${
+        edges.length < 2
+          ? `<div class="soft-card mb-6 rounded-3xl p-6"><p class="prose-page text-sm" style="color: var(--paper-dim)">Nobody has said anything worth repeating yet. Break rooms take a few weeks to loosen.</p></div>`
+          : `<div class="soft-card mb-6 rounded-3xl p-4">${renderRelationshipGraphSvg(state)}</div>`
+      }
       <div class="grid gap-4 md:grid-cols-2">
         ${edges
           .map(
