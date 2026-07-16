@@ -568,7 +568,36 @@ export function endWeek(state) {
     }
 
     character.weeklyMomentum = 0;
-    if (character.type === 'patient') character.seenThisWeek = false;
+    if (character.type === 'patient') {
+      // C2: warmth cools when she sits in someone else's waiting room.
+      if (character.seenThisWeek) {
+        character.unseenWeeks = 0;
+      } else {
+        character.unseenWeeks = (character.unseenWeeks || 0) + 1;
+        const tier = getPatientFramingTier(character);
+        if (character.unseenWeeks >= 2 && tier === 'warming') {
+          // Floor lets her slip to clinical_plus, never back to cold clinical.
+          character.indulgence = Math.max(22, character.indulgence - 3);
+          character.openness = Math.max(0, character.openness - 2);
+          if (!character.framingCooledNoted) {
+            character.framingCooledNoted = true;
+            recordLedger(state, { id: 'framing_cooled', characterId: character.id });
+            addWeekNote(
+              {
+                type: 'cooling',
+                title: `Cooling: ${character.name}`,
+                text: `Two weeks unseen. ${character.name.split(' ')[0]} rebooked once, then stopped mentioning the snack menu on the phone.`,
+              },
+              state,
+            );
+          }
+        } else if (character.unseenWeeks >= 2 && tier === 'complicit') {
+          state.heat = Math.min(100, (state.heat || 0) + 1);
+        }
+      }
+      if (character.unseenWeeks === 0) character.framingCooledNoted = false;
+      character.seenThisWeek = false;
+    }
   });
 
   if (!state.firedEvents) state.firedEvents = [];

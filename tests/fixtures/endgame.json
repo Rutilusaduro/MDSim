@@ -111,6 +111,7 @@
    "consent": "Adult patient, 21+. Intake forms list routine primary-care services.",
    "lastStage": 0,
    "publicReason": "sick visit",
+   "unseenWeeks": 30,
    "lastFramingTier": "clinical",
    "scenes": {
     "flags": [],

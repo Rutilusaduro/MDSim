@@ -833,6 +833,7 @@ export function completeVisit(state) {
 
   patient.visits = (patient.visits || 0) + 1;
   patient.seenThisWeek = true;
+  patient.unseenWeeks = 0;
   patient.trust = Math.round((patient.trust + 0.35) * 100) / 100;
   patient.openness = Math.min(100, patient.openness + 1.5);
   patient.weeklyMomentum += 0.45;
