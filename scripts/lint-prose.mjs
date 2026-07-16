@@ -87,6 +87,7 @@ for (const file of files) {
     const raw = match[1] || match[2] || match[3];
     // Prose only: markup templates share class soup by design.
     if (raw.includes('<') || raw.includes('class=') || raw.includes('${')) continue;
+    if (/(?:^|\s)(?:lg:|md:|sm:|px-|py-|mt-|mb-|rounded|text-\w)/.test(raw)) continue;
     const text = raw.toLowerCase();
     const words = text.replace(/[^a-z' ]+/g, ' ').split(/\s+/).filter(Boolean);
     if (words.length < 8) continue;
