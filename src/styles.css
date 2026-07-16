@@ -252,6 +252,40 @@ input {
   color: #8a3a2d;
 }
 
+/* Visit phase rail: a checklist ribbon, current step underlined. */
+.phase-rail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.phase-step {
+  padding: 0.15rem 0.1rem;
+  font-weight: 700;
+}
+
+.phase-done {
+  color: #7a8a68;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.phase-current {
+  color: var(--paper);
+  border-bottom: 2px solid var(--accent-soft);
+}
+
+.phase-todo {
+  color: #6b6155;
+}
+
+.phase-gap {
+  width: 1rem;
+  border-top: 1px solid var(--night-line);
+}
+
 /* Scene pages: a scene is a page, not a dialog box. */
 .scene-title {
   font-family: var(--font-prose);

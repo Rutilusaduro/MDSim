@@ -12,6 +12,7 @@ import {
   applyWeighChartChoice,
 } from './patientVisit.js';
 import { VISIT_TONES } from './scenes/catalog.js';
+import { renderChartGapSvg } from './gameOver.js';
 import { renderSilhouette } from './silhouettes.js';
 import { visitMobilityWarning } from './worldImpact.js';
 import { getFramingChipLabel } from './visitClinical.js';
@@ -181,27 +182,31 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   const phaseRail = VISIT_PHASES.map((phase, i) => {
     const done = i < phaseIdx;
     const current = i === phaseIdx;
-    const cls = done
-      ? 'bg-emerald-500/20 text-emerald-100'
-      : current
-        ? 'bg-amber-200/20 text-amber-50 ring-1 ring-amber-200/40'
-        : 'bg-stone-800/50 text-stone-500';
-    return `<span class="rounded-full px-3 py-1 text-xs font-bold ${cls}">${PHASE_LABELS[phase]}</span>`;
-  }).join('');
+    const cls = done ? 'phase-done' : current ? 'phase-current' : 'phase-todo';
+    return `<span class="phase-step ${cls}">${PHASE_LABELS[phase]}</span>`;
+  }).join('<span class="phase-gap"></span>');
+
+  const chartEntries = visit.completedActions
+    .filter((id) => id !== 'end_visit')
+    .map((id) => {
+      const label = actions.find((a) => a.id === id)?.label || id.replaceAll('_', ' ');
+      return `<li class="chart-num text-xs">✓ ${esc(label)}</li>`;
+    })
+    .join('');
 
   const logHtml = log.length
     ? log
         .map(
           (entry) => `
-        <div class="rounded-2xl border border-amber-100/10 bg-stone-950/40 p-4 text-sm leading-7 text-stone-200">
-          <p class="text-xs font-bold uppercase tracking-wide text-amber-200/80">${esc(entry.label)}</p>
-          <p class="mt-2 text-stone-100">${esc(entry.narrative)}</p>
-          ${entry.reply ? `<p class="mt-3 border-l-2 border-pink-300/40 pl-3 text-pink-100"><em>"${esc(entry.reply)}"</em></p>` : ''}
+        <div class="prose-page text-sm">
+          <p class="ui-label" style="color: var(--ink-soft)">${esc(entry.label)}</p>
+          <p class="mt-1">${esc(entry.narrative)}</p>
+          ${entry.reply ? `<p class="mt-2 pl-3" style="border-left: 2px solid var(--accent-soft)"><em>"${esc(entry.reply)}"</em></p>` : ''}
         </div>`,
         )
-        .join('')
+        .join('<hr class="my-3" style="border-color: #d9c795" />')
     : opening
-      ? `<div class="rounded-2xl border border-pink-400/20 bg-pink-950/20 p-4 text-sm leading-7 text-stone-100">${esc(opening)}</div>`
+      ? `<div class="prose-page text-sm">${esc(opening)}</div>`
       : '';
 
   const endVisitDone = visit.completedActions.includes('end_visit');
@@ -226,43 +231,33 @@ export function renderPatientVisitModal(state, patientId, hooks = {}) {
   return `
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p class="ui-label">Patient visit</p>
+        <p class="ui-label">Patient visit · week ${state.week} · ${state.actionPoints} AP remaining</p>
         <h2 class="mt-1 text-3xl font-black text-stone-50">${esc(patient.name)}</h2>
-        <p class="mt-1 text-stone-300">${esc(patient.role)} · ${esc(stage.bodyType)} · ${Math.round(patient.weight)} lb</p>
-        <p class="mt-2 flex flex-wrap items-center gap-2">
-          <span class="rounded-full bg-amber-200/15 px-3 py-1 text-xs font-bold text-amber-100">${esc(framingChip)}</span>
-          <span class="text-xs text-stone-400">${esc(framingNote)}</span>
-        </p>
-        <p class="mt-1 text-xs text-stone-400">${esc(getPatientAppearanceSummary(patient))}</p>
+        <p class="mt-1 text-stone-300">${esc(patient.role)} · ${esc(getPatientAppearanceSummary(patient))}</p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="visit-abandon">Leave desk</button>
-      </div>
+      <button class="dark-button rounded-2xl px-4 py-2 font-bold" data-action="visit-abandon">Leave desk</button>
     </div>
 
-    <div class="mt-4 flex flex-wrap gap-2">${phaseRail}</div>
-    ${mobilityWarning ? `<p class="mt-3 rounded-2xl border border-amber-300/25 bg-amber-950/30 px-4 py-2 text-xs text-amber-100">${esc(mobilityWarning)}</p>` : ''}
-    <p class="mt-2 text-xs text-stone-400">${state.actionPoints} AP remaining · Week ${state.week} · Bill consult before checkout</p>
+    ${mobilityWarning ? `<p class="mt-3 text-xs" style="color: var(--accent-soft)">${esc(mobilityWarning)}</p>` : ''}
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-[16rem_1fr]">
-      <aside class="soft-card rounded-3xl p-4 lg:sticky lg:top-0">
-        <div class="text-pink-300">${renderSilhouette(patient, stageIdx, { wide: true })}</div>
-        <p class="mt-2 text-center text-sm font-bold text-amber-100">${esc(stage.name)}</p>
-        <div class="mt-3 space-y-1 text-xs text-stone-400">
-          <div class="flex justify-between"><span>Trust</span><strong class="text-stone-200">${patient.trust.toFixed(1)}</strong></div>
-          <div class="flex justify-between"><span>Loyalty</span><strong class="text-stone-200">${patient.loyalty || 0}</strong></div>
-          <div class="flex justify-between"><span>Visits</span><strong class="text-stone-200">${patient.visits || 0}</strong></div>
-        </div>
+    <div class="mt-5 grid gap-6 lg:grid-cols-[20rem_1fr]">
+      <aside class="paper-surface h-fit p-4 lg:sticky lg:top-0">
+        <p class="ui-label" style="color: var(--ink-soft)">${esc(framingNote)}</p>
+        <div class="mt-3">${renderChartGapSvg(patient, state)}</div>
+        <div class="mt-3" style="color: var(--ink)">${renderSilhouette(patient, stageIdx, { wide: true })}</div>
+        <p class="mt-1 text-center text-sm font-bold" style="color: var(--ink)">${esc(stage.name)} · <span class="note-clip">${esc(framingChip)}</span></p>
+        ${chartEntries ? `<ul class="mt-3 space-y-1" style="color: var(--ink-soft)">${chartEntries}</ul>` : ''}
       </aside>
 
       <div class="min-w-0 space-y-5">
-        <div class="max-h-[14rem] space-y-3 overflow-auto pr-1">${logHtml}</div>
+        <div class="phase-rail">${phaseRail}</div>
+        ${logHtml ? `<div class="paper-surface max-h-[15rem] overflow-auto p-4">${logHtml}</div>` : ''}
 
         ${actionsHtml}
 
         ${
           visit.phase === 'checkout' && !endVisitDone && !interruptScene
-            ? `<p class="text-sm text-amber-100">Checkout: bill consult, schedule follow-up if you want, then end visit.</p>`
+            ? `<p class="text-sm text-amber-100">Checkout: bill the consult, schedule a follow-up if you want her back, then end the visit.</p>`
             : ''
         }
       </div>

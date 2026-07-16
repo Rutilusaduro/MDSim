@@ -85,8 +85,8 @@ export function renderChartGapSvg(patient, state) {
   const gap = chartGap(patient);
   return `
     <svg viewBox="0 0 200 100" class="w-full max-w-xs" aria-label="Weight vs chart trend">
-      <polyline fill="none" stroke="#f9a8d4" stroke-width="2" points="${pointsReal}" />
-      <polyline fill="none" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="4 3" points="${pointsChart}" />
+      <polyline fill="none" stroke="var(--ink, #26221b)" stroke-width="2" points="${pointsReal}" />
+      <polyline fill="none" stroke="var(--accent, #8a4b2d)" stroke-width="2" stroke-dasharray="4 3" points="${pointsChart}" />
     </svg>
-    <p class="mt-2 text-xs text-amber-200">Gap: <strong>${gap} lb</strong> (pink = scale, blue = chart)</p>`;
+    <p class="mt-2 text-xs" style="color: var(--ink-soft, #57503f)">Gap <strong class="chart-num">${gap} lb</strong> · solid = scale, dashed = what you charted</p>`;
 }
