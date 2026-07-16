@@ -477,34 +477,41 @@ function buildResolutionHtml({
     : '';
 
   const net = (weekConsultIncome || 0) + clinicRevenue - bills;
-  const incomeLines = [
-    weekConsultIncome ? `Visit fees ${formatMoney(weekConsultIncome)}` : null,
-    clinicRevenue ? `Clinic revenue ${formatMoney(clinicRevenue)}` : null,
-    `Bills ${formatMoney(bills)}`,
-    `Net ${formatMoney(net)}`,
-  ]
-    .filter(Boolean)
-    .join('. ');
+  const supplyAnomaly = state.supplyCost > state.rent;
+  const ledgerRow = (label, value, cls = '') =>
+    `<div class="ledger-row${cls ? ` ${cls}` : ''}"><span>${label}</span><span class="chart-num">${formatMoney(value)}</span></div>`;
+  const ledgerBlock = `
+    <div class="ledger mt-5">
+      ${weekConsultIncome ? ledgerRow('Visit fees', weekConsultIncome) : ''}
+      ${clinicRevenue ? ledgerRow('Clinic revenue', clinicRevenue) : ''}
+      ${ledgerRow('Rent', -state.rent)}
+      ${ledgerRow('Salaries', -state.salaries)}
+      ${ledgerRow('Supplies', -state.supplyCost, supplyAnomaly ? 'ledger-anomaly' : '')}
+      ${supplyAnomaly ? '<p class="mt-1 text-xs italic" style="color: var(--accent)">The kitchen now costs more than the lease.</p>' : ''}
+      ${ledgerRow('Net', net, 'ledger-net')}
+    </div>`;
 
   return `
-    <p>${installedText}</p>
-    ${seasonalBlock}
-    ${eventBlock}
-    ${rivalBlock}
-    ${wardrobeBlock}
-    ${relBlock}
-    ${chapterBlock}
-    <p>Week ${state.week} closes. ${
-      bestStaff
-        ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.`
-        : ''
-    } ${
-      bestPatient
-        ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier.`
-        : ''
-    }</p>
-    ${stageText}
-    <p>${incomeLines}. ${closingTone}</p>
+    <div class="prose-page">
+      <p>Week ${state.week}, Friday close. ${installedText} ${
+        bestStaff ? `<strong>${bestStaff.name}</strong> adds ${bestStaff.gain.toFixed(1)} lb.` : ''
+      } ${
+        bestPatient
+          ? `<strong>${bestPatient.name}</strong> leaves ${bestPatient.gain.toFixed(1)} lb heavier.`
+          : ''
+      } ${closingTone}</p>
+      ${seasonalBlock}
+      ${eventBlock}
+      ${rivalBlock}
+      ${wardrobeBlock}
+      ${relBlock}
+      ${chapterBlock}
+    </div>
+    ${ledgerBlock}
+    <div class="mt-4 border-t pt-3" style="border-color: #c9b686">
+      <p class="ui-label" style="color: var(--ink-soft)">Chart flags</p>
+      <div class="prose-page mt-1 text-sm">${stageText}</div>
+    </div>
   `;
 }
 

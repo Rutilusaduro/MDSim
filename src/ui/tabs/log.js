@@ -43,7 +43,7 @@ export function renderLog(state) {
                   <article class="soft-card rounded-3xl p-4">
                     <p class="ui-label">Week ${entry.week} - ${e(entry.type)}</p>
                     <h4 class="mt-1 font-bold text-stone-50">${e(entry.title)}</h4>
-                    <div class="rich-copy mt-2 text-sm">${entry.type === 'resolution' ? entry.text : `<p>${e(entry.text)}</p>`}</div>
+                    <div class="rich-copy mt-2 text-sm">${entry.type === 'resolution' ? `<div class="paper-surface p-4">${entry.text}</div>` : `<p>${e(entry.text)}</p>`}</div>
                   </article>
                 `,
               )

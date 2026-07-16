@@ -252,6 +252,31 @@ input {
   color: #8a3a2d;
 }
 
+/* Day-sheet ledger: ruled rows, tabular money, one anomaly style. */
+.ledger {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.ledger-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 0.3rem 0.25rem;
+  border-bottom: 1px solid #d9c795;
+}
+
+.ledger-anomaly > span:last-child {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.ledger-net {
+  font-weight: 800;
+  border-bottom: 3px double var(--ink-soft);
+}
+
 /* The weigh-in: dial settles, number lands, then the pen decision. */
 .dial-number {
   font-size: 3rem;

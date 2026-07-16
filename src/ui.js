@@ -463,7 +463,19 @@ function openGameOverModal(gameOver = gameState.gameOver) {
 
 function flushEndWeekModals(resolution) {
   clearModalQueue();
-  queueModal(`<div class="resolution-html">${resolution.html}</div>`);
+  queueModal(`
+    <div class="week-turn-enter paper-surface p-6 md:p-8">
+      <p class="ui-label" style="color: var(--ink-soft)">Day sheet · week ${resolution.week}</p>
+      <div class="resolution-html mt-2">${resolution.html}</div>
+      ${
+        resolution.newAchievements?.length
+          ? `<div class="mt-5 flex flex-wrap gap-2">${resolution.newAchievements
+              .map((a) => `<span class="stamp">${e(a.name)}</span>`)
+              .join('')}</div>`
+          : ''
+      }
+      <button class="gold-button mt-6 px-6 py-2 font-bold" data-action="close-modal">File it</button>
+    </div>`);
   if (getPendingGroupScene(gameState)) {
     const payload = getPendingGroupScene(gameState);
     queueModal(`<h2 class="text-2xl font-black text-stone-50">Group scene</h2><p class="mt-4 text-stone-200">${e(payload.scene?.title || 'Staff moment')}</p>`);
