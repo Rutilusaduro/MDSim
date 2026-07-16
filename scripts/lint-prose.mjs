@@ -79,11 +79,14 @@ for (const file of files) {
 }
 
 // ---- cross-file 5-gram duplicates --------------------------------------------
+// Per line, like lintSourceStrings: quote-pairing across lines would
+// otherwise capture raw code between two real strings as a "string".
 const STRING_LITERAL = /'((?:[^'\\]|\\.){40,})'|"((?:[^"\\]|\\.){40,})"|`((?:[^`\\]|\\.){40,})`/g;
 const gramIndex = new Map();
 for (const file of files) {
+  for (const line of file.source.split('\n')) {
   let match;
-  while ((match = STRING_LITERAL.exec(file.source)) !== null) {
+  while ((match = STRING_LITERAL.exec(line)) !== null) {
     const raw = match[1] || match[2] || match[3];
     // Prose only: markup templates share class soup by design.
     if (raw.includes('<') || raw.includes('class=') || raw.includes('${')) continue;
@@ -99,6 +102,7 @@ for (const file of files) {
       if (!gramIndex.has(gram)) gramIndex.set(gram, new Set());
       gramIndex.get(gram).add(file.rel);
     }
+  }
   }
 }
 const gramFindings = [];
