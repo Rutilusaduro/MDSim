@@ -35,6 +35,23 @@ const {
 } = await import('../src/patientVisit.js');
 const { getPatientFramingTier } = await import('../src/patientFraming.js');
 const { getStageIndex } = await import('../src/characters.js');
+const { hireCandidate } = await import('../src/recruitment.js');
+const { buyManagementItem } = await import('../src/clinic.js');
+
+/** The clinic grows through hiring; a policy that never hires is not
+ * playing the game. Shared management step for the non-neglect policies. */
+function manageClinic(state, { marketing = false } = {}) {
+  const candidates = state.recruitment?.candidates || [];
+  if (candidates.length && state.staff.length < 3 && state.actionPoints >= 5 && state.money > 900) {
+    hireCandidate(state, candidates[0].id);
+  }
+  if (!state.ownedUpgrades.includes('wellness-vending-wall') && state.money > 1600) {
+    buyManagementItem(state, 'wellness-vending-wall');
+  }
+  if (marketing && state.money > 2400) {
+    buyManagementItem(state, 'luxury-comfort-campaign');
+  }
+}
 
 function act(state, actionId, chartChoice = 'chart_true') {
   const result = performVisitAction(state, actionId);
@@ -72,24 +89,27 @@ function runVisit(state, patientId, plan, chartChoice) {
 
 const SKELETON = ['say_hi', 'review_chart', 'weigh_patient', 'bill_consultation', 'schedule_followup', 'end_visit'];
 const MONEY_PLAN = [...SKELETON.slice(0, 4), 'upsell_wellness_kit', 'schedule_followup', 'end_visit'];
+const LEAN_PLAN = SKELETON;
 const GAIN_PLAN = [
   'say_hi', 'personal_talk', 'offer_snack_menu', 'weigh_patient', 'feed_in_place',
   'warm_blanket', 'lounge_snack', 'comfort_plan', 'bill_consultation', 'schedule_followup', 'end_visit',
 ];
 const BALANCED_PLAN = [
-  'say_hi', 'review_symptoms', 'weigh_patient', 'nutrition_counseling',
+  'say_hi', 'review_symptoms', 'weigh_patient',
   'bill_consultation', 'schedule_followup', 'end_visit',
 ];
 
 const POLICIES = {
   neglect: () => {},
   'greedy-money': (state) => {
+    manageClinic(state, { marketing: true });
     for (const p of getUnvisitedPatients(state)) {
       if (state.actionPoints < 4) break;
-      runVisit(state, p.id, MONEY_PLAN, 'chart_true');
+      runVisit(state, p.id, state.actionPoints >= 6 ? MONEY_PLAN : LEAN_PLAN, 'chart_true');
     }
   },
   'greedy-gain': (state) => {
+    manageClinic(state);
     for (const p of getUnvisitedPatients(state)) {
       if (state.actionPoints < 4) break;
       const tier = getPatientFramingTier(p);
@@ -98,6 +118,7 @@ const POLICIES = {
     }
   },
   balanced: (state) => {
+    manageClinic(state, { marketing: true });
     for (const p of getUnvisitedPatients(state)) {
       if (state.actionPoints < 4) break;
       runVisit(state, p.id, BALANCED_PLAN, 'chart_true');
@@ -226,6 +247,14 @@ if (ASSERT) {
     [
       avg(finals.balanced, 'distinctLines') > 50,
       'balanced play renders a real spread of lines',
+    ],
+    [
+      avg(finals.balanced, 'money') > -1500,
+      'balanced play stays solvent on the attending start',
+    ],
+    [
+      avg(finals.balanced, 'money') - avg(finals.neglect, 'money') > 10000,
+      'neglect is punished distinctly from play',
     ],
     [
       medComplicit == null || medClinical == null || medComplicit >= medClinical,

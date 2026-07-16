@@ -38,7 +38,7 @@ import { framingRank } from './visitClinical.js';
 export const VISIT_PHASES = ['greeting', 'intake', 'exam', 'services', 'checkout'];
 export const TONE_ENABLED_ACTIONS = ['say_hi', 'offer_water', 'weigh_patient'];
 
-const CONSULT_FEE = 225;
+const CONSULT_FEE = 360;
 
 const CLINICAL_CLUSTER = new Set([
   'review_symptoms',
@@ -250,7 +250,7 @@ export const VISIT_ACTIONS = [
     description: 'Take-home bars and supplement cups. Upsell code on the invoice.',
     apCost: 1,
     phase: 'services',
-    effects: { money: 85, indulgence: 1, trust: 0.1 },
+    effects: { money: 140, indulgence: 1, trust: 0.1 },
     once: true,
   },
   {
@@ -623,6 +623,7 @@ export function startVisit(state, patientId) {
     completedActions: [],
     visitLog: [],
     startedWeek: state.week,
+    apAtStart: state.actionPoints,
     opening: getVisitOpeningWithEcho(state, patient),
   };
 
@@ -865,8 +866,16 @@ export function completeVisit(state) {
 
   if (state.stats) state.stats.visitCount = (state.stats.visitCount || 0) + 1;
 
+  // C7: breadth pays. A tight visit hands one AP back.
+  const spent = (visit.apAtStart ?? state.actionPoints) - state.actionPoints;
+  let refundNote = '';
+  if (spent > 0 && spent <= 5 && state.actionPoints < state.actionPointsMax) {
+    state.actionPoints += 1;
+    refundNote = ' Efficient clinic day: one AP back.';
+  }
+
   state.activePatientVisit = null;
-  return { ok: true, message: `${summary} Visit ${patient.visits} on the books.` };
+  return { ok: true, message: `${summary} Visit ${patient.visits} on the books.${refundNote}` };
 }
 
 export function getUnvisitedPatients(state) {
@@ -879,8 +888,10 @@ export function allPatientsSeen(state) {
 }
 
 export function visitWeekPenalty(state) {
-  const unvisited = getUnvisitedPatients(state);
-  if (!unvisited.length) {
+  // C7: triage, not a completion tax. Only patients ignored two weeks
+  // running complain where it counts, and word of mouth saturates.
+  const neglected = getUnvisitedPatients(state).filter((p) => (p.unseenWeeks || 0) >= 2);
+  if (!neglected.length) {
     return {
       unvisited: 0,
       reputation: 0,
@@ -889,15 +900,16 @@ export function visitWeekPenalty(state) {
     };
   }
 
-  const reputation = unvisited.length * 2;
+  const counted = Math.min(2, neglected.length);
+  const reputation = counted * 2;
   const trustLossPerPatient = 0.2;
-  const names = unvisited.map((patient) => patient.name).join(', ');
-  const penaltyLine = unvisited.length ? getMissedVisitPenalty(state, unvisited[0]) : '';
+  const names = neglected.map((patient) => patient.name).join(', ');
+  const penaltyLine = getMissedVisitPenalty(state, neglected[0]);
 
   return {
-    unvisited: unvisited.length,
+    unvisited: neglected.length,
     reputation,
     trustLossPerPatient,
-    message: `${unvisited.length} patient${unvisited.length === 1 ? '' : 's'} missed this week (${names}). Reputation -${reputation}. ${penaltyLine}`,
+    message: `${neglected.length} patient${neglected.length === 1 ? '' : 's'} left waiting two weeks running (${names}). Reputation -${reputation}. ${penaltyLine}`,
   };
 }

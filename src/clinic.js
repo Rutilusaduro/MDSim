@@ -35,7 +35,7 @@ export const shopItems = [
     maintenance: 60,
     tagline: 'Shakes, bars, cream cups behind glowing glass.',
     description: 'The machine hums. Everyone passes it. Most stop.',
-    effects: { patientGain: 0.11, staffGain: 0.09, weeklyRevenue: 95 },
+    effects: { patientGain: 0.11, staffGain: 0.09, weeklyRevenue: 160 },
   },
   {
     id: 'amber-scent-system',

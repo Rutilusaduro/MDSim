@@ -433,6 +433,8 @@ function buildResolutionHtml({
   stageChanges,
   bills,
   clinicRevenue,
+  walkInRevenue = 0,
+  staffRevenue = 0,
   weekConsultIncome,
   newPatients,
   weeklyEvent,
@@ -478,13 +480,15 @@ function buildResolutionHtml({
     ? `<p><strong>${seasonal.name}:</strong> ${seasonal.modifier}</p>`
     : '';
 
-  const net = (weekConsultIncome || 0) + clinicRevenue - bills;
+  const net = (weekConsultIncome || 0) + clinicRevenue + walkInRevenue + staffRevenue - bills;
   const supplyAnomaly = state.supplyCost > state.rent;
   const ledgerRow = (label, value, cls = '') =>
     `<div class="ledger-row${cls ? ` ${cls}` : ''}"><span>${label}</span><span class="chart-num">${formatMoney(value)}</span></div>`;
   const ledgerBlock = `
     <div class="ledger mt-5">
       ${weekConsultIncome ? ledgerRow('Visit fees', weekConsultIncome) : ''}
+      ${walkInRevenue ? ledgerRow('Walk-in copays', walkInRevenue) : ''}
+      ${staffRevenue ? ledgerRow('Staff-run visits', staffRevenue) : ''}
       ${clinicRevenue ? ledgerRow('Clinic revenue', clinicRevenue) : ''}
       ${ledgerRow('Rent', -state.rent)}
       ${ledgerRow('Salaries', -state.salaries)}
@@ -698,7 +702,7 @@ export function endWeek(state) {
   }
 
   const appetiteSum = state.patients.reduce((sum, p) => sum + (p.appetite || 0), 0);
-  state.supplyCost = Math.round(95 + appetiteSum * 12);
+  state.supplyCost = Math.round(95 + appetiteSum * 10);
 
   const dominant = getDominantStyle(state);
   if (dominant.scores?.softness >= 65 || dominant.axis === 'softness') {
@@ -755,8 +759,12 @@ export function endWeek(state) {
 
   const clinicRevenue = effects.weeklyRevenue;
   const weekConsultIncome = state.weekConsultIncome || 0;
+  // Walk-in copays: a primary care office bills for being open.
+  const walkInRevenue = state.patients.length * 65;
+  // Hired clinicians run their own routine slate. The receptionist does not bill.
+  const staffRevenue = Math.max(0, state.staff.length - 1) * 400;
   const bills = state.rent + state.salaries + state.supplyCost + effects.maintenance;
-  state.money += clinicRevenue - bills;
+  state.money += clinicRevenue + walkInRevenue + staffRevenue - bills;
   state.reputation = Math.max(0, state.reputation);
 
   const leaving = [];
@@ -856,6 +864,8 @@ export function endWeek(state) {
     stageChanges,
     bills,
     clinicRevenue,
+    walkInRevenue,
+    staffRevenue,
     weekConsultIncome,
     newPatients,
     weeklyEvent,
