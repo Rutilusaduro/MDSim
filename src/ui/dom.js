@@ -29,11 +29,17 @@ export function showToast(message, type = 'success') {
 export function openModal(content) {
   modalRoot().innerHTML = `
     <div class="modal-backdrop fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-4" data-action="close-modal">
-      <div class="modal-card glass-panel max-h-[92vh] w-full max-w-4xl overflow-auto rounded-[2rem] p-6 md:p-8" data-modal-card>
+      <div class="modal-card glass-panel max-h-[92vh] w-full max-w-4xl overflow-auto rounded-[2rem] p-6 md:p-8" data-modal-card role="dialog" aria-modal="true" tabindex="-1">
         ${content}
       </div>
     </div>
   `;
+  modalRoot().querySelector('[data-modal-card]')?.focus();
+}
+
+/** Ceremonies dismiss only through their own choices. */
+export function modalIsCeremony() {
+  return Boolean(modalRoot().querySelector('.ceremony'));
 }
 
 export function closeModal() {

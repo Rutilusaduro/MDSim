@@ -60,7 +60,7 @@ export function characterCard(character, variant = 'standard', state = gameState
     ? `<span class="note-clip">${e(getFramingChipLabel(getPatientFramingTier(character)))}</span>`
     : '';
   return `
-    <article class="chart-card cursor-pointer" data-action="${openAction}" data-id="${e(character.id)}">
+    <article class="chart-card cursor-pointer" data-action="${openAction}" data-id="${e(character.id)}" role="button" tabindex="0" aria-label="Open ${e(character.name)}">
       <div class="chart-card-tab">
         <span class="font-bold">${e(character.name)}</span>
         <span class="chart-num text-xs">${chartedLb} lb${isPatient && character.chartedWeight != null && Math.round(character.chartedWeight) !== Math.round(character.weight) ? ' (chart)' : ''}</span>

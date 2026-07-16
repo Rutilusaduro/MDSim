@@ -41,6 +41,16 @@ input {
   font: inherit;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+[data-modal-card]:focus {
+  outline: none;
+}
+
 /* Legacy class names kept so feature code migrates surface by surface. */
 
 .glass-panel {

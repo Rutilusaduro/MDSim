@@ -71,11 +71,11 @@ import { PUBLIC_CLINIC_TAGLINE, getCoverLabel } from './patientFraming.js';
 import { getClinicTagline, getClinicAmbientLine } from './clinicMindset.js';
 import { renderChartGapSvg } from './gameOver.js';
 import { queueModal, showNextModal, clearModalQueue } from './ui/modalQueue.js';
-import { openConfirmModal, handleConfirmYes, handleConfirmNo } from './ui/confirmModal.js';
+import { openConfirmModal, handleConfirmYes, handleConfirmNo, hasPendingConfirm } from './ui/confirmModal.js';
 import { getCharacterRouteLabel, getMindset, MINDSET_LABELS } from './mindset.js';
 import { isGameOver } from './gameOver.js';
 import { getWeekInterrupt, getWeekInterruptScene, resolveWeekInterrupt } from './weekScenes.js';
-import { app, closeModal, e, modalRoot, openModal, showToast } from './ui/dom.js';
+import { app, closeModal, e, modalIsCeremony, modalRoot, openModal, showToast } from './ui/dom.js';
 import { renderScenePage } from './ui/scenePage.js';
 import { stageMeter } from './ui/components.js';
 import { renderSidebar, renderTabs, renderTopNav } from './ui/header.js';
@@ -529,6 +529,21 @@ function handleInteraction(characterId, actionId) {
 }
 
 function bindEvents() {
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modalRoot().innerHTML && !modalIsCeremony() && !hasPendingConfirm()) {
+      closeModal();
+      if (dialogueCloseCallback) {
+        const callback = dialogueCloseCallback;
+        dialogueCloseCallback = null;
+        callback();
+      }
+      return;
+    }
+    if ((event.key === 'Enter' || event.key === ' ') && event.target.matches?.('[role="button"][data-action]')) {
+      event.preventDefault();
+      event.target.click();
+    }
+  });
   document.addEventListener('click', (event) => {
     const modalCard = event.target.closest('[data-modal-card]');
     if (modalCard) event.stopPropagation();
