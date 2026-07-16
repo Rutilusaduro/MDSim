@@ -133,21 +133,13 @@ export function renderSilhouette(character, stageIndex, options = {}) {
   const ghost = options.ghost ? 'opacity-35' : '';
   const label = options.label ? `<p class="text-center text-xs text-stone-400">${options.label}</p>` : '';
   const widthClass = options.wide ? 'w-32' : 'w-28';
-  const gradId = `sil-${(character.id || 'x').replace(/[^a-z0-9]/gi, '')}-${stageIndex}`;
-
   return `
     <div class="${ghost}">
       ${label}
       <svg viewBox="0 0 88 ${viewH}" class="mx-auto ${widthClass}" aria-hidden="true" role="img">
-        <defs>
-          <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="currentColor" stop-opacity="0.88" />
-            <stop offset="100%" stop-color="currentColor" stop-opacity="0.68" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="28" cy="${viewH - 6}" rx="20" ry="3.5" fill="currentColor" opacity="0.1" />
-        <path d="${hairPath}" fill="currentColor" opacity="0.22" />
-        <path d="${bodyPath}" fill="url(#${gradId})" />
+        <path d="${hairPath}" fill="currentColor" opacity="0.4" />
+        <path d="${bodyPath}" fill="var(--manila, #e8d9b0)" fill-opacity="0.3"
+          stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
       </svg>
     </div>
   `;
@@ -155,10 +147,11 @@ export function renderSilhouette(character, stageIndex, options = {}) {
 
 export function renderSilhouetteCompare(character, oldStage, newStage) {
   return `
-    <div class="flex items-end justify-center gap-6 text-pink-300">
-      ${renderSilhouette(character, oldStage, { ghost: true, label: `Stage ${oldStage + 1}`, wide: true })}
-      <span class="text-stone-500">→</span>
-      ${renderSilhouette(character, newStage, { label: `Stage ${newStage + 1}`, wide: true })}
+    <div class="silhouette-compare relative flex items-end justify-center" style="color: var(--ink)">
+      <div class="absolute inset-0 flex items-end justify-center opacity-30">
+        ${renderSilhouette(character, oldStage, { wide: true })}
+      </div>
+      ${renderSilhouette(character, newStage, { label: `Stage ${oldStage + 1} beneath stage ${newStage + 1}`, wide: true })}
     </div>
   `;
 }
