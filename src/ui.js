@@ -2,7 +2,7 @@ import { buyManagementItem, computeClinicEffects, getItem, shopItems } from './c
 import { describeCharacter, getStageIndex, getStageInfo, getPatientAppearanceSummary, weightStageNames } from './characters.js';
 import { endWeek, getInteractionOptions, performInteraction } from './events.js';
 import { findCharacter } from './roster.js';
-import { formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
+import { DIFFICULTY_TABLE, formatMoney, gameState, loadGame, resetGame, saveGame, spendActionPoint } from './state.js';
 import { getAchievementProgress } from './achievements.js';
 import { formatArcSceneNote } from './staffArcs/index.js';
 import { getArcProgress, getArcSceneForCharacter, advanceArc, getRouteLabel } from './arcs.js';
@@ -920,13 +920,33 @@ function bindEvents() {
       }
     }
     if (action === 'new-game') {
-      openConfirmModal('Start a fresh clinic and overwrite the current autosave?', () => {
-        resetGame();
-        activeTab = 'management';
-        closeModal();
-        render();
-        showToast('New clinic generated.');
-      }, openModal);
+      openModal(`
+        <div>
+          <p class="ui-label">New practice</p>
+          <h2 class="mt-1 text-2xl font-black text-stone-50">Sign a lease</h2>
+          <p class="mt-2 text-sm text-stone-400">Starting fresh overwrites the current autosave.</p>
+          <div class="mt-5 grid gap-2">
+            ${Object.entries(DIFFICULTY_TABLE)
+              .map(
+                ([id, knobs]) => `
+              <button class="soft-card rounded-2xl p-4 text-left" data-action="new-game-start" data-difficulty="${id}">
+                <strong class="text-stone-50">${e(knobs.label)}</strong>
+                <span class="ml-2 text-xs text-stone-400">${e(knobs.blurb)}</span>
+                <p class="mt-1 text-xs text-stone-500">Starts with ${formatMoney(knobs.money)} · audits begin week ${knobs.auditStartWeek}</p>
+              </button>`,
+              )
+              .join('')}
+          </div>
+          <button class="dark-button mt-5 rounded-2xl px-4 py-2 text-sm font-bold" data-action="close-modal">Keep current save</button>
+        </div>
+      `);
+    }
+    if (action === 'new-game-start') {
+      resetGame({ difficulty: target.dataset.difficulty });
+      activeTab = 'management';
+      closeModal();
+      render();
+      showToast(`New clinic generated. ${DIFFICULTY_TABLE[target.dataset.difficulty]?.label || 'Attending'} start.`);
     }
     if (action === 'rename-doctor') {
       const next = window.prompt('Doctor name', gameState.doctorName);

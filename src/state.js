@@ -34,6 +34,41 @@ export function createRng(seed = Date.now()) {
   };
 }
 
+/** C5: every tuning knob that differs by start lives here. */
+export const DIFFICULTY_TABLE = {
+  resident: {
+    label: 'Resident',
+    blurb: 'A forgiving lease. Learn the chart.',
+    money: 3000,
+    rentGrowthPct: 0,
+    rentGrowthFromWeek: Infinity,
+    auditStartWeek: 20,
+    gapHeatMult: 0.8,
+  },
+  attending: {
+    label: 'Attending',
+    blurb: 'The intended practice. Rent creeps from week 8.',
+    money: 2400,
+    rentGrowthPct: 1.5,
+    rentGrowthFromWeek: 8,
+    auditStartWeek: 14,
+    gapHeatMult: 1.0,
+  },
+  auditSeason: {
+    label: 'Audit season',
+    blurb: 'The board is already asking about you.',
+    money: 1800,
+    rentGrowthPct: 2.5,
+    rentGrowthFromWeek: 4,
+    auditStartWeek: 8,
+    gapHeatMult: 1.3,
+  },
+};
+
+export function difficultyKnobs(state) {
+  return DIFFICULTY_TABLE[state?.difficulty] || DIFFICULTY_TABLE.attending;
+}
+
 function defaultStats() {
   return {
     arcBeatsCompleted: 0,
@@ -57,13 +92,14 @@ export function createNewGame(options = {}) {
   const rng = createRng(options.seed ?? Date.now());
   const staff = createTinyClinicStaff(rng);
   const patients = [createPatient(rng, { week: 1, clinicalStart: true })];
+  const difficulty = DIFFICULTY_TABLE[options.difficulty] ? options.difficulty : 'attending';
 
   const game = {
     version: GAME_VERSION,
     clinicName: options.clinicName || 'Vale Family Medicine',
     doctorName: options.doctorName || 'Dr. Vale',
     week: 1,
-    money: 2400,
+    money: DIFFICULTY_TABLE[difficulty].money,
     reputation: 8,
     actionPointsMax: 7,
     actionPoints: 7,
@@ -123,7 +159,7 @@ export function createNewGame(options = {}) {
     supplyCostChapterFired: false,
     seenLines: {},
     history: [],
-    difficulty: 'attending',
+    difficulty,
     pendingLetters: [],
     coverOps: { activeBuffs: [] },
     noteSeq: 0,

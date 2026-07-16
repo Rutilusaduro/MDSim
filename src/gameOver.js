@@ -1,5 +1,6 @@
 import { chartGap, getPatientFramingTier, getCoverLabel } from './patientFraming.js';
 import { ledgerFor } from './memoryLedger.js';
+import { difficultyKnobs } from './state.js';
 
 export const AUDIT_GAME_OVER = {
   id: 'audit_shutdown',
@@ -41,6 +42,8 @@ export function buildAuditVerdict(state) {
 
 export function checkAuditGameOver(state) {
   if (state.gameOver) return state.gameOver;
+  // The board does not look your way before its season starts (C5).
+  if (state.week < difficultyKnobs(state).auditStartWeek) return null;
   const cover = state.coverRating ?? 100;
   const gap = summedChartGap(state);
   if (cover <= 0 || (cover < 12 && gap >= 18)) {

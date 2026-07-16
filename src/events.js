@@ -1,6 +1,7 @@
 import {
   addLog,
   addWeekNote,
+  difficultyKnobs,
   formatMoney,
   rngForState,
   saveGame,
@@ -643,11 +644,17 @@ export function endWeek(state) {
     }
   }
 
+  const knobs = difficultyKnobs(state);
+  if (state.week >= knobs.rentGrowthFromWeek && knobs.rentGrowthPct > 0) {
+    state.rent = Math.round(state.rent * (1 + knobs.rentGrowthPct / 100));
+  }
+
   if ((state.heat || 0) > 0 || state.patients?.length) {
     let gapHeat = 0;
     for (const patient of state.patients) {
       gapHeat += Math.min(6, chartGap(patient) / 8);
     }
+    gapHeat *= knobs.gapHeatMult;
     if (gapHeat > 0) {
       state.heat = Math.min(100, (state.heat || 0) + Math.floor(gapHeat));
     }

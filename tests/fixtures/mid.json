@@ -3,11 +3,11 @@
  "clinicName": "Vale Family Medicine",
  "doctorName": "Dr. Vale",
  "week": 11,
- "money": -6340,
+ "money": -6376,
  "reputation": 0,
  "actionPointsMax": 7,
  "actionPoints": 7,
- "rent": 420,
+ "rent": 438,
  "salaries": 280,
  "supplyCost": 174,
  "ownedUpgrades": [],
@@ -152,70 +152,70 @@
    "week": 10,
    "type": "resolution",
    "title": "Week 10 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 10, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      \n      <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$438</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$892</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-9-32",
    "week": 9,
    "type": "resolution",
    "title": "Week 9 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n    \n    \n    \n    \n    <p>Week 9 closes. <strong>Daphne Novak</strong> adds 3.6 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 9, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 3.6 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      \n      <p><strong>Break Room Scale:</strong> Someone leaves a scale in the break room. Numbers get whispered. Denial lasts an hour. Then snack runs double.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$432</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$886</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-8-28",
    "week": 8,
    "type": "resolution",
    "title": "Week 8 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    \n    \n    \n    \n    <p>Week 8 closes. <strong>Daphne Novak</strong> adds 3.5 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 8, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 3.5 lb. <strong>Celeste Mori</strong> leaves 1.0 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n      <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$426</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$880</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-7-25",
    "week": 7,
    "type": "resolution",
    "title": "Week 7 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n    <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n    \n    \n    \n    <p>Week 7 closes. <strong>Daphne Novak</strong> adds 2.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 7, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.6 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n      <p><strong>Ice Cream Truck:</strong> An ice cream truck parks outside. Someone orders for the whole lobby. Sticky fingers. Fuller middles.</p>\n      <p><strong>Patient Poach:</strong> ThriveWell offers your regulars a \"detox month.\" One patient almost leaves. Elena blocks the door with her hips. Literally.</p>\n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-6-21",
    "week": 6,
    "type": "resolution",
    "title": "Week 6 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 6 closes. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 6, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.4 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      <p><strong>Ice Cream Summer:</strong> Patient trust gains +15% from events.</p>\n      <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-5-17",
    "week": 5,
    "type": "resolution",
    "title": "Week 5 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n    <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n    \n    \n    \n    <p>Week 5 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 5, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      \n      <p><strong>Midnight Delivery:</strong> A midnight supply delivery includes \"bonus\" dessert crates. Staff on late shift find them. Morning shift finds crumbs.</p>\n      <p><strong>Poster War:</strong> Their new billboard shows thin models in yoga pants. \"Real wellness,\" it says. Your front desk staff glare at it through the window.</p>\n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-4-13",
    "week": 4,
    "type": "resolution",
    "title": "Week 4 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Button Crisis Monday:</strong> Three staff report button failures before nine a.m. Safety pins sell out at the corner store.</p>\n    <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n    \n    \n    \n    <p>Week 4 closes. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 4, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 3.1 lb. <strong>Celeste Mori</strong> leaves 0.9 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      \n      <p><strong>Button Crisis Monday:</strong> Three staff report button failures before nine a.m. Safety pins sell out at the corner store.</p>\n      <p><strong>Rival Juice Bar:</strong> ThriveWell Annex installs a juice bar across the street. Your patients smell kale. Two skip appointments. Reputation dips unless you answer.</p>\n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-3-9",
    "week": 3,
    "type": "resolution",
    "title": "Week 3 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n    \n    \n    \n    \n    <p>Week 3 closes. <strong>Daphne Novak</strong> adds 2.7 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 3, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.7 lb. <strong>Celeste Mori</strong> leaves 0.8 lb heavier. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n      \n      <p><strong>Word of Mouth:</strong> A patient tells a friend the clinic \"gets it.\" Reputation ticks up without ad spend.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-2-6",
    "week": 2,
    "type": "resolution",
    "title": "Week 2 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 2 closes. <strong>Daphne Novak</strong> adds 1.8 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 2, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 1.8 lb. <strong>Celeste Mori</strong> leaves 0.5 lb heavier. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n      \n      <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "note-1-3",
    "week": 1,
    "type": "resolution",
    "title": "Week 1 resolution",
-   "text": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n    <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n    \n    \n    \n    \n    <p>Week 1 closes. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n  "
+   "text": "\n    <div class=\"prose-page\">\n      <p>Week 1, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.8 lb. <strong>Celeste Mori</strong> leaves 0.7 lb heavier. 0 new patients on the roster. Word of mouth. Busy rooms.</p>\n      <p><strong>Feast Season:</strong> Double food event weight. Wardrobe strain +10%.</p>\n      <p><strong>Holiday Feast Tray:</strong> A donor sends a holiday feast tray. Staff and patients share. Portion control dies with the first bite.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$420</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$874</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  "
   },
   {
    "id": "welcome",
@@ -249,7 +249,7 @@
    }
   ],
   "stageChanges": [],
-  "bills": 874,
+  "bills": 892,
   "clinicRevenue": 0,
   "newPatients": [],
   "weeklyEvent": {
@@ -265,7 +265,7 @@
   "seasonal": null,
   "ending": null,
   "newAchievements": [],
-  "html": "\n    <p>No new gear this week. The clinic runs on what it already has.</p>\n    \n    <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n    \n    \n    \n    \n    <p>Week 10 closes. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier.</p>\n    <p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p>\n    <p>Bills $874. Net -$874. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n  ",
+  "html": "\n    <div class=\"prose-page\">\n      <p>Week 10, Friday close. No new gear this week. The clinic runs on what it already has. <strong>Daphne Novak</strong> adds 2.3 lb. <strong>Celeste Mori</strong> leaves 0.6 lb heavier. 0 new patients waitlisted. Reputation does the recruiting now.</p>\n      \n      <p><strong>Caterer Convention:</strong> A caterer convention books the block. Sample trays flood the break room. Nobody skips.</p>\n      \n      \n      \n      \n    </div>\n    \n    <div class=\"ledger mt-5\">\n      \n      \n      <div class=\"ledger-row\"><span>Rent</span><span class=\"chart-num\">-$438</span></div>\n      <div class=\"ledger-row\"><span>Salaries</span><span class=\"chart-num\">-$280</span></div>\n      <div class=\"ledger-row\"><span>Supplies</span><span class=\"chart-num\">-$174</span></div>\n      \n      <div class=\"ledger-row ledger-net\"><span>Net</span><span class=\"chart-num\">-$892</span></div>\n    </div>\n    <div class=\"mt-4 border-t pt-3\" style=\"border-color: #c9b686\">\n      <p class=\"ui-label\" style=\"color: var(--ink-soft)\">Chart flags</p>\n      <div class=\"prose-page mt-1 text-sm\"><p>No formal stage change this week. Tighter buttons. Louder stomachs. Small signs.</p></div>\n    </div>\n  ",
   "weekInterrupt": {
    "sceneId": "early_jeans_tight",
    "characterId": "staff-6195e"
@@ -414,7 +414,7 @@
   },
   {
    "week": 8,
-   "money": -4592,
+   "money": -4598,
    "heat": 0,
    "cover": 100,
    "reputation": 0,
@@ -423,7 +423,7 @@
   },
   {
    "week": 9,
-   "money": -5466,
+   "money": -5484,
    "heat": 0,
    "cover": 100,
    "reputation": 0,
@@ -432,7 +432,7 @@
   },
   {
    "week": 10,
-   "money": -6340,
+   "money": -6376,
    "heat": 0,
    "cover": 100,
    "reputation": 0,
